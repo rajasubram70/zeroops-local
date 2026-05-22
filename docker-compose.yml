@@ -1,0 +1,251 @@
+version: "3.8"
+
+networks:
+  zeroops:
+    driver: bridge
+  zammad-docker-compose_default:
+    external: true
+
+volumes:
+  prometheus_data:
+  loki_data:
+  tempo_data:
+  grafana_data:
+  postgres_data:
+  odoo_postgres_data:
+  odoo_data:
+
+
+services:
+  demo-api:
+    build: ./app/api
+    container_name: demo-api
+    ports:
+      - "8080:8080"
+    environment:
+      - OTEL_ENDPOINT=http://otel-collector:4318
+      - REDIS_HOST=redis
+      - POSTGRES_DSN=postgresql://appuser:apppass@postgres:5432/enterprise_db
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [postgres, redis, otel-collector]
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./config/promtail/promtail.yml:/etc/promtail/config.yml
+      - //./pipe/docker_engine://./pipe/docker_engine
+    command: -config.file=/etc/promtail/config.yml
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [loki]
+
+  rca-service:
+    build: ./rca-service
+    container_name: rca-service
+    ports:
+      - "5001:5000"
+    volumes:
+      - //./pipe/docker_engine://./pipe/docker_engine
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - LOKI_URL=http://loki:3100
+      - GRAFANA_URL=http://grafana:3000
+      - GRAFANA_USER=admin
+      - GRAFANA_PASS=zeroops
+      - USE_OLLAMA=true
+      - OLLAMA_URL=http://host.docker.internal:11434/v1
+      - OLLAMA_MODEL=gpt-oss:20b
+    # - OPENAI_API_KEY=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
+      - DASHBOARD_UID=add2575
+      - SLACK_WEBHOOK=https://hooks.slack.com/services/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
+      - RCA_BASE_URL=http://localhost:5001
+      - ZAMMAD_URL=http://zammad-docker-compose-zammad-nginx-1:8080
+      - ZAMMAD_TOKEN=LSEuQk4pVaKjzYbjaVxoCp_tVdrZxu1xR-nVBfUGUi0R0SHd2DEo0UgnhD6q70yf
+    networks:
+      - zeroops
+      - zammad-docker-compose_default
+    restart: unless-stopped
+    depends_on: [prometheus, loki, grafana]
+
+  demo-worker:
+    build: ./app/worker
+    container_name: demo-worker
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_DSN=postgresql://appuser:apppass@postgres:5432/enterprise_db
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [redis, postgres]
+
+  # ── Observability stack ──────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    networks: [zeroops]
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/loki/loki.yml:/etc/loki/loki.yml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/loki.yml
+    networks: [zeroops]
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    user: "0"
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+    volumes:
+      - ./config/tempo/tempo.yml:/etc/tempo/tempo.yml
+      - tempo_data:/var/tempo
+    command: -config.file=/etc/tempo/tempo.yml
+    networks: [zeroops]
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    ports:
+      - "4318:4318"
+      - "8889:8889"
+    volumes:
+      - ./config/otel-collector/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [prometheus, loki, tempo]
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=zeroops
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_FEATURE_TOGGLES_ENABLE=correlations
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [prometheus, loki, tempo]
+
+ # ── URL monitoring layer ───────────────────────────────────────────────
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox-exporter
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./config/blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml
+    networks: [zeroops]
+    restart: unless-stopped
+
+  # ── Data layer ───────────────────────────────────────────────
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: enterprise_db
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [zeroops]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks: [zeroops]
+    restart: unless-stopped
+
+  # ── Exporters (expose Postgres + Redis metrics to Prometheus) ─
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://appuser:apppass@postgres:5432/enterprise_db?sslmode=disable"
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [postgres]
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on: [redis]
+
+  odoo-postgres:
+    image: postgres:15
+    container_name: odoo-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo123
+    volumes:
+      - odoo_postgres_data:/var/lib/postgresql/data
+    networks: [zeroops]
+    restart: unless-stopped
+
+#---------- Bridge API ----------
+  bridge-api:
+    build: ./bridge-api
+    container_name: bridge-api
+    ports:
+      - "5002:5002"
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - LOKI_URL=http://loki:3100
+      - ZAMMAD_URL=http://zammad-docker-compose-zammad-nginx-1:8080
+      - ZAMMAD_TOKEN=LSEuQk4pVaKjzYbjaVxoCp_tVdrZxu1xR-nVBfUGUi0R0SHd2DEo0UgnhD6q70yf
+      - RCA_URL=http://rca-service:5000
+    networks:
+      - zeroops
+      - zammad-docker-compose_default
+    restart: unless-stopped
+    depends_on: [prometheus, loki, grafana, rca-service]
+
+# ── odoo CRM ─
+  odoo:
+    image: odoo:17
+    container_name: odoo
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=odoo-postgres
+      - USER=odoo
+      - PASSWORD=odoo123
+    volumes:
+      - odoo_data:/var/lib/odoo
+    networks: [zeroops]
+    restart: unless-stopped
+    depends_on:
+      - odoo-postgres

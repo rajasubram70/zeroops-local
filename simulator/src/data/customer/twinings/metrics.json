@@ -1,0 +1,183 @@
+{
+  "_notes": "Twinings metrics \u2014 MTTR in hours (not minutes). Baseline 0% automation. ZeroOps target: 50%+ auto-resolution (matches BTX initiative target). 40% cost reduction over 3 years = board mandate.",
+  "kpis": {
+    "mttr_baseline_hrs": 285,
+    "mttr_baseline_min": 17100,
+    "mttr_current_min": 28,
+    "auto_fix_baseline_pct": 0,
+    "auto_fix_rate_pct": 52,
+    "alert_volume_per_day": 320,
+    "actionable_alerts_per_day": 71,
+    "alert_noise_red_pct": 78,
+    "ticket_deflection_baseline_pct": 0,
+    "ticket_deflection_pct": 61,
+    "csat_baseline": 2.4,
+    "csat_current": 4.1,
+    "ops_headcount": 24,
+    "incidents_per_month": 493,
+    "engineer_hourly_rate_usd": 85,
+    "llm_cost_per_month_usd": 38,
+    "nps_baseline": -50,
+    "nps_current": 28,
+    "nps_target": 50,
+    "satisfaction_measure": "BOTH",
+    "csat_target": 4.5
+  },
+  "snapshot": [
+    {
+      "metric": "Mean Time to Resolve (MTTR)",
+      "before": "285 hours",
+      "after": "28 min",
+      "delta": "\u2193 99.8%",
+      "good": true
+    },
+    {
+      "metric": "Automation Rate",
+      "before": "0%",
+      "after": "52%",
+      "delta": "\u2191 52pts",
+      "good": true
+    },
+    {
+      "metric": "SLA Breach Rate",
+      "before": "85%",
+      "after": "8%",
+      "delta": "\u2193 77pts",
+      "good": true
+    },
+    {
+      "metric": "Alert Noise",
+      "before": "320/day",
+      "after": "71/day",
+      "delta": "\u2193 78%",
+      "good": true
+    },
+    {
+      "metric": "Authorization Request Wait",
+      "before": "76 hrs",
+      "after": "4 hrs",
+      "delta": "\u2193 95%",
+      "good": true
+    },
+    {
+      "metric": "Net Promoter Score (NPS)",
+      "before": "-50  (mostly detractors)",
+      "after": "+28  (positive territory)",
+      "delta": "\u2191 +78 pts",
+      "good": true
+    },
+    {
+      "metric": "Monthly Incidents Avoided",
+      "before": "0",
+      "after": "287",
+      "delta": "\u2191 287",
+      "good": true
+    },
+    {
+      "metric": "Engineer Hours Saved / Month",
+      "before": "0",
+      "after": "1,847 hrs",
+      "delta": "New",
+      "good": true
+    }
+  ],
+  "history": [
+    {
+      "month": "Jul'24",
+      "mttr": 285,
+      "autoFix": 0,
+      "deflection": 0,
+      "csat": 2.4,
+      "noise": 0,
+      "incidents": 493,
+      "nps": -50
+    },
+    {
+      "month": "Aug'24",
+      "mttr": 240,
+      "autoFix": 6,
+      "deflection": 8,
+      "csat": 2.8,
+      "noise": 22,
+      "incidents": 471,
+      "nps": -50
+    },
+    {
+      "month": "Sep'24",
+      "mttr": 180,
+      "autoFix": 14,
+      "deflection": 18,
+      "csat": 3.2,
+      "noise": 38,
+      "incidents": 448,
+      "nps": -35
+    },
+    {
+      "month": "Oct'24",
+      "mttr": 120,
+      "autoFix": 24,
+      "deflection": 31,
+      "csat": 3.6,
+      "noise": 52,
+      "incidents": 421,
+      "nps": -20
+    },
+    {
+      "month": "Nov'24",
+      "mttr": 62,
+      "autoFix": 36,
+      "deflection": 44,
+      "csat": 3.9,
+      "noise": 64,
+      "incidents": 387,
+      "nps": -5
+    },
+    {
+      "month": "Dec'24",
+      "mttr": 28,
+      "autoFix": 52,
+      "deflection": 61,
+      "csat": 4.1,
+      "noise": 78,
+      "incidents": 347,
+      "nps": 28
+    }
+  ],
+  "roi": {
+    "period": "December 2024",
+    "incidentsHandled": 347,
+    "autoResolved": 180,
+    "humanAssisted": 167,
+    "hrsSaved": 266,
+    "costAvoidance": 22610,
+    "noiseSuppressed": 7470,
+    "noiseSuppressValue": 53004,
+    "llmCost": 38,
+    "netROI": 75576,
+    "roiMultiplier": 1990,
+    "_note": "ROI multiplier 5525x reflects extreme MTTR baseline (285 hours). This is the most powerful ROI story in any CPG demo."
+  },
+  "csat_by_priority": [
+    {
+      "label": "P1 \u2014 Critical",
+      "csat": 3.2,
+      "nps_contrib": -12,
+      "n": 23,
+      "note": "Users still shaken \u2014 even fast resolution leaves stress"
+    },
+    {
+      "label": "P2 \u2014 High",
+      "csat": 4.0,
+      "nps_contrib": 18,
+      "n": 41,
+      "note": "Improving \u2014 proactive comms making a difference"
+    },
+    {
+      "label": "P3 \u2014 Medium",
+      "csat": 4.4,
+      "nps_contrib": 42,
+      "n": 87,
+      "note": "Strong \u2014 many resolved before user noticed"
+    }
+  ]
+}

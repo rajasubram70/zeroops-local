@@ -1,0 +1,149 @@
+{
+  "_notes": "Twinings KB articles \u2014 mapped from the 5 incident categories. All SAP-specific runbooks.",
+  "articles": [
+    {
+      "id": "KB-TW-001",
+      "title": "SAP MDG \u2014 Approval Queue Management & Automation",
+      "domain": "SAP Core ERP",
+      "tags": ["MDG", "master data", "approval", "queue", "S4HANA"],
+      "status": "active",
+      "body": "Procedures for managing SAP MDG approval queue backlog including batch job rescheduling via SM37, priority escalation workflows, and ZeroOps auto-validation configuration for standard master data correction patterns.",
+      "sections": [
+        {
+          "title": "Diagnosing Queue Backlog",
+          "content": "Check MDG workflow inbox via S/4HANA Fiori app 'Manage Workflows'. Review SM37 background job schedule for MDG batch jobs \u2014 confirm they are in BACKGROUND not DIALOG class."
+        },
+        {
+          "title": "Immediate Relief \u2014 SM37 Rescheduling",
+          "content": "Transaction SM37 \u2192 select MDG batch jobs \u2192 reschedule to background WP class. This immediately frees dialog WPs for user sessions. Expected impact: 15% queue throughput improvement within 1 hour."
+        },
+        {
+          "title": "ZeroOps Auto-Validation Setup",
+          "content": "Configure Change Validator with MDG auto-approval rules: pricing output corrections, GL/COA field mappings, vendor bank details (low-risk). Estimated 60% of queue items eligible for auto-approval."
+        },
+        {
+          "title": "Escalation Triggers",
+          "content": "Auto-escalate when queue > 200 items, when GL/COA structural changes are pending, or when downstream Ariba PO blocking is detected. ServiceNow auto-ticket raised for senior approver."
+        }
+      ],
+      "relatedIncidents": [
+        "INC-TWNG-00447",
+        "INC-TWNG-00441",
+        "INC-TWNG-00428"
+      ],
+      "relatedAgents": ["RCA Engine", "Change Validator", "Remediation Agent"]
+    },
+    {
+      "id": "KB-TW-002",
+      "title": "SAP IAS/IPS \u2014 Authorization Request Automation & SoD Checking",
+      "domain": "SAP Platform & Identity",
+      "tags": ["IAS", "authorization", "SoD", "Fiori", "provisioning"],
+      "status": "active",
+      "body": "ZeroOps automated SoD checking and Fiori catalog auto-provisioning runbook \u2014 eliminating 76-hour manual authorization queue for standard role requests.",
+      "sections": [
+        {
+          "title": "Auto-Approval Eligibility Rules",
+          "content": "Eligible for auto-approval: display roles (SAP_BC_*_DISPLAY), standard Fiori catalog pages (F1234-F2000 range), new starter standard onboarding packs. Not eligible: transaction access to FI posting, HR sensitive data, admin transactions."
+        },
+        {
+          "title": "SoD Check Automation",
+          "content": "ZeroOps Change Validator runs GRC SoD check via API before any role assignment. Conflict detected \u2192 human escalation. Clean result \u2192 auto-provision via IAS API. Audit log written to ServiceNow automatically."
+        },
+        {
+          "title": "IAS Provisioning Steps",
+          "content": "1. SoD check via SAP GRC API \u00b7 2. IAS role assignment via REST API \u00b7 3. IPS synchronisation trigger \u00b7 4. Fiori catalog assignment \u00b7 5. ServiceNow request closed \u00b7 6. User notified via Teams."
+        }
+      ],
+      "relatedIncidents": ["INC-TWNG-00444", "INC-TWNG-00421"],
+      "relatedAgents": [
+        "Change Validator",
+        "Remediation Agent",
+        "Alert Correlator"
+      ]
+    },
+    {
+      "id": "KB-TW-003",
+      "title": "SAP Analytics Cloud \u2014 Report Performance & BW Query Optimisation",
+      "domain": "SAP Analytics & Planning",
+      "tags": ["SAC", "BW4HANA", "CDS", "performance", "reporting"],
+      "status": "active",
+      "body": "Diagnosis and resolution procedures for SAC report generation timeouts \u2014 BW/4HANA CDS view optimisation and SAC query priority configuration.",
+      "sections": [
+        {
+          "title": "Diagnosing SAC Report Latency",
+          "content": "Check SAC tenant activity log for report run times > 3min. Identify BW InfoProviders with full table scans via BW/4HANA transaction RSRT. Check HANA memory utilisation via cloud ALM."
+        },
+        {
+          "title": "CDS View Optimisation",
+          "content": "HANA calculation view alternative for top 5 CDS views \u2014 ZeroOps RCA Engine generates optimisation recommendation. Apply via BW/4HANA transport request. Test with RSRT before production deployment."
+        },
+        {
+          "title": "SAC Report Priority Configuration",
+          "content": "Configure SAC query priority: P1 executive dashboards \u2192 dedicated processing slot. P2 management reports \u2192 standard queue. P3 ad-hoc \u2192 deferred during peak. ZeroOps Capacity Planner auto-applies tiering during month-end."
+        }
+      ],
+      "relatedIncidents": ["INC-TWNG-00445", "INC-TWNG-00433"],
+      "relatedAgents": ["RCA Engine", "Capacity Planner", "Log Analyzer"]
+    },
+    {
+      "id": "KB-TW-004",
+      "title": "K2 Workflow \u2014 Timeout Management & Auto-Restart",
+      "domain": "Integration & Data Platform",
+      "tags": ["K2", "workflow", "timeout", "ServiceNow", "automation"],
+      "status": "active",
+      "body": "K2 workflow session timeout resolution \u2014 auto-restart procedures for workflows that expire waiting for upstream SAP approval responses.",
+      "sections": [
+        {
+          "title": "Identifying Timed-Out Workflows",
+          "content": "K2 Management Console \u2192 Active Workflows \u2192 filter Status = Expired. Correlate to ServiceNow catalog item status = Stalled. ZeroOps Alert Correlator auto-detects this pattern."
+        },
+        {
+          "title": "Auto-Restart via ZeroOps",
+          "content": "ZeroOps Remediation Agent monitors for K2 timeout + upstream SAP approval complete events. On detection: restart K2 workflow instance via K2 REST API. ServiceNow item updated. No service desk involvement."
+        }
+      ],
+      "relatedIncidents": ["INC-TWNG-00439", "INC-TWNG-00447"],
+      "relatedAgents": ["Alert Correlator", "Remediation Agent"]
+    },
+    {
+      "id": "KB-TW-005",
+      "title": "SAP Fiori \u2014 Cache Management & Post-Maintenance Recovery",
+      "domain": "SAP Core ERP",
+      "tags": ["Fiori", "cache", "maintenance", "auto-resolve"],
+      "status": "active",
+      "body": "SAP Fiori tile cache flush procedures \u2014 included in post-maintenance runbook to prevent user-facing errors after SAP PCE patching.",
+      "sections": [
+        {
+          "title": "Post-Maintenance Cache Flush",
+          "content": "SAP S/4HANA transaction /UI2/FLPD_CONF \u2192 Reset Fiori cache. Execute ICM cache flush via SM59. ZeroOps Remediation Agent executes this automatically after maintenance window close."
+        },
+        {
+          "title": "Auto-Detection Pattern",
+          "content": "ZeroOps Alert Correlator: detect >3 Fiori tile loading errors within 60 seconds of maintenance window end \u2192 trigger auto-flush. Pattern confidence 99% \u2014 zero false positives in production."
+        }
+      ],
+      "relatedIncidents": ["INC-TWNG-00436", "INC-TWNG-00421"],
+      "relatedAgents": ["Alert Correlator", "Remediation Agent"]
+    },
+    {
+      "id": "KB-TW-006",
+      "title": "SAP Password Reset \u2014 Automated via IAS API",
+      "domain": "SAP Platform & Identity",
+      "tags": ["password", "IAS", "reset", "automation", "self-service"],
+      "status": "active",
+      "body": "Fully automated SAP password reset via SAP IAS API \u2014 eliminating the 14.5-hour average manual service desk resolution time.",
+      "sections": [
+        {
+          "title": "Automation Flow",
+          "content": "User request via ServiceNow self-service portal \u2192 identity verified via Azure AD MFA \u2192 IAS password reset API call \u2192 user notified via Teams and email \u2192 ServiceNow ticket auto-closed. Total time: < 60 seconds."
+        },
+        {
+          "title": "Account Unlock \u2014 Lockout Recovery",
+          "content": "SAP IAS lockout after 5 failed attempts \u2192 ZeroOps detects lockout alert from Cloud ALM \u2192 auto-unlock after MFA verification \u2192 unlock logged to GRC audit trail automatically."
+        }
+      ],
+      "relatedIncidents": ["INC-TWNG-00421", "INC-TWNG-00444"],
+      "relatedAgents": ["Change Validator", "Alert Correlator"]
+    }
+  ]
+}

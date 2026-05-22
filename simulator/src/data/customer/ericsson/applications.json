@@ -1,0 +1,845 @@
+{
+  "_schema": "ZeroOps Application Landscape v1.0",
+  "_customer": "Ericsson IT",
+  "_notes": "Drives Service Map (TopologyPage) and Application Health tiles on Dashboard. Each domain is a 'value chain'. status: GREEN|AMBER|RED. uptime 0-100. trend is 8 data points oldest-to-newest. Apps within each domain have infra components for drill-down. hosting values appear as badges.",
+  "domains": [
+    {
+      "id": "sap-landscape",
+      "name": "SAP Landscape",
+      "icon": "\ud83c\udfed",
+      "hosting": "Azure Public Cloud",
+      "hostingColor": "#0078D4",
+      "status": "RED",
+      "uptime": 82,
+      "trend": [93, 91, 90, 88, 87, 84, 82, 82],
+      "forecast": "SAP AP1 WP saturation active \u2014 period-end close at risk",
+      "apps": [
+        {
+          "id": "sap-ap1",
+          "name": "SAP S/4HANA \u2014 AP1",
+          "status": "AMBER",
+          "perf": 78,
+          "version": "S4-2023",
+          "infra": [
+            {
+              "c": "Azure VM",
+              "type": "Standard_E32s_v5",
+              "h": "AMBER",
+              "m": 87,
+              "anom": true,
+              "detail": "CPU 87% \u2014 WP saturation risk at period-end batch"
+            },
+            {
+              "c": "SAP HANA DB",
+              "type": "Azure Premium SSD",
+              "h": "GREEN",
+              "m": 91,
+              "anom": false,
+              "detail": "HANA memory 62% \u2014 nominal"
+            },
+            {
+              "c": "ExpressRoute",
+              "type": "10Gbps circuit",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "Latency 4ms DC-to-Azure \u2014 nominal"
+            },
+            {
+              "c": "Azure Monitor",
+              "type": "Observability",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "All SAP VM telemetry routing to ZeroOps"
+            }
+          ],
+          "ver": "S4-2023"
+        },
+        {
+          "id": "sap-s4hana",
+          "name": "SAP S/4HANA Finance",
+          "status": "AMBER",
+          "perf": 82,
+          "version": "S4-2023",
+          "ver": "S4-2023",
+          "infra": [
+            {
+              "c": "Azure VM",
+              "type": "Standard_E32s_v5",
+              "h": "AMBER",
+              "m": 82,
+              "anom": false,
+              "detail": "CPU 62% \u2014 nominal outside peak"
+            },
+            {
+              "c": "SAP HANA DB",
+              "type": "Azure Premium SSD",
+              "h": "GREEN",
+              "m": 91,
+              "anom": false,
+              "detail": "HANA memory 62% \u2014 nominal"
+            },
+            {
+              "c": "ExpressRoute",
+              "type": "10Gbps circuit",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "Latency 4ms \u2014 nominal"
+            }
+          ]
+        },
+        {
+          "id": "sap-concur",
+          "name": "SAP Concur",
+          "status": "AMBER",
+          "perf": 71,
+          "version": "Cloud",
+          "infra": [
+            {
+              "c": "SaaS API",
+              "type": "SAP Concur Cloud",
+              "h": "AMBER",
+              "m": 71,
+              "anom": true,
+              "detail": "Expense sync failing \u2014 service account credential expired"
+            },
+            {
+              "c": "Integration",
+              "type": "S/4HANA FI Module",
+              "h": "AMBER",
+              "m": 68,
+              "anom": true,
+              "detail": "2,847 expense reports stuck in sync queue"
+            }
+          ],
+          "ver": "Cloud"
+        },
+        {
+          "id": "sap-ariba",
+          "name": "SAP Ariba",
+          "status": "GREEN",
+          "perf": 93,
+          "version": "Cloud",
+          "ver": "Cloud",
+          "infra": [
+            {
+              "c": "SaaS API",
+              "type": "SAP Ariba Cloud",
+              "h": "GREEN",
+              "m": 93,
+              "anom": false,
+              "detail": "Procurement workflows nominal"
+            }
+          ]
+        },
+        {
+          "id": "coupa",
+          "name": "Coupa Procurement",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "SaaS",
+          "ver": "SaaS",
+          "infra": [
+            {
+              "c": "SaaS",
+              "type": "Coupa Cloud",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "All procurement flows nominal"
+            }
+          ]
+        },
+        {
+          "id": "sap-successfactors",
+          "name": "SAP SuccessFactors",
+          "status": "GREEN",
+          "perf": 98,
+          "version": "Cloud",
+          "infra": [
+            {
+              "c": "SaaS",
+              "type": "SF Cloud",
+              "h": "GREEN",
+              "m": 98,
+              "anom": false,
+              "detail": "HR platform nominal \u2014 all integrations healthy"
+            }
+          ],
+          "ver": "Cloud"
+        },
+        {
+          "id": "sap-solman",
+          "name": "SAP Solution Manager",
+          "status": "GREEN",
+          "perf": 94,
+          "version": "7.2",
+          "ver": "7.2",
+          "infra": [
+            {
+              "c": "Azure VM",
+              "type": "Standard_D8s_v5",
+              "h": "GREEN",
+              "m": 94,
+              "anom": false,
+              "detail": "Solution Manager healthy"
+            },
+            {
+              "c": "SAP HANA",
+              "type": "DB Layer",
+              "h": "GREEN",
+              "m": 93,
+              "anom": false,
+              "detail": "Nominal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engineering-platform",
+      "name": "Engineering Platform",
+      "icon": "\u2699",
+      "hosting": "Ericsson DC (Stockholm)",
+      "hostingColor": "#1B4332",
+      "status": "RED",
+      "uptime": 58,
+      "trend": [95, 92, 88, 82, 74, 65, 60, 58],
+      "forecast": "GitLab CI runner OOM cascade active \u2014 Nexus disk 91% upstream root cause",
+      "apps": [
+        {
+          "id": "gitlab",
+          "name": "GitLab CI/CD",
+          "status": "RED",
+          "perf": 22,
+          "version": "16.x",
+          "infra": [
+            {
+              "c": "On-Prem DC",
+              "type": "K8s Cluster",
+              "h": "RED",
+              "m": 22,
+              "anom": true,
+              "detail": "OOM kills \u2014 23 runner pods restarting. Pipeline queue 847 jobs"
+            },
+            {
+              "c": "Stockholm DC Fabric",
+              "type": "10GbE Switch",
+              "h": "AMBER",
+              "m": 61,
+              "anom": true,
+              "detail": "Network latency elevated \u2014 DC fabric congestion"
+            }
+          ],
+          "ver": "16.x"
+        },
+        {
+          "id": "nexus",
+          "name": "Nexus Artifactory",
+          "status": "RED",
+          "perf": 31,
+          "version": "3.x",
+          "infra": [
+            {
+              "c": "On-Prem DC",
+              "type": "NAS Storage",
+              "h": "RED",
+              "m": 91,
+              "anom": true,
+              "detail": "/data 91% \u2014 retention policy disabled. SNAPSHOT cleanup needed."
+            },
+            {
+              "c": "Storage I/O",
+              "type": "NAS I/O throughput",
+              "h": "RED",
+              "m": 29,
+              "anom": true,
+              "detail": "Fetch latency 29s vs 3s baseline \u2014 I/O degraded by disk pressure"
+            }
+          ],
+          "ver": "3.x"
+        },
+        {
+          "id": "jira",
+          "name": "Jira Software",
+          "status": "AMBER",
+          "perf": 74,
+          "version": "9.4",
+          "infra": [
+            {
+              "c": "Azure VM",
+              "type": "Standard_D8s_v5",
+              "h": "GREEN",
+              "m": 82,
+              "anom": false,
+              "detail": "VM healthy"
+            },
+            {
+              "c": "PostgreSQL",
+              "type": "Azure DB",
+              "h": "AMBER",
+              "m": 74,
+              "anom": true,
+              "detail": "WAL accumulation \u2014 inactive replication slot. 62GB backlog."
+            }
+          ],
+          "ver": "9.4"
+        },
+        {
+          "id": "confluence",
+          "name": "Confluence",
+          "status": "GREEN",
+          "perf": 96,
+          "version": "8.x",
+          "infra": [
+            {
+              "c": "Azure VM",
+              "type": "Standard_D4s_v5",
+              "h": "GREEN",
+              "m": 96,
+              "anom": false,
+              "detail": "Nominal"
+            }
+          ],
+          "ver": "8.x"
+        },
+        {
+          "id": "jenkins",
+          "name": "Jenkins Build Farm",
+          "status": "GREEN",
+          "perf": 91,
+          "version": "2.426",
+          "ver": "2.426",
+          "infra": [
+            {
+              "c": "DC Server",
+              "type": "Build Agent Pool",
+              "h": "GREEN",
+              "m": 88,
+              "anom": false,
+              "detail": "24 agents healthy"
+            },
+            {
+              "c": "Disk",
+              "type": "NAS Storage",
+              "h": "GREEN",
+              "m": 74,
+              "anom": false,
+              "detail": "Build artifact store 74% \u2014 healthy"
+            }
+          ]
+        },
+        {
+          "id": "sonarqube",
+          "name": "SonarQube",
+          "status": "GREEN",
+          "perf": 96,
+          "version": "10.x",
+          "ver": "10.x",
+          "infra": [
+            {
+              "c": "Azure VM",
+              "type": "Standard_D4s_v5",
+              "h": "GREEN",
+              "m": 96,
+              "anom": false,
+              "detail": "Code quality scans nominal"
+            }
+          ]
+        },
+        {
+          "id": "harbor",
+          "name": "Harbor Container Reg",
+          "status": "GREEN",
+          "perf": 98,
+          "version": "2.9",
+          "ver": "2.9",
+          "infra": [
+            {
+              "c": "DC Server",
+              "type": "OCI Registry",
+              "h": "GREEN",
+              "m": 98,
+              "anom": false,
+              "detail": "Container image pulls nominal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "identity-access",
+      "name": "Identity & Access",
+      "icon": "\ud83d\udd10",
+      "hosting": "Azure + SailPoint Cloud",
+      "hostingColor": "#0078D4",
+      "status": "AMBER",
+      "uptime": 81,
+      "trend": [96, 94, 91, 88, 85, 83, 81, 81],
+      "forecast": "Entra ID MFA latency elevated \u2014 CA policy rollback in progress",
+      "apps": [
+        {
+          "id": "entra-id",
+          "name": "Microsoft Entra ID",
+          "status": "AMBER",
+          "perf": 64,
+          "version": "Azure AD",
+          "infra": [
+            {
+              "c": "Azure",
+              "type": "Entra ID SaaS",
+              "h": "AMBER",
+              "m": 64,
+              "anom": true,
+              "detail": "MFA latency 4.2s vs 280ms baseline. CA policy rollback in progress."
+            },
+            {
+              "c": "Conditional Access",
+              "type": "Policy Engine",
+              "h": "AMBER",
+              "m": 58,
+              "anom": true,
+              "detail": "Recursive evaluation loop on B2B guest accounts"
+            }
+          ],
+          "ver": "Azure AD"
+        },
+        {
+          "id": "sailpoint",
+          "name": "SailPoint IGA",
+          "status": "AMBER",
+          "perf": 82,
+          "version": "IdentityNow",
+          "infra": [
+            {
+              "c": "Azure",
+              "type": "SaaS Cloud",
+              "h": "AMBER",
+              "m": 82,
+              "anom": true,
+              "detail": "Access certification campaign 14 days overdue \u2014 3,847 entitlements pending"
+            },
+            {
+              "c": "Compliance",
+              "type": "SOX Campaign",
+              "h": "RED",
+              "m": 31,
+              "anom": true,
+              "detail": "SOX deadline in 3 days \u2014 escalation active"
+            }
+          ],
+          "ver": "IdentityNow"
+        },
+        {
+          "id": "cyberark",
+          "name": "CyberArk PAM",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "12.x",
+          "infra": [
+            {
+              "c": "Ericsson DC",
+              "type": "On-Prem",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "PAM vault healthy \u2014 all privileged sessions nominal"
+            }
+          ],
+          "ver": "12.x"
+        },
+        {
+          "id": "okta",
+          "name": "Okta B2B Federation",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "SaaS",
+          "ver": "SaaS",
+          "infra": [
+            {
+              "c": "SaaS",
+              "type": "Okta Cloud",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "B2B partner federation nominal"
+            }
+          ]
+        },
+        {
+          "id": "keycloak",
+          "name": "Keycloak Dev SSO",
+          "status": "GREEN",
+          "perf": 94,
+          "version": "22.x",
+          "ver": "22.x",
+          "infra": [
+            {
+              "c": "DC K8s",
+              "type": "K8s Pod",
+              "h": "GREEN",
+              "m": 92,
+              "anom": false,
+              "detail": "Dev SSO healthy \u2014 4 pods running"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "global-collaboration",
+      "name": "Global Collaboration",
+      "icon": "\ud83d\udcac",
+      "hosting": "Microsoft Cloud",
+      "hostingColor": "#0078D4",
+      "status": "GREEN",
+      "uptime": 99,
+      "trend": [99, 99, 99, 98, 99, 99, 99, 99],
+      "forecast": "All collaboration services nominal \u2014 18,400 users active",
+      "apps": [
+        {
+          "id": "teams",
+          "name": "Microsoft Teams",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "M365",
+          "infra": [
+            {
+              "c": "M365 Cloud",
+              "type": "SaaS",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "All Teams services nominal \u2014 18,400 users active"
+            }
+          ],
+          "ver": "M365"
+        },
+        {
+          "id": "m365-exchange",
+          "name": "Exchange Online",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "M365",
+          "ver": "M365",
+          "infra": [
+            {
+              "c": "M365 Cloud",
+              "type": "Exchange SaaS",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "Mail flow nominal \u2014 18,400 mailboxes"
+            }
+          ]
+        },
+        {
+          "id": "sharepoint",
+          "name": "SharePoint Online",
+          "status": "GREEN",
+          "perf": 98,
+          "version": "M365",
+          "infra": [
+            {
+              "c": "M365 Cloud",
+              "type": "SaaS",
+              "h": "GREEN",
+              "m": 98,
+              "anom": false,
+              "detail": "Document management nominal"
+            }
+          ],
+          "ver": "M365"
+        },
+        {
+          "id": "m365-onedrive",
+          "name": "OneDrive for Business",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "M365",
+          "ver": "M365",
+          "infra": [
+            {
+              "c": "M365 Cloud",
+              "type": "OneDrive SaaS",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "File sync nominal"
+            }
+          ]
+        },
+        {
+          "id": "zoom",
+          "name": "Zoom",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "SaaS",
+          "ver": "SaaS",
+          "infra": [
+            {
+              "c": "SaaS",
+              "type": "Zoom Cloud",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "Video conferencing nominal"
+            }
+          ]
+        },
+        {
+          "id": "servicenow",
+          "name": "ServiceNow ITSM",
+          "status": "GREEN",
+          "perf": 96,
+          "version": "Tokyo",
+          "ver": "Tokyo",
+          "infra": [
+            {
+              "c": "SaaS",
+              "type": "ServiceNow Cloud",
+              "h": "GREEN",
+              "m": 96,
+              "anom": false,
+              "detail": "All ITSM flows nominal \u2014 312 tickets/day"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "end-user-compute",
+      "name": "End-User Compute",
+      "icon": "\ud83d\udcbb",
+      "hosting": "Azure + Intune Cloud",
+      "hostingColor": "#0078D4",
+      "status": "GREEN",
+      "uptime": 97,
+      "trend": [97, 97, 96, 97, 97, 98, 97, 97],
+      "forecast": "All EUC services healthy \u2014 100,000 endpoints managed",
+      "apps": [
+        {
+          "id": "intune",
+          "name": "Microsoft Intune",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "M365",
+          "infra": [
+            {
+              "c": "Azure",
+              "type": "MDM SaaS",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "100,000 endpoints managed \u2014 all nominal"
+            }
+          ],
+          "ver": "M365"
+        },
+        {
+          "id": "sccm",
+          "name": "SCCM / Config Manager",
+          "status": "GREEN",
+          "perf": 94,
+          "version": "2309",
+          "ver": "2309",
+          "infra": [
+            {
+              "c": "DC Server",
+              "type": "SCCM Site Server",
+              "h": "GREEN",
+              "m": 94,
+              "anom": false,
+              "detail": "Config management nominal"
+            }
+          ]
+        },
+        {
+          "id": "defender-edr",
+          "name": "Defender for Endpoint",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "M365",
+          "ver": "M365",
+          "infra": [
+            {
+              "c": "M365 Cloud",
+              "type": "EDR SaaS",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "100,000 endpoints protected"
+            }
+          ]
+        },
+        {
+          "id": "autopilot",
+          "name": "Windows Autopilot",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "M365",
+          "ver": "M365",
+          "infra": [
+            {
+              "c": "M365 Cloud",
+              "type": "Autopilot SaaS",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "Device provisioning nominal"
+            }
+          ]
+        },
+        {
+          "id": "flexlm",
+          "name": "FlexLM License Server",
+          "status": "AMBER",
+          "perf": 81,
+          "version": "11.x",
+          "ver": "11.x",
+          "infra": [
+            {
+              "c": "DC Server",
+              "type": "License Server",
+              "h": "AMBER",
+              "m": 81,
+              "anom": true,
+              "detail": "Certificate expiry in 14 days \u2014 renewal initiated"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "network-security",
+      "name": "Network & Security",
+      "icon": "\ud83d\udee1",
+      "hosting": "CrowdStrike + Zscaler Cloud",
+      "hostingColor": "#DC2626",
+      "status": "GREEN",
+      "uptime": 99,
+      "trend": [99, 99, 99, 99, 99, 100, 99, 99],
+      "forecast": "Security posture healthy \u2014 CrowdStrike alert storm auto-resolved by ZeroOps",
+      "apps": [
+        {
+          "id": "crowdstrike",
+          "name": "CrowdStrike Falcon",
+          "status": "GREEN",
+          "perf": 99,
+          "version": "Falcon",
+          "infra": [
+            {
+              "c": "Cloud",
+              "type": "EDR SaaS",
+              "h": "GREEN",
+              "m": 99,
+              "anom": false,
+              "detail": "100,000 endpoints protected \u2014 alert storm auto-resolved by ZeroOps (47,000 \u2192 17 actionable)"
+            }
+          ],
+          "ver": "Falcon"
+        },
+        {
+          "id": "zscaler-zia",
+          "name": "Zscaler ZIA",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "ZIA",
+          "ver": "ZIA",
+          "infra": [
+            {
+              "c": "Cloud",
+              "type": "ZIA Gateway",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "Web security filtering nominal"
+            }
+          ]
+        },
+        {
+          "id": "zscaler",
+          "name": "Zscaler ZPA",
+          "status": "AMBER",
+          "perf": 84,
+          "version": "ZPA",
+          "infra": [
+            {
+              "c": "Cloud",
+              "type": "ZPA Gateway",
+              "h": "GREEN",
+              "m": 98,
+              "anom": false,
+              "detail": "Global gateways healthy"
+            },
+            {
+              "c": "APAC",
+              "type": "Singapore PoP",
+              "h": "AMBER",
+              "m": 61,
+              "anom": true,
+              "detail": "APAC routing issue \u2014 traffic hitting EU nodes. Zscaler support engaged."
+            }
+          ],
+          "ver": "ZPA"
+        },
+        {
+          "id": "sentinel",
+          "name": "Microsoft Sentinel",
+          "status": "GREEN",
+          "perf": 98,
+          "version": "SaaS",
+          "ver": "SaaS",
+          "infra": [
+            {
+              "c": "Azure",
+              "type": "SIEM SaaS",
+              "h": "GREEN",
+              "m": 98,
+              "anom": false,
+              "detail": "Security analytics nominal \u2014 2.4TB/day ingested"
+            }
+          ]
+        },
+        {
+          "id": "palo-alto",
+          "name": "Palo Alto Prisma",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "SaaS",
+          "ver": "SaaS",
+          "infra": [
+            {
+              "c": "Cloud",
+              "type": "SASE Platform",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "Network security nominal"
+            }
+          ]
+        },
+        {
+          "id": "splunk",
+          "name": "Splunk SIEM",
+          "status": "GREEN",
+          "perf": 97,
+          "version": "9.x",
+          "infra": [
+            {
+              "c": "Azure",
+              "type": "SIEM Cloud",
+              "h": "GREEN",
+              "m": 97,
+              "anom": false,
+              "detail": "Log ingestion nominal \u2014 2.4TB/day"
+            }
+          ],
+          "ver": "9.x"
+        }
+      ]
+    }
+  ]
+}

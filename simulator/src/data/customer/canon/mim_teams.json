@@ -1,0 +1,425 @@
+{
+  "_notes": "Canon Europa MIM teams \u2014 Oracle/Informatica estate",
+  "_warning": "Demo data only",
+  "smeRoster": {
+    "Informatica": [
+      {
+        "id": "s1",
+        "name": "FAM Lead",
+        "team": "Integration Ops",
+        "role": "Informatica Owner",
+        "status": "active",
+        "ai": false,
+        "avatar": "FL",
+        "color": "#7C3AED"
+      },
+      {
+        "id": "s2",
+        "name": "TAM Admin",
+        "team": "Integration Ops",
+        "role": "Admin Support",
+        "status": "active",
+        "ai": false,
+        "avatar": "TA",
+        "color": "#0057A8"
+      },
+      {
+        "id": "s3",
+        "name": "ZeroOps",
+        "team": "AI Engine",
+        "role": "Autonomous",
+        "status": "active",
+        "ai": true,
+        "avatar": "ZO",
+        "color": "#16A34A"
+      }
+    ],
+    "Oracle EBS": [
+      {
+        "id": "s1",
+        "name": "OTC Lead",
+        "team": "Oracle Ops",
+        "role": "EBS OTC Owner",
+        "status": "active",
+        "ai": false,
+        "avatar": "OL",
+        "color": "#CC0000"
+      },
+      {
+        "id": "s2",
+        "name": "DBA",
+        "team": "Oracle DBA",
+        "role": "Database Admin",
+        "status": "standby",
+        "ai": false,
+        "avatar": "DB",
+        "color": "#D97706"
+      },
+      {
+        "id": "s3",
+        "name": "Finance Lead",
+        "team": "Finance",
+        "role": "Revenue Sign-off",
+        "status": "active",
+        "ai": false,
+        "avatar": "FI",
+        "color": "#7C3AED"
+      },
+      {
+        "id": "s4",
+        "name": "ZeroOps",
+        "team": "AI Engine",
+        "role": "Autonomous",
+        "status": "active",
+        "ai": true,
+        "avatar": "ZO",
+        "color": "#16A34A"
+      }
+    ],
+    "DEFAULT": [
+      {
+        "id": "s1",
+        "name": "IT Ops Lead",
+        "team": "IT Operations",
+        "role": "Incident Lead",
+        "status": "active",
+        "ai": false,
+        "avatar": "IT",
+        "color": "#CC0000"
+      },
+      {
+        "id": "s2",
+        "name": "ZeroOps",
+        "team": "AI Engine",
+        "role": "Autonomous",
+        "status": "active",
+        "ai": true,
+        "avatar": "ZO",
+        "color": "#16A34A"
+      }
+    ],
+    "Oracle": [
+      {
+        "id": "s1",
+        "name": "OTC Lead",
+        "team": "Oracle Ops",
+        "role": "EBS OTC Owner",
+        "status": "active",
+        "ai": false,
+        "avatar": "OL",
+        "color": "#CC0000"
+      },
+      {
+        "id": "s2",
+        "name": "DBA",
+        "team": "Oracle DBA",
+        "role": "Database Admin",
+        "status": "standby",
+        "ai": false,
+        "avatar": "DB",
+        "color": "#D97706"
+      },
+      {
+        "id": "s3",
+        "name": "Finance Lead",
+        "team": "Finance",
+        "role": "Revenue Sign-off",
+        "status": "active",
+        "ai": false,
+        "avatar": "FI",
+        "color": "#7C3AED"
+      },
+      {
+        "id": "s4",
+        "name": "ZeroOps",
+        "team": "AI Engine",
+        "role": "Autonomous",
+        "status": "active",
+        "ai": true,
+        "avatar": "ZO",
+        "color": "#16A34A"
+      }
+    ]
+  },
+  "liveMetrics": {
+    "65501787": {
+      "mttr": "18 min",
+      "alerts": 31,
+      "autoSteps": 6,
+      "status": "RESOLVING",
+      "confidence": 91
+    },
+    "65504576": {
+      "mttr": "28 min",
+      "alerts": 22,
+      "autoSteps": 5,
+      "status": "RESOLVED",
+      "confidence": 89
+    },
+    "65505018": {
+      "mttr": "4 hrs",
+      "alerts": 12,
+      "autoSteps": 5,
+      "status": "IN PROGRESS",
+      "confidence": 82
+    }
+  },
+  "warRoomChat": {
+    "65501787": [
+      {
+        "ts": "05:11",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "INC-CN-00142: 7 Informatica jobs failed, 24 transit files stuck. Auto-recovery initiated \u2014 batch reset, file moves, restarts."
+      },
+      {
+        "ts": "05:14",
+        "user": "FAM Lead",
+        "role": "Lead",
+        "msg": "Confirmed \u2014 checking downstream impact on EBS and Pearlchain feeds."
+      },
+      {
+        "ts": "05:28",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "All 7 jobs restarted successfully. 24 transit files processed. Downstream feeds \u2014 EBS, Salesforce, Pearlchain \u2014 all active."
+      },
+      {
+        "ts": "05:32",
+        "user": "FAM Lead",
+        "role": "Lead",
+        "msg": "Confirmed healthy. Good resolution. MTTR 18 min vs 4-6h manual."
+      }
+    ],
+    "65504576": [
+      {
+        "ts": "14:22",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "INC-CN-00141: 38 WSH concurrent requests stuck. MTL_TRANSACTIONS_INTERFACE pending. Auto-reprocessing 32 eligible orders via WSHFSTRX."
+      },
+      {
+        "ts": "14:25",
+        "user": "OTC Lead",
+        "role": "Lead",
+        "msg": "Finance confirmed \u2014 month-end revenue booking at risk. Proceeding with reprocessing."
+      },
+      {
+        "ts": "14:38",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "32 orders cleared. 6 require DB-level fix \u2014 DBA and Finance approval requested."
+      },
+      {
+        "ts": "14:42",
+        "user": "Finance Lead",
+        "role": "Lead",
+        "msg": "Approving DB fix for 6 orders. Please proceed."
+      },
+      {
+        "ts": "14:50",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "All 38 orders closed. Revenue recognition unblocked. MTTR 28 min vs 3-4h manual."
+      }
+    ],
+    "65505018": [
+      {
+        "ts": "09:30",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "DD auth failure: 284 invoices not picked. Bank mandate expired for 31 customers. AR reversal executing."
+      },
+      {
+        "ts": "09:35",
+        "user": "Finance Lead",
+        "role": "Lead",
+        "msg": "AR team notified. Confirming mandate scope with collections."
+      },
+      {
+        "ts": "09:48",
+        "user": "ZeroOps",
+        "role": "AI",
+        "msg": "AR receipts reversed. Mandate corrected in Oracle AR backend. Accenture notified for rerun \u2014 same-period window identified."
+      },
+      {
+        "ts": "09:52",
+        "user": "Finance Lead",
+        "role": "Lead",
+        "msg": "Confirmed. Much better than the usual 1-week delay."
+      }
+    ]
+  },
+  "vendorEscalations": {
+    "65501787": [
+      {
+        "vendor": "Informatica Support",
+        "contact": "Support",
+        "phone": "support.informatica.com",
+        "sla": "P1: 4 hrs",
+        "status": "STANDBY"
+      }
+    ],
+    "65504576": [
+      {
+        "vendor": "Oracle Support",
+        "contact": "Support",
+        "phone": "support.oracle.com",
+        "sla": "P1: 4 hrs",
+        "status": "STANDBY"
+      }
+    ],
+    "65505018": [
+      {
+        "vendor": "Accenture",
+        "contact": "AR Team",
+        "phone": "accenture-canon@accenture.com",
+        "sla": "P1: 2 hrs",
+        "status": "ENGAGED"
+      },
+      {
+        "vendor": "Oracle Support",
+        "contact": "Support",
+        "phone": "support.oracle.com",
+        "sla": "P1: 4 hrs",
+        "status": "STANDBY"
+      }
+    ]
+  },
+  "timeline": {
+    "65501787": [
+      {
+        "ts": "05:11",
+        "type": "alert",
+        "actor": "ELK / OEM",
+        "msg": "ELK alert: 7 Informatica jobs in FAILED state. OEM confirms 3 jobs unscheduled. 24 files stuck in transit directory."
+      },
+      {
+        "ts": "05:12",
+        "type": "detect",
+        "actor": "ZeroOps",
+        "msg": "Alert Correlator correlated 31 ELK/OEM alerts to single root incident INC-CN-00142. Downstream cascade risk identified: Oracle EBS, Salesforce, Pearlchain, OAS."
+      },
+      {
+        "ts": "05:13",
+        "type": "swarm",
+        "actor": "ZeroOps",
+        "msg": "P1 bridge opened. FAM Lead and TAM Admin notified. ZeroOps auto-recovery initiated in parallel \u2014 no waiting for manual team assembly."
+      },
+      {
+        "ts": "05:14",
+        "type": "action",
+        "actor": "ZeroOps RCA Engine",
+        "msg": "Root cause identified: upstream source system sent null field causing Informatica parse failure. Pattern confidence: 91%. Pre-approved recovery plan selected."
+      },
+      {
+        "ts": "05:16",
+        "type": "action",
+        "actor": "ZeroOps Remediation",
+        "msg": "Batch status reset for 4 failed outbound jobs. 24 transit files moving to landing directory \u2014 inbound jobs retriggered."
+      },
+      {
+        "ts": "05:20",
+        "type": "action",
+        "actor": "ZeroOps Remediation",
+        "msg": "All 7 failed jobs restarting. 3 unscheduled jobs rescheduled. Scheduler re-enabled for all affected integrations."
+      },
+      {
+        "ts": "05:24",
+        "type": "comms",
+        "actor": "ZeroOps",
+        "msg": "Downstream systems confirmed healthy: Oracle EBS feed active, Salesforce sync running, Pearlchain pricing feed refreshed, OAS pipeline cleared."
+      },
+      {
+        "ts": "05:27",
+        "type": "resolve",
+        "actor": "ZeroOps",
+        "msg": "All integration jobs running successfully. 24 transit files processed. No data loss confirmed."
+      },
+      {
+        "ts": "05:29",
+        "type": "close",
+        "actor": "ZeroOps",
+        "msg": "INC-CN-00142 auto-closed in XURRENT. MTTR: 18 minutes. Manual equivalent: 4-6 hours. TAM admin dependency eliminated."
+      }
+    ],
+    "65504576": [
+      {
+        "ts": "14:22",
+        "type": "alert",
+        "actor": "Oracle OEM",
+        "msg": "OEM alert: 38 WSH concurrent requests stuck > 30 minutes. Orders in Shipped/Awaiting Closure status. Revenue recognition blocked."
+      },
+      {
+        "ts": "14:23",
+        "type": "detect",
+        "actor": "ZeroOps",
+        "msg": "Alert Correlator identified revenue impact: 38 orders blocked, month-end close at risk. MTL_TRANSACTIONS_INTERFACE pending confirmed as root cause."
+      },
+      {
+        "ts": "14:24",
+        "type": "swarm",
+        "actor": "ZeroOps",
+        "msg": "P1 bridge opened. OTC Lead, Finance Lead, and DBA notified. Finance confirmed month-end revenue target at risk \u2014 priority escalation."
+      },
+      {
+        "ts": "14:25",
+        "type": "comms",
+        "actor": "ZeroOps",
+        "msg": "Finance team briefed: 38 orders blocked, estimated revenue impact assessed. ZeroOps WSHFSTRX reprocessing initiated for 32 eligible orders."
+      },
+      {
+        "ts": "14:28",
+        "type": "action",
+        "actor": "ZeroOps Oracle Ops",
+        "msg": "WSHFSTRX concurrent request executed for 32 eligible orders. MTL_TRANSACTIONS_INTERFACE pending records cleared for 32 orders."
+      },
+      {
+        "ts": "14:36",
+        "type": "decision",
+        "actor": "Finance Lead",
+        "msg": "6 orders require DB-level MTL_TRANSACTIONS_INTERFACE fix. ZeroOps prepared fix summary. Finance Lead and DBA reviewing \u2014 one-click approval pending."
+      },
+      {
+        "ts": "14:40",
+        "type": "action",
+        "actor": "ZeroOps Remediation",
+        "msg": "Finance/DBA approval received. DB-level fix applied to 6 remaining orders. MTL interface records corrected."
+      },
+      {
+        "ts": "14:48",
+        "type": "resolve",
+        "actor": "ZeroOps",
+        "msg": "All 38 ship confirmations completed. Orders moved to Closed status. Revenue recognition unblocked \u2014 period-end target protected."
+      },
+      {
+        "ts": "14:50",
+        "type": "close",
+        "actor": "ZeroOps",
+        "msg": "INC-CN-00141 resolved. MTTR: 28 minutes. Manual equivalent: 3-4 hours including DBA escalation and data fix coordination."
+      }
+    ]
+  },
+  "broadcastTemplates": [
+    {
+      "id": "b1",
+      "label": "P1 Active",
+      "text": "\u26a0 P1 INCIDENT ACTIVE \u2014 {id} \u2014 {svc} \u2014 Impact: {impact} \u2014 Bridge open"
+    },
+    {
+      "id": "b2",
+      "label": "Update",
+      "text": "\ud83d\udccb UPDATE \u2014 {id} \u2014 Root cause: {rca} \u2014 ETA: {eta} \u2014 ZeroOps auto-resolving"
+    },
+    {
+      "id": "b3",
+      "label": "Resolved",
+      "text": "\u2705 RESOLVED \u2014 {id} \u2014 {svc} \u2014 MTTR: {mttr} \u2014 ZeroOps autonomous resolution"
+    },
+    {
+      "id": "b4",
+      "label": "Finance Alert",
+      "text": "\ud83d\udcb0 REVENUE IMPACT \u2014 {id} \u2014 {svc} \u2014 Finance team: {action} required by {eta}"
+    }
+  ]
+}

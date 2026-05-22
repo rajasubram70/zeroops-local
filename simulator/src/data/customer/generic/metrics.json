@@ -1,0 +1,46 @@
+{
+  "kpis": {
+    "mttr_baseline_min": 210,
+    "mttr_current_min": 31,
+    "auto_fix_rate_pct": 61,
+    "auto_fix_baseline_pct": 0,
+    "auto_fix_target_pct": 75,
+    "ticket_deflection_pct": 58,
+    "ticket_deflection_baseline_pct": 14,
+    "alert_noise_reduction_pct": 94,
+    "alert_noise_red_pct": 94,
+    "alert_volume_per_day": 2140,
+    "actionable_alerts_per_day": 34,
+    "sla_compliance_pct": 97,
+    "mttd_current_min": 3,
+    "csat_current": 4.4,
+    "csat_baseline": 3.0,
+    "satisfaction_measure": "CSAT",
+    "engineer_toil_current_pct": 26,
+    "engineer_toil_baseline_pct": 72,
+    "engineer_hourly_rate_usd": 120
+  },
+  "sdlc": {
+    "buildsThisMonth": 14,
+    "buildSuccessRate": 93,
+    "avgLeadTimeDays": 1.6,
+    "changeFailureRate": 3,
+    "deploymentsThisMonth": 9,
+    "sodChecksThisMonth": 52,
+    "sodAutoApproved": 46,
+    "sodHiTLRequired": 6,
+    "sodRejected": 1,
+    "accessProvisionedToday": 11,
+    "dora": {
+      "deploymentFrequency": "9/month",
+      "deploymentFrequencyLabel": "On-demand",
+      "leadTimeForChanges": "1.6 days",
+      "leadTimeCategory": "Elite",
+      "changeFailureRate": "3%",
+      "changeFailureCategory": "Elite",
+      "mttrCode": "24 min",
+      "mttrCategory": "Elite",
+      "rating": "Elite"
+    }
+  }
+}

@@ -1,0 +1,284 @@
+{
+  "stats": {
+    "totalToday": 28,
+    "autoFulfilled": 17,
+    "autoRate": 61,
+    "avgTime": "8m",
+    "openNow": 11,
+    "awaitingApproval": 3,
+    "slaBreaches": 0,
+    "timeSavedMins": 312,
+    "totalMonth": 238
+  },
+  "catalogue": [
+    {
+      "type": "Access & Identity",
+      "category": "access",
+      "icon": "\ud83d\udd10",
+      "items": [
+        {
+          "name": "ERP System Access (SAP S/4HANA)",
+          "auto": "82%",
+          "autoRate": 82,
+          "sla": "4h",
+          "time": "6m",
+          "monthly": 48,
+          "volume": "48/month",
+          "source": "ServiceNow",
+          "desc": "Role-based ERP access with automated SoD check"
+        },
+        {
+          "name": "HR Platform Access (Workday)",
+          "auto": "91%",
+          "autoRate": 91,
+          "sla": "4h",
+          "time": "4m",
+          "monthly": 32,
+          "volume": "32/month",
+          "source": "ServiceNow",
+          "desc": "Workday HCM access provisioning"
+        },
+        {
+          "name": "VPN / Remote Access",
+          "auto": "78%",
+          "autoRate": 78,
+          "sla": "2h",
+          "time": "8m",
+          "monthly": 41,
+          "volume": "41/month",
+          "source": "ServiceNow",
+          "desc": "VPN account creation and certificate provisioning"
+        },
+        {
+          "name": "M365 Licence Assignment",
+          "auto": "95%",
+          "autoRate": 95,
+          "sla": "2h",
+          "time": "2m",
+          "monthly": 29,
+          "volume": "29/month",
+          "source": "ServiceNow",
+          "desc": "Microsoft 365 licence assignment and mailbox creation"
+        },
+        {
+          "name": "Shared Mailbox / Distribution Group",
+          "auto": "88%",
+          "autoRate": 88,
+          "sla": "4h",
+          "time": "5m",
+          "monthly": 18,
+          "volume": "18/month",
+          "source": "ServiceNow",
+          "desc": "M365 shared mailbox and group management"
+        }
+      ]
+    },
+    {
+      "type": "Software & Tooling",
+      "category": "software",
+      "icon": "\ud83d\udcbb",
+      "items": [
+        {
+          "name": "Software Installation Request",
+          "auto": "44%",
+          "autoRate": 44,
+          "sla": "8h",
+          "time": "22m",
+          "monthly": 34,
+          "volume": "34/month",
+          "source": "ServiceNow",
+          "desc": "Standard software deployment via SCCM/Intune"
+        },
+        {
+          "name": "Development Tool Licence",
+          "auto": "61%",
+          "autoRate": 61,
+          "sla": "8h",
+          "time": "14m",
+          "monthly": 12,
+          "volume": "12/month",
+          "source": "ServiceNow",
+          "desc": "IDE, testing tool and dev platform licences"
+        },
+        {
+          "name": "Cloud Resource Provisioning",
+          "auto": "52%",
+          "autoRate": 52,
+          "sla": "4h",
+          "time": "18m",
+          "monthly": 8,
+          "volume": "8/month",
+          "source": "ServiceNow",
+          "desc": "Azure VM, storage and service provisioning"
+        }
+      ]
+    },
+    {
+      "type": "ERP & Business Applications",
+      "category": "erp",
+      "icon": "\ud83d\udcca",
+      "items": [
+        {
+          "name": "SAP Report / Query Access",
+          "auto": "79%",
+          "autoRate": 79,
+          "sla": "4h",
+          "time": "7m",
+          "monthly": 22,
+          "volume": "22/month",
+          "source": "ServiceNow",
+          "desc": "SAP reporting role and query access"
+        },
+        {
+          "name": "Purchase Order Approval Delegation",
+          "auto": "71%",
+          "autoRate": 71,
+          "sla": "4h",
+          "time": "9m",
+          "monthly": 14,
+          "volume": "14/month",
+          "source": "ServiceNow",
+          "desc": "Temporary approval delegation during absence"
+        },
+        {
+          "name": "New Supplier Onboarding (EDI)",
+          "auto": "38%",
+          "autoRate": 38,
+          "sla": "2 days",
+          "time": "4h",
+          "monthly": 6,
+          "volume": "6/month",
+          "source": "ServiceNow",
+          "desc": "EDI trading partner setup and testing"
+        }
+      ]
+    },
+    {
+      "type": "Infrastructure & Platform",
+      "category": "infra",
+      "icon": "\ud83d\udda5",
+      "items": [
+        {
+          "name": "Server / VM Resource Scaling",
+          "auto": "34%",
+          "autoRate": 34,
+          "sla": "4h",
+          "time": "38m",
+          "monthly": 7,
+          "volume": "7/month",
+          "source": "ServiceNow",
+          "desc": "CPU/memory/disk scaling \u2014 CAB review required"
+        },
+        {
+          "name": "SSL Certificate Renewal",
+          "auto": "81%",
+          "autoRate": 81,
+          "sla": "2h",
+          "time": "6m",
+          "monthly": 4,
+          "volume": "4/month",
+          "source": "ServiceNow",
+          "desc": "Certificate renewal with automated CA workflow"
+        },
+        {
+          "name": "Network Firewall Rule Request",
+          "auto": "28%",
+          "autoRate": 28,
+          "sla": "1 day",
+          "time": "2h",
+          "monthly": 3,
+          "volume": "3/month",
+          "source": "ServiceNow",
+          "desc": "Firewall rule change \u2014 security review required"
+        }
+      ]
+    }
+  ],
+  "open": [
+    {
+      "id": "SR-GEN-00447",
+      "type": "Access",
+      "svc": "ERP System Access",
+      "user": "a.johansson@enterprise.com",
+      "dept": "Finance",
+      "status": "Auto-Fulfilling",
+      "age": "6m",
+      "sla": "4h",
+      "priority": "Normal",
+      "autoPath": true
+    },
+    {
+      "id": "SR-GEN-00446",
+      "type": "Access",
+      "svc": "M365 Licence Assignment",
+      "user": "k.osei@enterprise.com",
+      "dept": "HR",
+      "status": "Fulfilled",
+      "age": "3m",
+      "sla": "2h",
+      "priority": "Normal",
+      "autoPath": true
+    },
+    {
+      "id": "SR-GEN-00445",
+      "type": "Software",
+      "svc": "Development Tool Licence",
+      "user": "r.yamamoto@enterprise.com",
+      "dept": "Engineering",
+      "status": "Pending Approval",
+      "age": "1h 22m",
+      "sla": "8h",
+      "priority": "Normal",
+      "autoPath": false
+    },
+    {
+      "id": "SR-GEN-00444",
+      "type": "ERP",
+      "svc": "SAP Report / Query Access",
+      "user": "f.mensah@enterprise.com",
+      "dept": "Procurement",
+      "status": "Auto-Fulfilling",
+      "age": "12m",
+      "sla": "4h",
+      "priority": "Normal",
+      "autoPath": true
+    },
+    {
+      "id": "SR-GEN-00443",
+      "type": "Access",
+      "svc": "ERP System Access",
+      "user": "m.petrov@enterprise.com",
+      "dept": "Finance",
+      "status": "HiTL \u2014 Approved",
+      "age": "41m",
+      "sla": "4h",
+      "priority": "High",
+      "autoPath": false,
+      "sodConflict": true
+    },
+    {
+      "id": "SR-GEN-00442",
+      "type": "Infra",
+      "svc": "Server / VM Resource Scaling",
+      "user": "devops@enterprise.com",
+      "dept": "Platform Engineering",
+      "status": "Pending CAB",
+      "age": "2h 14m",
+      "sla": "4h",
+      "priority": "High",
+      "autoPath": false
+    },
+    {
+      "id": "SR-GEN-00441",
+      "type": "Access",
+      "svc": "HR Platform Access",
+      "user": "j.okafor@enterprise.com",
+      "dept": "People & Culture",
+      "status": "Fulfilled",
+      "age": "28m",
+      "sla": "4h",
+      "priority": "Normal",
+      "autoPath": true
+    }
+  ]
+}

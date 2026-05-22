@@ -1,0 +1,460 @@
+{
+  "_notes": "Canon Europa \u2014 Oracle/Salesforce estate on OCI + Azure. 5 workbook apps + integration/middleware layer.",
+  "domains": [
+    {
+      "id": "oracle-core",
+      "name": "Oracle Core ERP",
+      "icon": "\ud83c\udfed",
+      "color": "#CC0000",
+      "status": "AMBER",
+      "uptime": 96.2,
+      "hosting": "OCI",
+      "hostingColor": "#CC0000",
+      "sessions": 12000,
+      "trend": [99.1, 98.4, 97.8, 96.9, 96.2, 96.2],
+      "up": 96,
+      "apps": [
+        {
+          "id": "bizops",
+          "name": "BizOps (Oracle SCM)",
+          "status": "AMBER",
+          "ver": "Oracle SCM Cloud",
+          "hosting": "OCI",
+          "perf": 62,
+          "users": 12000,
+          "uptime": 96.2,
+          "tech": "Oracle SCM \u00b7 OCI",
+          "desc": "Supply chain management \u2014 order processing, inventory, fulfilment. Ship confirmation failures blocking revenue booking daily.",
+          "intel": {
+            "activeIssue": "Ship confirmation stuck \u2014 orders remaining in Shipped/Awaiting Closure status",
+            "causalChain": [
+              "Daily monitoring report identifies stuck shipments",
+              "Support engineer reviews WSH errors in EBS",
+              "Manual reprocessing or data fix required",
+              "Revenue recognition delayed"
+            ],
+            "agentConfidence": 87,
+            "recommendation": "Auto-detect stuck ship confirmations via OEM \u2014 execute pre-approved concurrent request reprocessing"
+          },
+          "infra": [
+            {
+              "c": "db",
+              "label": "Oracle DB",
+              "val": "Latency 4.2s",
+              "unit": "s",
+              "m": 72,
+              "anom": true,
+              "h": "AMBER",
+              "detail": "Concurrent request queue backing up"
+            },
+            {
+              "c": "queue",
+              "label": "Concurrent Requests",
+              "val": "147 pending",
+              "unit": "req",
+              "m": 80,
+              "anom": true,
+              "h": "AMBER",
+              "detail": "Ship confirm jobs queued \u2014 processing delayed"
+            },
+            {
+              "c": "cpu",
+              "label": "OCI CPU",
+              "val": "61%",
+              "unit": "%",
+              "m": 61,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "Within normal range"
+            }
+          ]
+        },
+        {
+          "id": "oracle-finance",
+          "name": "Finance (Oracle Finance)",
+          "status": "RED",
+          "ver": "Oracle Financials Cloud",
+          "hosting": "OCI",
+          "perf": 38,
+          "users": 12000,
+          "uptime": 93.8,
+          "tech": "Oracle Finance \u00b7 OCI",
+          "desc": "Core finance \u2014 AR, AP, GL, revenue recognition. DD authorisation failures causing 1-week MTTR and collection delays.",
+          "intel": {
+            "activeIssue": "Direct Debit authorisation failing \u2014 bank mandate issue causing invoices not picked",
+            "causalChain": [
+              "DD authorisation run executed",
+              "Invoices not picked \u2014 bank mandate error",
+              "AR reverses impacted receipts",
+              "Canon IT resolves mandate in backend",
+              "Accenture reruns DD after 1 week \u2014 scheduled window"
+            ],
+            "agentConfidence": 82,
+            "recommendation": "Automated mandate validation before DD run \u2014 detect and flag affected invoices pre-execution"
+          },
+          "infra": [
+            {
+              "c": "db",
+              "label": "Oracle AR",
+              "val": "284 stuck",
+              "unit": "inv",
+              "m": 88,
+              "anom": true,
+              "h": "RED",
+              "detail": "Invoices not picked in DD run \u2014 mandate error"
+            },
+            {
+              "c": "app",
+              "label": "DD Process",
+              "val": "Failed",
+              "unit": "",
+              "m": 90,
+              "anom": true,
+              "h": "RED",
+              "detail": "Direct Debit authorisation process failing"
+            },
+            {
+              "c": "cpu",
+              "label": "OCI CPU",
+              "val": "44%",
+              "unit": "%",
+              "m": 44,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "Normal"
+            }
+          ]
+        },
+        {
+          "id": "oracle-ebs",
+          "name": "Oracle EBS (Order to Cash)",
+          "status": "RED",
+          "ver": "Oracle EBS R12",
+          "hosting": "OCI",
+          "perf": 31,
+          "users": 8000,
+          "uptime": 91.4,
+          "tech": "Oracle EBS \u00b7 Forms \u00b7 Concurrent Processing \u00b7 OCI",
+          "desc": "Order-to-Cash \u2014 Shipping Execution (WSH), Order Management (OM). Ship confirmation failures occur daily, 3-4h MTTR.",
+          "intel": {
+            "activeIssue": "Ship confirmation stuck \u2014 orders in Shipped/Awaiting Closure blocking revenue booking",
+            "causalChain": [
+              "Delivery records not updating WSH",
+              "Inventory interface transaction pending",
+              "Concurrent request log shows errors",
+              "Manual reprocessing or DB fix required",
+              "Revenue recognition cannot proceed"
+            ],
+            "agentConfidence": 89,
+            "recommendation": "ZeroOps monitors WSH concurrent logs \u2014 auto-reprocesses ship confirm for pre-approved patterns"
+          },
+          "infra": [
+            {
+              "c": "queue",
+              "label": "WSH Concurrent",
+              "val": "38 stuck",
+              "unit": "jobs",
+              "m": 85,
+              "anom": true,
+              "h": "RED",
+              "detail": "Ship confirm concurrent requests stuck"
+            },
+            {
+              "c": "db",
+              "label": "Inventory Interface",
+              "val": "Pending",
+              "unit": "",
+              "m": 82,
+              "anom": true,
+              "h": "RED",
+              "detail": "Inventory interface transactions not clearing"
+            },
+            {
+              "c": "app",
+              "label": "OTC Process",
+              "val": "Blocked",
+              "unit": "",
+              "m": 88,
+              "anom": true,
+              "h": "RED",
+              "detail": "Order closure blocked \u2014 revenue recognition delayed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crm-digital",
+      "name": "CRM & Digital",
+      "icon": "\u2601",
+      "color": "#00A1E0",
+      "status": "GREEN",
+      "uptime": 99.1,
+      "hosting": "Salesforce Cloud",
+      "hostingColor": "#00A1E0",
+      "sessions": 17000,
+      "trend": [99.4, 99.3, 99.2, 99.1, 99.1, 99.1],
+      "up": 99,
+      "apps": [
+        {
+          "id": "sfdc-crm",
+          "name": "CRM & Marketing (Salesforce)",
+          "status": "GREEN",
+          "ver": "Salesforce Sales + Marketing Cloud",
+          "hosting": "Salesforce Cloud",
+          "perf": 91,
+          "users": 17000,
+          "uptime": 99.1,
+          "tech": "Salesforce \u00b7 Cloud",
+          "desc": "CRM and marketing automation. Largest user base \u2014 17,000 users. Critical for sales operations across 39 countries.",
+          "intel": {
+            "activeIssue": "No active issue \u2014 healthy. ZeroOps monitoring Salesforce\u2192Oracle integration data flow.",
+            "causalChain": [],
+            "agentConfidence": 93,
+            "recommendation": "Pre-emptive monitoring of Salesforce\u2192Informatica\u2192Oracle data pipeline for month-end integrity"
+          },
+          "infra": [
+            {
+              "c": "api",
+              "label": "SF API",
+              "val": "98.4%",
+              "unit": "%",
+              "m": 98,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "API availability within SLA"
+            },
+            {
+              "c": "pod",
+              "label": "Integration Flow",
+              "val": "Healthy",
+              "unit": "",
+              "m": 20,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "Salesforce\u2192Oracle sync running normally"
+            }
+          ]
+        },
+        {
+          "id": "pearlchain",
+          "name": "Pearlchain (CPQ & CM)",
+          "status": "AMBER",
+          "ver": "Java \u00b7 OCI",
+          "hosting": "OCI",
+          "perf": 58,
+          "users": 1900,
+          "uptime": 97.4,
+          "tech": "Java \u00b7 OCI",
+          "desc": "Configure-Price-Quote and Contract Management. 1,900 users. Critical for sales quoting and contract lifecycle.",
+          "intel": {
+            "activeIssue": "Integration data feed from Informatica intermittently delayed \u2014 CPQ pricing data stale",
+            "causalChain": [
+              "Informatica job fails or delays",
+              "CPQ pricing data not refreshed",
+              "Sales cannot generate accurate quotes",
+              "Manual intervention to trigger refresh"
+            ],
+            "agentConfidence": 78,
+            "recommendation": "ZeroOps monitors Informatica\u2192Pearlchain data freshness \u2014 auto-trigger refresh on staleness detection"
+          },
+          "infra": [
+            {
+              "c": "cache",
+              "label": "Pricing Cache",
+              "val": "Stale 2h",
+              "unit": "",
+              "m": 65,
+              "anom": true,
+              "h": "AMBER",
+              "detail": "CPQ pricing data not refreshed from Informatica"
+            },
+            {
+              "c": "cpu",
+              "label": "OCI CPU",
+              "val": "48%",
+              "unit": "%",
+              "m": 48,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "Normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "analytics-reporting",
+      "name": "Analytics & Reporting",
+      "icon": "\ud83d\udcca",
+      "color": "#D97706",
+      "status": "GREEN",
+      "uptime": 98.6,
+      "hosting": "OCI",
+      "hostingColor": "#CC0000",
+      "sessions": 2100,
+      "trend": [99.1, 98.9, 98.8, 98.7, 98.6, 98.6],
+      "up": 99,
+      "apps": [
+        {
+          "id": "oas",
+          "name": "OAS (Oracle Analytics Service)",
+          "status": "GREEN",
+          "ver": "Oracle Analytics Cloud",
+          "hosting": "OCI",
+          "perf": 84,
+          "users": 2100,
+          "uptime": 98.6,
+          "tech": "Oracle Analytics \u00b7 OCI",
+          "desc": "Business intelligence and reporting. Finance, supply chain and operations dashboards. Data freshness critical.",
+          "intel": {
+            "activeIssue": "No active issue \u2014 ZeroOps monitoring data pipeline freshness from Oracle EBS and Informatica feeds",
+            "causalChain": [],
+            "agentConfidence": 91,
+            "recommendation": "Pre-emptive pipeline monitoring \u2014 detect Informatica feed delays before OAS reports show stale data"
+          },
+          "infra": [
+            {
+              "c": "pipeline",
+              "label": "Data Pipelines",
+              "val": "All OK",
+              "unit": "",
+              "m": 20,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "EBS and Informatica feeds on schedule"
+            },
+            {
+              "c": "cpu",
+              "label": "OCI CPU",
+              "val": "38%",
+              "unit": "%",
+              "m": 38,
+              "anom": false,
+              "h": "GREEN",
+              "detail": "Normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "integration-middleware",
+      "name": "Integration & Middleware",
+      "icon": "\ud83d\udd00",
+      "color": "#7C3AED",
+      "status": "RED",
+      "uptime": 94.1,
+      "hosting": "OCI + Azure",
+      "hostingColor": "#7C3AED",
+      "sessions": 0,
+      "trend": [98.2, 97.4, 96.1, 95.2, 94.5, 94.1],
+      "up": 94,
+      "apps": [
+        {
+          "id": "informatica",
+          "name": "Informatica (Integration Platform)",
+          "status": "RED",
+          "ver": "Informatica IICS",
+          "hosting": "OCI",
+          "perf": 34,
+          "users": 0,
+          "uptime": 94.1,
+          "tech": "Informatica IICS \u00b7 OCI",
+          "desc": "Core integration platform \u2014 all data flows between Oracle EBS, Salesforce, Pearlchain, Primavera. Failures cascade to all downstream systems. 2-3 failures/month, 4-6h MTTR.",
+          "intel": {
+            "activeIssue": "Integration jobs failed \u2014 unscheduled jobs, unprocessed files in transit directory",
+            "causalChain": [
+              "Informatica job fails \u2014 no auto-recovery",
+              "FAM manually identifies all failed jobs",
+              "Reschedules unscheduled jobs, resets batch status",
+              "Moves unprocessed files from transit to landing",
+              "Triggers jobs manually \u2014 TAM admin dependency adds delay",
+              "4-6 hours per incident"
+            ],
+            "agentConfidence": 91,
+            "recommendation": "ZeroOps auto-restarts failed jobs, resets batch status, moves transit files \u2014 eliminates TAM dependency"
+          },
+          "infra": [
+            {
+              "c": "queue",
+              "label": "Failed Jobs",
+              "val": "7 failed",
+              "unit": "jobs",
+              "m": 85,
+              "anom": true,
+              "h": "RED",
+              "detail": "Outbound and inbound jobs failed \u2014 unprocessed files in transit"
+            },
+            {
+              "c": "app",
+              "label": "Job Scheduler",
+              "val": "3 unscheduled",
+              "unit": "",
+              "m": 80,
+              "anom": true,
+              "h": "RED",
+              "detail": "Jobs unscheduled due to failure \u2014 manual reschedule required"
+            },
+            {
+              "c": "db",
+              "label": "Transit Files",
+              "val": "24 stuck",
+              "unit": "files",
+              "m": 75,
+              "anom": true,
+              "h": "RED",
+              "detail": "Files in transit directory \u2014 not moved to landing"
+            }
+          ]
+        },
+        {
+          "id": "primavera",
+          "name": "Primavera (Project/Invoice)",
+          "status": "AMBER",
+          "ver": "Oracle Primavera Cloud",
+          "hosting": "OCI",
+          "perf": 61,
+          "users": 500,
+          "uptime": 96.8,
+          "tech": "Oracle Primavera \u00b7 OCI",
+          "desc": "Project management and invoice delivery. Informatica delivers invoices to Primavera. Header/line amount mismatches cause delivery failures \u2014 monthly 10-15 invoices, 1-2 day MTTR.",
+          "intel": {
+            "activeIssue": "Invoice delivery failing \u2014 header amount vs line sum mismatch",
+            "causalChain": [
+              "Informatica delivers invoice to Primavera",
+              "Header amount and line sum do not match",
+              "Primavera rejects delivery",
+              "NSO SPOC manually updates header/line data",
+              "Manually pushes for delivery \u2014 1-2 business day MTTR"
+            ],
+            "agentConfidence": 84,
+            "recommendation": "Auto-validate invoice header/line amounts before delivery \u2014 auto-correct within tolerance or flag for review"
+          },
+          "infra": [
+            {
+              "c": "app",
+              "label": "Invoice Delivery",
+              "val": "12 failed",
+              "unit": "inv",
+              "m": 78,
+              "anom": true,
+              "h": "AMBER",
+              "detail": "Header/line mismatch \u2014 delivery rejected by Primavera"
+            },
+            {
+              "c": "db",
+              "label": "Invoice Queue",
+              "val": "Pending",
+              "unit": "",
+              "m": 60,
+              "anom": true,
+              "h": "AMBER",
+              "detail": "Failed invoices awaiting manual correction"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

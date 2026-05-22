@@ -1,0 +1,31 @@
+{
+  "_schema": "ZeroOps Chat Suggestions v1.0",
+  "_notes": "Six suggested prompts shown on the AI Assistant empty state. Replace text with customer-specific services and scenarios. icon is an emoji. text is the exact prompt sent to GPT-4o when the card is clicked.",
+
+  "suggestions": [
+    {
+      "icon": "🔍",
+      "text": "Why did GitLab go down tonight and what did ZeroOps do about it?"
+    },
+    {
+      "icon": "⚡",
+      "text": "What would happen if SAP AP1 went down during month-end close?"
+    },
+    {
+      "icon": "📊",
+      "text": "Show me the ROI ZeroOps has delivered this month in numbers"
+    },
+    {
+      "icon": "🛡",
+      "text": "Which incidents required human approval today and why did ZeroOps escalate them?"
+    },
+    {
+      "icon": "🤖",
+      "text": "Which agents are running right now and what are they doing?"
+    },
+    {
+      "icon": "⚠",
+      "text": "What should I focus on in the next shift handover — any risks or trends I should know?"
+    }
+  ]
+}

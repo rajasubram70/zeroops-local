@@ -1,0 +1,204 @@
+{
+  "articles": [
+    {
+      "id": "KB-AG-001",
+      "title": "PACS IMPAX/EI — JVM Heap Exhaustion Recovery",
+      "domain": "PACS Platform",
+      "tags": ["JVM", "Heap", "PACS", "DICOM", "IMPAX"],
+      "reads": 47,
+      "confidence": 94,
+      "relatedIncidents": ["INC0002101", "INC0002065"],
+      "relatedAgents": ["RCA Engine", "Remediation Agent", "Change Validator"],
+      "sections": [
+        {
+          "title": "Detection Pattern",
+          "steps": [
+            "Prometheus alert: heap_used_ratio > 0.95 on pacs-app-prod-* namespace",
+            "DICOM receiver thread count drops below 8 (normal: 24-32)",
+            "OOM kill events appear in pod logs — EtchRecipeProcessor or DicomReceiverThread",
+            "Image retrieval failure rate increases — monitored via Datadog APM"
+          ]
+        },
+        {
+          "title": "Immediate Relief",
+          "steps": [
+            "Capture heap dump BEFORE restart: kubectl exec pacs-app-prod-01 -- jmap -dump:format=b,file=/tmp/heap.hprof",
+            "Rolling restart: kubectl rollout restart deployment/pacs-app --strategy=RollingUpdate",
+            "Validate pod health before each rollover — check heap < 20% before proceeding",
+            "Apply interim config patch: -Xmx12g via ConfigMap if heap was < 8g"
+          ]
+        },
+        {
+          "title": "Permanent Fix",
+          "steps": [
+            "Root cause: object reference leak in DicomReceiverThread.java — thread pool not releasing DICOM dataset objects",
+            "Fix: implement explicit dataset.clear() in DicomReceiverThread finally block",
+            "Code fix tracked in ServiceNow CHG-8821 — raise Problem Record PRB-AG-00018 if second occurrence",
+            "Post-fix validation: 72h monitoring window — heap should stabilise below 40%"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KB-AG-002",
+      "title": "HL7 Gateway — Consumer Thread Deadlock Recovery",
+      "domain": "Integration Layer",
+      "tags": ["HL7", "Gateway", "Deadlock", "Threading", "ADT"],
+      "reads": 34,
+      "confidence": 91,
+      "relatedIncidents": ["INC0002098", "INC0002065"],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Detection Pattern",
+          "steps": [
+            "Datadog alert: hl7_queue_depth > 1000 — consumer threads not draining queue",
+            "Thread dump shows BLOCKED threads waiting on DB connection pool lock",
+            "HL7 success rate drops below 95% — normal is 99.9%+",
+            "Patient ADT/ORM message processing stops — queue grows at 200-400 msg/min"
+          ]
+        },
+        {
+          "title": "Recovery Steps",
+          "steps": [
+            "HiTL approval required — risk score 34 due to patient data flow impact",
+            "Gateway restart: kubectl rollout restart deployment/hl7-gateway",
+            "Queue replay: ZeroOps Remediation Agent auto-replays queued messages after restart",
+            "Validate: HL7 success rate returns to 99.9%+ within 5 minutes of restart"
+          ]
+        },
+        {
+          "title": "Prevention",
+          "steps": [
+            "Configure DB connection pool max to 50 (current: 20 — insufficient for peak load)",
+            "Add deadlock detection timeout: 30 seconds with auto-restart on detection",
+            "Scale gateway to 2 replicas during morning peak (06:00-10:00 window)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KB-AG-003",
+      "title": "DICOM Store (VNA) — Capacity Management",
+      "domain": "Archive & VNA",
+      "tags": ["VNA", "DICOM", "Capacity", "Storage", "Archive"],
+      "reads": 28,
+      "confidence": 89,
+      "relatedIncidents": ["INC0002095"],
+      "relatedAgents": ["Capacity Planner", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Alert Thresholds",
+          "steps": [
+            "Warning alert at 80% — triggers Capacity Planner forecast review",
+            "Critical alert at 90% — triggers emergency expansion planning",
+            "Ingest failure at 95% — immediate intervention required",
+            "Current ingest rate: 2.4 TB/day — plan for 30-day rolling capacity"
+          ]
+        },
+        {
+          "title": "Emergency Expansion",
+          "steps": [
+            "Azure Blob tier migration for studies > 2 years (immediate 15-20% capacity recovery)",
+            "NFS mount expansion via Azure NetApp Files — 4h SLA",
+            "Temporary ingest throttle if partition > 93% — prevents write failures"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KB-AG-004",
+      "title": "RUBEE Orchestrator — Thread Pool Saturation",
+      "domain": "Clinical Workflow",
+      "tags": ["RUBEE", "ThreadPool", "Worklist", "Performance"],
+      "reads": 19,
+      "confidence": 87,
+      "relatedIncidents": ["INC0002092"],
+      "relatedAgents": ["RCA Engine", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Detection",
+          "steps": [
+            "Dynatrace alert: rubee_thread_pool_utilisation > 80%",
+            "Worklist distribution latency > 5 minutes — normal is < 30 seconds",
+            "Morning peak window 07:00-09:30 is highest risk — plan accordingly"
+          ]
+        },
+        {
+          "title": "Resolution",
+          "steps": [
+            "Apply auto-scale config: maxWorkers 200 → 400 (requires approval — risk score 28)",
+            "Restart RUBEE Orchestrator during low-load window if thread leak suspected",
+            "Permanent fix: enable Kubernetes HPA for RUBEE deployment — scales on CPU > 70%"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KB-AG-005",
+      "title": "Long-Term Archive — PostgreSQL Replication Lag",
+      "domain": "Archive & VNA",
+      "tags": ["PostgreSQL", "Replication", "WAL", "Archive", "LTA"],
+      "reads": 22,
+      "confidence": 92,
+      "relatedIncidents": ["INC0002089"],
+      "relatedAgents": ["RCA Engine", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Root Cause",
+          "steps": [
+            "Inactive replication slot accumulating WAL — common after maintenance windows",
+            "Check: SELECT slot_name, active FROM pg_replication_slots — look for active=false",
+            "WAL accumulation causes disk pressure and replication lag simultaneously"
+          ]
+        },
+        {
+          "title": "Resolution",
+          "steps": [
+            "Drop inactive slot: SELECT pg_drop_replication_slot('slot_name')",
+            "Trigger CHECKPOINT to flush WAL backlog",
+            "Monitor replication lag: should return to < 5 seconds within 10 minutes",
+            "Re-create slot only if replica genuinely needs it — confirm with DBA"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KB-AG-006",
+      "title": "ZeroOps AGFA Remediation Playbook",
+      "domain": "Platform",
+      "tags": ["ZeroOps", "Playbook", "Runbook", "AIOps"],
+      "reads": 89,
+      "confidence": 98,
+      "relatedIncidents": [],
+      "relatedAgents": [
+        "Alert Correlator",
+        "RCA Engine",
+        "Remediation Agent",
+        "Change Validator",
+        "Capacity Planner",
+        "Log Analyzer"
+      ],
+      "sections": [
+        {
+          "title": "Risk Score Thresholds",
+          "steps": [
+            "Risk 0-25 (Pillar 1 Sentinel): fully autonomous — no human gate",
+            "Risk 26-50 (Pillar 2 Guardian): one HiTL approval via ServiceNow — 5 min window",
+            "Risk 51-100 (Pillar 3 Advisor): AI-assisted human decision — full brief prepared",
+            "All actions logged, reversible, and auditable in ServiceNow"
+          ]
+        },
+        {
+          "title": "AGFA-Specific Rules",
+          "steps": [
+            "Never auto-restart HL7 Gateway without HiTL — patient data flow requires approval",
+            "PACS rolling restart is auto-approved (risk 18) — heap dump always captured first",
+            "VNA storage changes always require HiTL — data integrity risk",
+            "AI Inference Engine GPU restart auto-approved after 72h uptime (risk 22)"
+          ]
+        }
+      ]
+    }
+  ]
+}

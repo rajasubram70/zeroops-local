@@ -1,0 +1,193 @@
+{
+  "log": [
+    {
+      "ts": "07:30",
+      "pillar": 1,
+      "icon": "\ud83d\udcbe",
+      "agent": "Capacity Planner",
+      "action": "Jenkins agent-04 disk at 91% \u2014 automated artefact cleanup executed \u2014 38GB freed \u2014 34 queued builds released",
+      "outcome": "AUTO-RESOLVED",
+      "dur": "4m 12s",
+      "highlight": true
+    },
+    {
+      "ts": "08:22",
+      "pillar": 1,
+      "icon": "\ud83d\udd17",
+      "agent": "Remediation Agent",
+      "action": "EDI gateway partner reconnection \u2014 9/12 connections re-established \u2014 2,341 messages replayed in order \u2014 all delivery receipts confirmed",
+      "outcome": "AUTO-RESOLVED",
+      "dur": "29m 14s",
+      "highlight": true
+    },
+    {
+      "ts": "06:14",
+      "pillar": 1,
+      "icon": "\u2699",
+      "agent": "RCA Engine",
+      "action": "SAP S/4HANA WP saturation \u2014 12 batch jobs rescheduled to background class \u2014 dialog pool 89% \u2192 41% \u2014 no user impact",
+      "outcome": "AUTO-RESOLVED",
+      "dur": "3m 48s",
+      "highlight": true
+    },
+    {
+      "ts": "06:00",
+      "pillar": 1,
+      "icon": "\ud83d\udd10",
+      "agent": "Alert Correlator",
+      "action": "VPN certificate expiry detected \u2014 8 days remaining \u2014 INC0001006 raised \u2014 renewal workflow triggered \u2014 human approval required",
+      "outcome": "DETECTED",
+      "dur": "12s"
+    },
+    {
+      "ts": "05:44",
+      "pillar": 1,
+      "icon": "\ud83c\udf10",
+      "agent": "Remediation Agent",
+      "action": "API Gateway circuit breaker applied \u2014 WMS cascade timeout contained \u2014 graceful degradation active \u2014 error rate 4.2% \u2192 0.1%",
+      "outcome": "AUTO-RESOLVED",
+      "dur": "1m 22s"
+    },
+    {
+      "ts": "09:05",
+      "pillar": 2,
+      "icon": "\ud83d\udd11",
+      "agent": "RCA Engine",
+      "action": "SSO auth latency 4.2s \u2014 RADIUS TLS renegotiation confirmed \u2014 human approval raised for RADIUS service restart",
+      "outcome": "HITL RAISED",
+      "dur": "48s",
+      "highlight": true
+    },
+    {
+      "ts": "09:22",
+      "pillar": 2,
+      "icon": "\ud83d\udc64",
+      "agent": "HiTL Console",
+      "action": "B.Thompson approved RADIUS service restart \u2014 executed \u2014 auth latency 4.2s \u2192 180ms \u2014 14,200 users unaffected",
+      "outcome": "HITL DONE",
+      "dur": "11s"
+    },
+    {
+      "ts": "07:14",
+      "pillar": 1,
+      "icon": "\ud83d\udd10",
+      "agent": "SoD Check Agent",
+      "action": "SR-GEN-00441 \u2014 J.Okafor \u2014 SAP Finance Viewer + HR ReadOnly \u2014 SoD clean \u2014 risk 14 \u2014 auto-provisioned \u2014 4 systems updated",
+      "outcome": "AUTO-RESOLVED",
+      "dur": "3m 58s"
+    },
+    {
+      "ts": "07:28",
+      "pillar": 2,
+      "icon": "\u26a0",
+      "agent": "SoD Check Agent",
+      "action": "SR-GEN-00443 \u2014 M.Petrov \u2014 SAP AP approver + vendor master edit \u2014 payment cycle violation detected \u2014 HiTL to line manager",
+      "outcome": "HITL RAISED",
+      "dur": "52s",
+      "highlight": true
+    },
+    {
+      "ts": "07:41",
+      "pillar": 2,
+      "icon": "\ud83d\udc64",
+      "agent": "HiTL Console",
+      "action": "SR-GEN-00443 \u2014 S.Chen approved with controls \u2014 AP limit \u20ac25K \u2014 dual-control required \u2014 GRC updated \u2014 ServiceNow closed",
+      "outcome": "HITL DONE",
+      "dur": "13s"
+    },
+    {
+      "ts": "08:02",
+      "pillar": 1,
+      "icon": "\ud83d\udd27",
+      "agent": "Build Agent",
+      "action": "AI SDLC PRB-ENT-00024 \u2014 ERP batch scheduling algorithm \u2014 code generated \u2014 PR #1142 raised \u2014 96% test coverage \u2014 CHG-4821 created",
+      "outcome": "BUILD COMPLETE",
+      "dur": "5m 44s",
+      "highlight": true,
+      "sdlc": true
+    },
+    {
+      "ts": "08:31",
+      "pillar": 1,
+      "icon": "\ud83d\ude80",
+      "agent": "Release Agent",
+      "action": "AI SDLC PRB-ENT-00024 \u2014 all 312 regression tests passed \u2014 Jenkins pipeline triggered \u2014 CHG-4821 deployed to production",
+      "outcome": "DEPLOYED",
+      "dur": "29m 02s",
+      "highlight": true,
+      "sdlc": true
+    },
+    {
+      "ts": "Yesterday 18:00",
+      "pillar": 1,
+      "icon": "\ud83d\udcec",
+      "agent": "Remediation Agent",
+      "action": "ESB dead letter queue \u2014 847 messages categorised \u2014 replay plan prepared \u2014 awaiting approval \u2014 EDI downstream confirmed available",
+      "outcome": "PENDING HITL",
+      "dur": "1m 04s"
+    },
+    {
+      "ts": "Yesterday 14:18",
+      "pillar": 2,
+      "icon": "\ud83d\uddc4",
+      "agent": "RCA Engine",
+      "action": "WMS DB deadlock \u2014 missing composite index identified \u2014 index rebuild plan prepared \u2014 human approval required for operational impact",
+      "outcome": "HITL RAISED",
+      "dur": "1m 12s",
+      "highlight": true
+    },
+    {
+      "ts": "Yesterday 02:15",
+      "pillar": 1,
+      "icon": "\ud83d\udd14",
+      "agent": "Alert Correlator",
+      "action": "1,847 raw alerts from 6 monitoring systems correlated into 3 actionable incidents \u2014 1,844 alerts suppressed",
+      "outcome": "DETECTED",
+      "dur": "8s"
+    }
+  ],
+  "dailyStats": [
+    {
+      "label": "Auto-Resolved",
+      "value": 11,
+      "pillar": 1,
+      "color": "#16A34A",
+      "icon": "\u2705"
+    },
+    {
+      "label": "Alerts Suppressed",
+      "value": 2140,
+      "pillar": 1,
+      "color": "#2563EB",
+      "icon": "\ud83d\udd14"
+    },
+    {
+      "label": "HiTL Decisions",
+      "value": 4,
+      "pillar": 2,
+      "color": "#D97706",
+      "icon": "\ud83d\udee1"
+    },
+    {
+      "label": "Access Provisioned",
+      "value": 11,
+      "pillar": 1,
+      "color": "#7C3AED",
+      "icon": "\ud83d\udd10"
+    },
+    {
+      "label": "SDLC Builds",
+      "value": 2,
+      "pillar": 1,
+      "color": "#16A34A",
+      "icon": "\ud83d\udd27"
+    },
+    {
+      "label": "Cost Avoided",
+      "value": 8420,
+      "pillar": 1,
+      "color": "#16A34A",
+      "icon": "\ud83d\udcb0"
+    }
+  ]
+}

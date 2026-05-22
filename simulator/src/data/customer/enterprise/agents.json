@@ -1,0 +1,242 @@
+{
+  "agents": [
+    {
+      "id": "alert-correlator",
+      "name": "Alert Correlator",
+      "icon": "\ud83d\udd14",
+      "desc": "Ingests signals from Prometheus, Datadog, Azure Monitor and ITSM. Correlates thousands of alerts into actionable incidents. Noise reduction: 94%.",
+      "runs": 5841,
+      "success": "99.2%",
+      "tokens": "924K",
+      "costOK": "$0.001",
+      "human": "0%",
+      "status": "Active",
+      "model": "claude-haiku-4-5",
+      "provider": "Anthropic",
+      "ok": 99,
+      "dur": "0.3s",
+      "tokensMonth": "924K",
+      "tools": [
+        "Prometheus API",
+        "Datadog API",
+        "Azure Monitor",
+        "ServiceNow API"
+      ],
+      "integrations": [
+        "Prometheus",
+        "Datadog",
+        "Azure Monitor",
+        "ServiceNow",
+        "SAP Cloud ALM"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Accuracy improving",
+        "delta": "+2.1%"
+      },
+      "anatomy": {
+        "trigger": "Alert threshold breach from any connected monitoring source",
+        "process": "Deduplicate, correlate, pattern match against vector DB of historical incidents, risk score",
+        "output": "Single actionable incident with context \u2014 pushed to RCA Engine and ServiceNow"
+      }
+    },
+    {
+      "id": "log-analyzer",
+      "name": "Log Analyser",
+      "icon": "\ud83d\udccb",
+      "desc": "Deep analysis of application and infrastructure logs. Identifies error patterns, performance degradation and anomalous behaviour across the full estate.",
+      "runs": 2341,
+      "success": "98.1%",
+      "tokens": "1.12M",
+      "costOK": "$0.009",
+      "human": "0%",
+      "status": "Active",
+      "model": "claude-sonnet-4-5",
+      "provider": "Anthropic",
+      "ok": 98,
+      "dur": "1.1s",
+      "tokensMonth": "1.12M",
+      "tools": ["Elasticsearch", "Datadog Logs", "Azure Log Analytics"],
+      "integrations": [
+        "Elasticsearch",
+        "Datadog",
+        "Azure Log Analytics",
+        "SAP HANA Logs"
+      ],
+      "drift": {
+        "dir": "stable",
+        "label": "\u2192 Stable",
+        "delta": "\u00b10.2%"
+      },
+      "anatomy": {
+        "trigger": "Incident raised by Alert Correlator or threshold anomaly detected",
+        "process": "Query logs across time window, identify error patterns, correlate with metrics, rank hypotheses",
+        "output": "Log evidence package with top 3 root cause hypotheses \u2014 passed to RCA Engine"
+      }
+    },
+    {
+      "id": "rca-engine",
+      "name": "RCA Engine",
+      "icon": "\ud83d\udd0d",
+      "desc": "Traverses the service dependency graph and queries the vector database of historical incidents to identify root cause with confidence score. The diagnostic core of ZeroOps.",
+      "runs": 1247,
+      "success": "94.8%",
+      "tokens": "2.14M",
+      "costOK": "$0.021",
+      "human": "7%",
+      "status": "Active",
+      "model": "claude-sonnet-4-5",
+      "provider": "Anthropic",
+      "ok": 95,
+      "dur": "2.8s",
+      "tokensMonth": "2.14M",
+      "tools": ["Graph Traversal", "Vector DB", "SAP RFC", "CMDB API"],
+      "integrations": [
+        "ServiceNow CMDB",
+        "SAP Cloud ALM",
+        "Datadog",
+        "Azure Monitor",
+        "GitHub"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Confidence improving",
+        "delta": "+3.4%"
+      },
+      "anatomy": {
+        "trigger": "Log evidence package from Log Analyser",
+        "process": "Graph traversal of service dependencies, vector similarity search against 24 months of incidents, confidence scoring",
+        "output": "Root cause with confidence score, causal chain, recommended remediation \u2014 triggers Remediation Agent or HiTL"
+      }
+    },
+    {
+      "id": "remediation-agent",
+      "name": "Remediation Agent",
+      "icon": "\u26a1",
+      "desc": "Selects and executes the appropriate remediation action \u2014 from the knowledge base or AI-generated plan. Executes via Ansible, Kubernetes, SAP RFC or REST API. Validates recovery before closing.",
+      "runs": 847,
+      "success": "91.4%",
+      "tokens": "612K",
+      "costOK": "$0.014",
+      "human": "21%",
+      "status": "Active",
+      "model": "claude-sonnet-4-5",
+      "provider": "Anthropic",
+      "ok": 91,
+      "dur": "3.2s",
+      "tokensMonth": "612K",
+      "tools": ["Ansible", "Kubernetes", "SAP RFC", "ServiceNow API", "REST"],
+      "integrations": [
+        "Ansible",
+        "Kubernetes",
+        "ServiceNow",
+        "SAP S/4HANA",
+        "Jenkins",
+        "Azure"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Auto-rate improving",
+        "delta": "+4.1%"
+      },
+      "anatomy": {
+        "trigger": "Confirmed root cause from RCA Engine (risk < 25) or HiTL approval (risk 25\u201374)",
+        "process": "Select remediation from KB, validate against risk thresholds, execute via appropriate tool, monitor recovery",
+        "output": "Remediation executed, recovery validated, ticket updated in ServiceNow"
+      }
+    },
+    {
+      "id": "change-validator",
+      "name": "Change Validator",
+      "icon": "\u2705",
+      "desc": "Pre-validates every proposed action against the live configuration baseline, change calendar and CAB restrictions. Ensures ZeroOps never acts during frozen windows or against policy.",
+      "runs": 487,
+      "success": "100%",
+      "tokens": "148K",
+      "costOK": "$0.001",
+      "human": "14%",
+      "status": "Active",
+      "model": "claude-haiku-4-5",
+      "provider": "Anthropic",
+      "ok": 100,
+      "dur": "0.4s",
+      "tokensMonth": "148K",
+      "tools": ["ServiceNow Change API", "CMDB API", "Ansible"],
+      "integrations": ["ServiceNow", "Azure DevOps", "GitHub", "CMDB"],
+      "drift": {
+        "dir": "stable",
+        "label": "\u2192 100% accuracy maintained",
+        "delta": "0%"
+      },
+      "anatomy": {
+        "trigger": "Proposed remediation action from Remediation Agent",
+        "process": "Check change calendar, CAB restrictions, CMDB baseline, rollback availability",
+        "output": "Approved (proceed) or Blocked (escalate) \u2014 all actions logged with full audit trail"
+      }
+    },
+    {
+      "id": "capacity-planner",
+      "name": "Capacity Planner",
+      "icon": "\ud83d\udcc8",
+      "desc": "Continuously monitors resource utilisation trends and proactively recommends or executes scaling actions before thresholds are breached. Prevents incidents rather than resolving them.",
+      "runs": 124,
+      "success": "97.6%",
+      "tokens": "334K",
+      "costOK": "$0.033",
+      "human": "4%",
+      "status": "Active",
+      "model": "claude-sonnet-4-5",
+      "provider": "Anthropic",
+      "ok": 98,
+      "dur": "4.1s",
+      "tokensMonth": "334K",
+      "tools": ["Prometheus", "Azure Monitor", "Kubernetes", "Ansible"],
+      "integrations": [
+        "Prometheus",
+        "Azure Monitor",
+        "Kubernetes",
+        "ServiceNow",
+        "Datadog"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Proactive rate up",
+        "delta": "+6.2%"
+      },
+      "anatomy": {
+        "trigger": "Resource utilisation trend crossing predictive threshold (not reactive threshold)",
+        "process": "Trend analysis over 30-day rolling window, workload forecasting, risk-adjusted scaling recommendation",
+        "output": "Proactive scaling action or recommendation \u2014 with business event correlation"
+      }
+    },
+    {
+      "id": "sod-agent",
+      "name": "SoD Check Agent",
+      "icon": "\ud83d\udd10",
+      "desc": "Automated Segregation of Duties check for every access provisioning request. Integrates with SAP GRC and identity platforms to detect conflicts before roles are assigned.",
+      "runs": 3124,
+      "success": "99.8%",
+      "tokens": "412K",
+      "costOK": "$0.007",
+      "human": "11%",
+      "status": "Active",
+      "model": "claude-sonnet-4-5",
+      "provider": "Anthropic",
+      "ok": 100,
+      "dur": "0.9s",
+      "tokensMonth": "412K",
+      "tools": ["SAP GRC API", "Azure AD", "Okta", "ServiceNow"],
+      "integrations": ["SAP GRC", "Azure AD", "Okta", "ServiceNow", "CyberArk"],
+      "drift": {
+        "dir": "stable",
+        "label": "\u2192 Zero false negatives",
+        "delta": "0%"
+      },
+      "anatomy": {
+        "trigger": "Access provisioning request received from ServiceNow",
+        "process": "Query SAP GRC for role conflict matrix, cross-reference requested roles against existing entitlements, calculate risk score",
+        "output": "Clean (auto-provision) or Conflict (HiTL with full violation detail and suggested controls)"
+      }
+    }
+  ]
+}

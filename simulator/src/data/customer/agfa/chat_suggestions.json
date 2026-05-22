@@ -1,0 +1,12 @@
+{
+  "suggestions": [
+    { "icon": "🔥", "text": "What are the active P1 incidents right now?" },
+    { "icon": "🖼", "text": "What is the PACS platform health status?" },
+    { "icon": "📊", "text": "What is the auto-fix rate this month?" },
+    { "icon": "🔗", "text": "How many HL7 messages are stuck in queue?" },
+    { "icon": "🗄", "text": "How much DICOM storage capacity do we have left?" },
+    { "icon": "💰", "text": "What is the ROI from ZeroOps this month?" },
+    { "icon": "⚡", "text": "How many incidents were auto-resolved today?" },
+    { "icon": "🧠", "text": "What is the AI inference engine latency?" }
+  ]
+}

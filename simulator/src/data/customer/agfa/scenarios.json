@@ -1,0 +1,844 @@
+{
+  "scenarios": [
+    {
+      "id": "agfa-pacs-auto",
+      "title": "PACS JVM Auto-Recovery",
+      "subtitle": "INC0002101 \u00b7 IMPAX/EI App Server \u00b7 6 hospital sites impacted",
+      "pillar": 1,
+      "icon": "\ud83d\uddbc",
+      "appId": "pacs-app",
+      "chainId": "pacs-platform",
+      "pri": "P1",
+      "mttr": "18 min 22 sec",
+      "agents": 5,
+      "steps": [
+        {
+          "id": "s1",
+          "label": "Alert Correlation",
+          "icon": "\ud83d\udd17",
+          "type": "auto",
+          "agent": "Alert Correlator",
+          "summary": "186 Prometheus alerts correlated into 1 incident \u2014 INC0002101 raised",
+          "highlight": true,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Ingesting Prometheus alert stream \u2014 heap_used_ratio > 0.95",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "186 duplicate alerts detected \u2014 deduplicating by CI fingerprint",
+              "kind": "info",
+              "t": 1500
+            },
+            {
+              "msg": "INC0002101 raised \u2014 P1 \u00b7 IMPAX/EI App Server \u00b7 6 sites impacted",
+              "kind": "success",
+              "t": 3000
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "label": "Root Cause Analysis",
+          "icon": "\ud83d\udd0d",
+          "type": "auto",
+          "agent": "RCA Engine",
+          "summary": "DICOM receiver thread pool heap leak identified \u2014 91% confidence \u00b7 matches INC0002065",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "Traversing PACS dependency graph \u2014 mapping blast radius",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "Correlating JVM heap timeline vs DICOM receiver thread allocation",
+              "kind": "info",
+              "t": 1500
+            },
+            {
+              "msg": "Vector DB match: INC0002065 \u2014 94% similarity \u00b7 same heap leak pattern",
+              "kind": "warn",
+              "t": 2500
+            },
+            {
+              "msg": "Root cause confirmed: DICOM receiver thread pool leak \u00b7 confidence 91%",
+              "kind": "success",
+              "t": 4000
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "label": "Heap Dump Capture",
+          "icon": "\ud83d\udcbe",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "2.1GB heap dump saved \u2014 forensic evidence preserved before restart",
+          "highlight": false,
+          "duration": 3500,
+          "events": [
+            {
+              "msg": "Risk score: 18/100 \u2014 Sentinel threshold clear \u00b7 auto-execution approved",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "kubectl exec pacs-app-prod-01 -- jmap -dump:format=b,file=/tmp/heap.hprof",
+              "kind": "info",
+              "t": 1500
+            },
+            {
+              "msg": "Heap dump 2.1GB saved \u2014 INC0002101-heap.hprof",
+              "kind": "success",
+              "t": 3000
+            }
+          ]
+        },
+        {
+          "id": "s4",
+          "label": "Rolling Restart",
+          "icon": "\ud83d\udd04",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "Zero-downtime rolling restart \u2014 all 3 pods recovered \u00b7 heap 98% \u2192 12%",
+          "highlight": true,
+          "duration": 6000,
+          "events": [
+            {
+              "msg": "Rolling restart initiated \u2014 one pod at a time \u00b7 zero-downtime strategy",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "Pod 1/3: heap 11% \u2713 | CPU 24% \u2713 | DICOM receiver healthy \u2713",
+              "kind": "success",
+              "t": 2000
+            },
+            {
+              "msg": "Pod 2/3: heap 13% \u2713 | CPU 26% \u2713 | DICOM receiver healthy \u2713",
+              "kind": "success",
+              "t": 3500
+            },
+            {
+              "msg": "Pod 3/3: heap 12% \u2713 | CPU 22% \u2713 | DICOM receiver healthy \u2713",
+              "kind": "success",
+              "t": 5000
+            }
+          ]
+        },
+        {
+          "id": "s5",
+          "label": "JVM Config Patch",
+          "icon": "\u2699",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "JVM heap increased -Xmx8g \u2192 -Xmx12g \u00b7 prevents recurrence while code fix scheduled",
+          "highlight": false,
+          "duration": 3000,
+          "events": [
+            {
+              "msg": "Applying permanent config: -Xmx12g via ConfigMap patch",
+              "kind": "info",
+              "t": 1000
+            },
+            {
+              "msg": "ConfigMap updated \u00b7 rolling restart triggered \u00b7 all pods applying new config",
+              "kind": "success",
+              "t": 2500
+            }
+          ]
+        },
+        {
+          "id": "s6",
+          "label": "Validation & Close",
+          "icon": "\u2705",
+          "type": "auto",
+          "agent": "Change Validator",
+          "summary": "All 6 hospital sites restored \u00b7 MTTR 18m 22s \u00b7 INC0002101 auto-closed in ServiceNow",
+          "highlight": true,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Health check: all 6 hospital sites \u2014 DICOM retrieval restored",
+              "kind": "success",
+              "t": 1000
+            },
+            {
+              "msg": "MTTR: 18m 22s \u2014 P1 SLA MET (target 4h)",
+              "kind": "success",
+              "t": 2000
+            },
+            {
+              "msg": "INC0002101 auto-closed in ServiceNow \u00b7 KB-AG-001 updated",
+              "kind": "success",
+              "t": 3000
+            }
+          ]
+        }
+      ],
+      "blastRadius": "6 hospital sites \u2014 DICOM retrieval, radiology workflow, reporting",
+      "reversibility": "HIGH \u2014 rolling restart, fully reversible",
+      "slaStatus": "P1 4h SLA \u00b7 MTTR 18m 22s \u00b7 SLA MET",
+      "outcome": {
+        "sla": "18m 22s \u2014 SLA MET",
+        "result": "PACS fully restored \u2014 all 6 hospital sites operational",
+        "mttr": "18m 22s",
+        "saved": "~72 min vs manual",
+        "agents": "5 agents",
+        "autoSteps": "6/6 auto",
+        "hitlSteps": "0 human gates"
+      },
+      "pillarLabel": "Pillar 1 \u00b7 Sentinel \u00b7 Autonomous",
+      "pillarColor": "#16A34A",
+      "incident": "INC0002101",
+      "riskScore": 18,
+      "category": "Infrastructure \u00b7 JVM / PACS"
+    },
+    {
+      "id": "agfa-hl7-guardian",
+      "title": "HL7 Gateway Message Recovery",
+      "subtitle": "INC0002098 \u00b7 2,847 messages \u00b7 patient admission flow blocked",
+      "pillar": 2,
+      "icon": "\ud83d\udd17",
+      "appId": "hl7-gateway",
+      "chainId": "integration-layer",
+      "pri": "P1",
+      "mttr": "24 min 18 sec",
+      "agents": 4,
+      "steps": [
+        {
+          "id": "s1",
+          "label": "Alert Correlation",
+          "icon": "\ud83d\udd17",
+          "type": "auto",
+          "agent": "Alert Correlator",
+          "summary": "HL7 consumer thread deadlock detected \u2014 INC0002098 raised \u00b7 2,847 messages backing up",
+          "highlight": true,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Datadog alert: hl7_queue_depth > 2000 \u00b7 consumer threads not processing",
+              "kind": "warn",
+              "t": 500
+            },
+            {
+              "msg": "INC0002098 raised \u2014 P1 \u00b7 HL7 Gateway \u00b7 patient admission flow blocked",
+              "kind": "warn",
+              "t": 2000
+            },
+            {
+              "msg": "Blast radius: all hospital ADT/ORM flows \u2014 patient data blocked",
+              "kind": "warn",
+              "t": 3000
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "label": "Root Cause Analysis",
+          "icon": "\ud83d\udd0d",
+          "type": "auto",
+          "agent": "RCA Engine",
+          "summary": "Consumer thread deadlock confirmed \u2014 same pattern as INC0002065 resolved this morning",
+          "highlight": false,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Analysing HL7 thread dump \u2014 checking for deadlock signatures",
+              "kind": "info",
+              "t": 1000
+            },
+            {
+              "msg": "Thread deadlock confirmed \u2014 threads waiting on DB connection pool lock",
+              "kind": "warn",
+              "t": 2000
+            },
+            {
+              "msg": "Matches INC0002065 pattern \u2014 risk score 34 \u00b7 HiTL required for gateway restart",
+              "kind": "warn",
+              "t": 3500
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "label": "Human Approval",
+          "icon": "\ud83d\udc64",
+          "type": "hitl",
+          "agent": "HiTL Console",
+          "summary": "Sofia Reyes approved gateway restart \u2014 11 second approval time",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "Risk score 34 \u2014 above Sentinel threshold \u00b7 HiTL approval required",
+              "kind": "warn",
+              "t": 500
+            },
+            {
+              "msg": "ServiceNow approval task sent to Sofia Reyes (AIOps Engineer)",
+              "kind": "info",
+              "t": 1500
+            },
+            {
+              "msg": "\u2713 APPROVED by Sofia Reyes \u2014 11 seconds \u00b7 gateway restart authorised",
+              "kind": "success",
+              "t": 4000
+            }
+          ]
+        },
+        {
+          "id": "s4",
+          "label": "Gateway Restart & Queue Replay",
+          "icon": "\ud83d\udd04",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "HL7 gateway restarted \u00b7 2,847 messages replayed \u00b7 patient admission flow restored",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "HL7 Gateway restart initiated \u2014 consumer thread pool cleared",
+              "kind": "info",
+              "t": 1000
+            },
+            {
+              "msg": "Gateway healthy \u00b7 consumer threads active \u00b7 processing 340 msg/min",
+              "kind": "success",
+              "t": 2500
+            },
+            {
+              "msg": "Queue replay complete \u2014 2,847 messages delivered \u00b7 0 lost",
+              "kind": "success",
+              "t": 4000
+            }
+          ]
+        },
+        {
+          "id": "s5",
+          "label": "Validation & Close",
+          "icon": "\u2705",
+          "type": "auto",
+          "agent": "Change Validator",
+          "summary": "All hospital ADT/ORM flows restored \u00b7 INC0002098 closed in ServiceNow",
+          "highlight": true,
+          "duration": 3000,
+          "events": [
+            {
+              "msg": "HL7 success rate: 99.94% \u2014 within SLA \u00b7 queue depth 0",
+              "kind": "success",
+              "t": 1000
+            },
+            {
+              "msg": "INC0002098 auto-closed \u00b7 MTTR: 24m 18s \u00b7 KB-AG-002 updated",
+              "kind": "success",
+              "t": 2500
+            }
+          ]
+        }
+      ],
+      "blastRadius": "All hospital ADT/ORM flows \u2014 patient admission data blocked",
+      "reversibility": "HIGH \u2014 gateway restart, queue replay, fully reversible",
+      "slaStatus": "P1 4h SLA \u00b7 MTTR 24m 18s \u00b7 SLA MET",
+      "outcome": {
+        "sla": "24m 18s \u2014 SLA MET",
+        "result": "2,847 HL7 messages replayed \u2014 patient flows restored",
+        "mttr": "24m 18s",
+        "saved": "~90 min vs manual",
+        "agents": "4 agents",
+        "autoSteps": "4/5 auto",
+        "hitlSteps": "1 HiTL gate"
+      },
+      "pillarLabel": "Pillar 2 \u00b7 Guardian \u00b7 One Human Gate",
+      "pillarColor": "#2563EB",
+      "incident": "INC0002098",
+      "riskScore": 34,
+      "category": "Integration \u00b7 HL7 Gateway",
+      "whyHitl": "HL7 gateway restart affects live patient ADT and ORM message flows across all hospital sites. While ZeroOps has confirmed the root cause and prepared the restart plan, a service interruption to patient data routing requires clinical operations sign-off before execution. Risk score 34 \u2014 above the autonomous threshold of 25.",
+      "remediationPlan": [
+        {
+          "n": 1,
+          "act": "Confirm thread deadlock \u2014 jstack analysis on HL7 gateway pod",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 2,
+          "act": "Human approval \u2014 patient data flow impact acknowledged",
+          "auto": false,
+          "risk": "MEDIUM"
+        },
+        {
+          "n": 3,
+          "act": "Rolling restart of HL7 gateway pod \u2014 zero message loss strategy",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 4,
+          "act": "Replay 2,847 queued messages from dead-letter queue in order",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 5,
+          "act": "Validate HL7 success rate > 99.9% across all hospital sites",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 6,
+          "act": "Close INC0002098 in ServiceNow \u2014 attach replay confirmation",
+          "auto": true,
+          "risk": "LOW"
+        }
+      ]
+    },
+    {
+      "id": "agfa-problem-mgmt",
+      "title": "Problem Management \u2014 PACS Recurring Heap Leak",
+      "subtitle": "PRB-AG-00018 \u00b7 INC0002101 + INC0002065 \u00b7 permanent code fix initiated",
+      "pillar": 2,
+      "icon": "\ud83d\udd01",
+      "appId": "pacs-app",
+      "chainId": "pacs-platform",
+      "pri": "P1",
+      "mttr": "Pattern eliminated",
+      "agents": 6,
+      "steps": [
+        {
+          "id": "s1",
+          "label": "Pattern Detection",
+          "icon": "\ud83d\udd0d",
+          "type": "auto",
+          "agent": "RCA Engine",
+          "summary": "2 PACS JVM heap incidents in 18 hours detected \u2014 recurring pattern confirmed",
+          "highlight": true,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Querying incident history: PACS JVM heap \u00b7 last 30 days",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "Pattern confirmed: INC0002065 (08:15) + INC0002101 (02:47) \u2014 same DICOM receiver leak",
+              "kind": "warn",
+              "t": 2000
+            },
+            {
+              "msg": "Root cause: object reference leak in DicomReceiverThread.java:412 \u00b7 code fix required",
+              "kind": "warn",
+              "t": 3500
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "label": "Problem Record Raised",
+          "icon": "\ud83d\udccb",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "PRB-AG-00018 raised in ServiceNow \u2014 both incidents linked \u00b7 full diagnostic bundle attached",
+          "highlight": true,
+          "duration": 3500,
+          "events": [
+            {
+              "msg": "PRB-AG-00018 created in ServiceNow \u00b7 linked: INC0002101, INC0002065",
+              "kind": "success",
+              "t": 1000
+            },
+            {
+              "msg": "Diagnostic bundle attached: heap dumps, thread traces, RCA report",
+              "kind": "info",
+              "t": 2500
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "label": "Fix Options",
+          "icon": "\ud83d\udc64",
+          "type": "hitl",
+          "agent": "HiTL Console",
+          "summary": "Problem Manager presented 3 options \u2014 Option 2 selected: permanent code fix + interim heap increase",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "Option 1: Increase heap to 16g (\u00a30 cost, buys 4 weeks) \u2014 interim only",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "Option 2: Permanent code fix DicomReceiverThread.java + heap to 12g (2 dev days)",
+              "kind": "info",
+              "t": 1500
+            },
+            {
+              "msg": "Option 3: Replace DICOM receiver with vendor patch (4 weeks, \u00a312K)",
+              "kind": "info",
+              "t": 2500
+            },
+            {
+              "msg": "\u2713 APPROVED: Option 2 \u2014 permanent code fix selected by Dr. Stefan M\u00fcller",
+              "kind": "success",
+              "t": 4500
+            }
+          ]
+        },
+        {
+          "id": "s4",
+          "label": "Handoff to CI/CD Pipeline",
+          "icon": "\ud83d\ude80",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "Fix requirement handed to Jenkins pipeline \u2014 control passed to AGFA release management",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "ServiceNow change CHG-8821 created \u2014 DicomReceiverThread.java object lifecycle fix",
+              "kind": "info",
+              "t": 1000
+            },
+            {
+              "msg": "Jenkins pipeline triggered \u2014 build CHG-8821-fix queued in AGFA release management",
+              "kind": "info",
+              "t": 2500
+            },
+            {
+              "msg": "\u26a1 Control passed to customer release pipeline \u2014 ZeroOps monitoring handoff complete",
+              "kind": "success",
+              "t": 4000
+            }
+          ]
+        },
+        {
+          "id": "s5",
+          "label": "KEDB & Monitoring",
+          "icon": "\ud83d\udcda",
+          "type": "auto",
+          "agent": "Change Validator",
+          "summary": "KEDB updated \u00b7 monitoring window active \u00b7 PRB-AG-00018 in controlled resolution",
+          "highlight": true,
+          "duration": 3000,
+          "events": [
+            {
+              "msg": "KEDB updated \u2014 DicomReceiverThread heap leak pattern documented",
+              "kind": "success",
+              "t": 1000
+            },
+            {
+              "msg": "30-day monitoring window active \u2014 auto-alert if pattern recurs before fix deployed",
+              "kind": "info",
+              "t": 2500
+            }
+          ]
+        }
+      ],
+      "blastRadius": "Recurring PACS outages \u2014 6 hospital sites each occurrence",
+      "reversibility": "HIGH \u2014 code fix via CI/CD, interim config patch applied",
+      "slaStatus": "Problem record raised \u00b7 code fix in pipeline \u00b7 pattern eliminated",
+      "outcome": {
+        "sla": "Pattern eliminated",
+        "result": "PRB-AG-00018 raised \u00b7 CHG-8821 handed to AI SDLC pipeline",
+        "mttr": "Pattern eliminated",
+        "saved": "2+ future P1s prevented",
+        "agents": "4 agents",
+        "autoSteps": "4/5 auto",
+        "hitlSteps": "1 HiTL gate"
+      },
+      "pillarLabel": "Pillar 2 \u00b7 Guardian \u00b7 One Human Gate",
+      "pillarColor": "#2563EB",
+      "incident": "PRB-AG-00018",
+      "riskScore": 22,
+      "category": "Problem Management \u00b7 CI/CD",
+      "whyHitl": "Raising a Problem record and initiating a code fix pipeline requires confirmation that the recurring pattern justifies permanent engineering effort. The decision to allocate development resource and trigger the AI SDLC pipeline requires a senior engineer or change manager to confirm. ZeroOps has prepared full evidence \u2014 two P1 incidents in 18 hours \u2014 for the decision.",
+      "remediationPlan": [
+        {
+          "n": 1,
+          "act": "Correlate INC0002101 and INC0002065 \u2014 confirm recurring pattern",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 2,
+          "act": "Human sign-off \u2014 confirm PRB-AG-00018 warrants permanent code fix",
+          "auto": false,
+          "risk": "MEDIUM"
+        },
+        {
+          "n": 3,
+          "act": "Raise PRB-AG-00018 in ServiceNow \u2014 link both incidents",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 4,
+          "act": "Trigger AI SDLC pipeline \u2014 DicomReceiverThread.java fix",
+          "auto": true,
+          "risk": "LOW"
+        },
+        {
+          "n": 5,
+          "act": "Hand off to Jenkins \u2014 CHG-8821 created and queued for deployment",
+          "auto": true,
+          "risk": "LOW"
+        }
+      ]
+    },
+    {
+      "id": "agfa-sap-batch",
+      "title": "SAP Batch Job Recovery \u2014 Finance & Procurement",
+      "subtitle": "INC0002103 \u00b7 SAP ERP Azure \u00b7 overnight batch stalled \u00b7 downstream blocked",
+      "pillar": 1,
+      "icon": "\ud83c\udfe2",
+      "appId": "sap-erp",
+      "chainId": "enterprise-it",
+      "pri": "P1",
+      "mttr": "22 min 14 sec",
+      "agents": 5,
+      "blastRadius": "Invoice generation \u00b7 Procurement approval \u00b7 Financial ledger feed \u00b7 Month-end reporting",
+      "reversibility": "HIGH \u2014 job reschedule fully reversible \u00b7 no data loss \u00b7 idempotent restart",
+      "slaStatus": "P1 4h SLA \u00b7 MTTR 22m 14s \u00b7 SLA MET",
+      "pillarLabel": "Pillar 1 \u00b7 Sentinel \u00b7 Autonomous",
+      "pillarColor": "#16A34A",
+      "outcome": {
+        "sla": "22m 14s \u2014 SLA MET",
+        "result": "SAP batch cleared \u2014 847 documents posted \u2014 finance & procurement restored",
+        "mttr": "22m 14s",
+        "saved": "~90 min vs BASIS on-call",
+        "agents": "5 agents",
+        "autoSteps": "6/6 auto",
+        "hitlSteps": "0 human gates"
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "label": "Alert Correlation",
+          "icon": "\ud83d\udd17",
+          "type": "auto",
+          "agent": "Alert Correlator",
+          "summary": "SAP batch queue depth anomaly detected \u2014 847 documents stalled \u00b7 INC0002103 raised",
+          "highlight": true,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Prometheus: sap_batch_queue_depth > 500 \u00b7 threshold breached at 02:14",
+              "kind": "info",
+              "t": 400
+            },
+            {
+              "msg": "Datadog: SAP work process utilisation 94% \u00b7 dialog pool saturated",
+              "kind": "warn",
+              "t": 1200
+            },
+            {
+              "msg": "Correlating 23 alerts \u2192 1 incident \u00b7 blast radius: finance + procurement",
+              "kind": "info",
+              "t": 2200
+            },
+            {
+              "msg": "INC0002103 raised \u2014 P1 \u00b7 SAP ERP Azure \u00b7 847 documents in queue",
+              "kind": "success",
+              "t": 3400
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "label": "Log Analysis",
+          "icon": "\ud83d\udccb",
+          "type": "auto",
+          "agent": "Log Analyzer",
+          "summary": "SM37 job log analysis \u2014 RFBIBL00 document posting job identified as stall point",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "Querying SAP application server logs \u2014 SM37 batch job history last 4h",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "Job RFBIBL00 (FI document posting) \u2014 status ACTIVE since 01:47 \u00b7 27 min no progress",
+              "kind": "warn",
+              "t": 1600
+            },
+            {
+              "msg": "Lock contention detected \u2014 BKPF/BSEG tables held by dialog process WP-04",
+              "kind": "warn",
+              "t": 2800
+            },
+            {
+              "msg": "Downstream jobs queued: RFDABL00 (AR), RFEBBU00 (bank statement), MM60 (procurement)",
+              "kind": "warn",
+              "t": 3800
+            },
+            {
+              "msg": "Root cause confirmed: dialog work process lock blocking background job",
+              "kind": "success",
+              "t": 4600
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "label": "Root Cause Analysis",
+          "icon": "\ud83d\udd0d",
+          "type": "auto",
+          "agent": "RCA Engine",
+          "summary": "Dialog work process WP-04 holding BKPF table lock \u00b7 27 minutes \u00b7 job cascade identified",
+          "highlight": true,
+          "duration": 5500,
+          "events": [
+            {
+              "msg": "Traversing SAP dependency graph \u2014 batch job \u2192 work process \u2192 table lock chain",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "WP-04 lock age: 27 min 14 sec \u00b7 origin: FI posting session user BATCH_FI",
+              "kind": "warn",
+              "t": 1800
+            },
+            {
+              "msg": "Cascade identified: RFBIBL00 \u2192 RFDABL00 \u2192 RFEBBU00 \u2192 MM60 all blocked",
+              "kind": "warn",
+              "t": 3000
+            },
+            {
+              "msg": "Pattern match: similar to INC0001987 (6 weeks ago) \u00b7 same WP lock pattern \u00b7 91% confidence",
+              "kind": "info",
+              "t": 4200
+            },
+            {
+              "msg": "Risk score: 17/100 \u00b7 Sentinel approved \u00b7 proceeding with autonomous remediation",
+              "kind": "success",
+              "t": 5200
+            }
+          ]
+        },
+        {
+          "id": "s4",
+          "label": "Work Process Release",
+          "icon": "\u26a1",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "Stale dialog session cancelled \u00b7 BKPF lock released \u00b7 batch queue begins draining",
+          "highlight": true,
+          "duration": 5000,
+          "events": [
+            {
+              "msg": "Connecting to SAP via RFC \u2014 SM04 session manager",
+              "kind": "info",
+              "t": 500
+            },
+            {
+              "msg": "Terminating stale dialog session BATCH_FI WP-04 \u2014 lock age 27 min \u00b7 safe to cancel",
+              "kind": "info",
+              "t": 1600
+            },
+            {
+              "msg": "Session cancelled \u00b7 BKPF/BSEG table locks released \u00b7 WP-04 free",
+              "kind": "success",
+              "t": 2800
+            },
+            {
+              "msg": "RFBIBL00 job resuming \u00b7 document posting restarted \u00b7 queue draining",
+              "kind": "success",
+              "t": 3800
+            },
+            {
+              "msg": "Work process pool: 94% \u2192 41% utilisation \u00b7 dialog and background balanced",
+              "kind": "success",
+              "t": 4600
+            }
+          ]
+        },
+        {
+          "id": "s5",
+          "label": "Downstream Validation",
+          "icon": "\ud83d\udd04",
+          "type": "auto",
+          "agent": "Remediation Agent",
+          "summary": "All 4 downstream jobs released \u00b7 847 documents processed \u00b7 finance and procurement flows restored",
+          "highlight": true,
+          "duration": 6000,
+          "events": [
+            {
+              "msg": "Monitoring downstream job cascade \u2014 RFDABL00, RFEBBU00, MM60 restarting",
+              "kind": "info",
+              "t": 600
+            },
+            {
+              "msg": "RFDABL00 (AR posting): ACTIVE \u00b7 processing 312 open items",
+              "kind": "success",
+              "t": 1800
+            },
+            {
+              "msg": "RFEBBU00 (bank statement): ACTIVE \u00b7 23 statements queued for import",
+              "kind": "success",
+              "t": 2800
+            },
+            {
+              "msg": "MM60 (procurement): ACTIVE \u00b7 47 purchase orders releasing for approval",
+              "kind": "success",
+              "t": 3800
+            },
+            {
+              "msg": "847 FI documents posted \u00b7 invoice generation unblocked \u00b7 ledger feed flowing",
+              "kind": "success",
+              "t": 4800
+            },
+            {
+              "msg": "All downstream processes confirmed healthy \u2014 data flowing end-to-end",
+              "kind": "success",
+              "t": 5600
+            }
+          ]
+        },
+        {
+          "id": "s6",
+          "label": "Prevention & Close",
+          "icon": "\u2705",
+          "type": "auto",
+          "agent": "Change Validator",
+          "summary": "Preventive monitoring rule added \u00b7 INC0002103 auto-closed \u00b7 KEDB updated",
+          "highlight": true,
+          "duration": 4000,
+          "events": [
+            {
+              "msg": "Validating SAP financial calendar \u2014 month-end close unaffected \u00b7 08:00 deadline safe",
+              "kind": "success",
+              "t": 800
+            },
+            {
+              "msg": "Adding SM04 lock age alert: trigger at 10 min (was unmonitored) \u00b7 prevents recurrence",
+              "kind": "info",
+              "t": 1800
+            },
+            {
+              "msg": "KEDB updated \u2014 WP lock pattern KB-AG-SAP-001 created",
+              "kind": "info",
+              "t": 2800
+            },
+            {
+              "msg": "INC0002103 auto-closed in ServiceNow \u00b7 MTTR: 22m 14s \u00b7 P1 SLA met",
+              "kind": "success",
+              "t": 3600
+            }
+          ]
+        }
+      ],
+      "incident": "INC0002103",
+      "riskScore": 17,
+      "category": "SAP ERP \u00b7 Batch Processing"
+    }
+  ]
+}

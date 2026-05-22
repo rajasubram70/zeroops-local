@@ -1,0 +1,1567 @@
+{
+  "incidents": [
+    {
+      "id": "INC0002103",
+      "pri": "P1",
+      "svc": "SAP ERP \u2014 Batch Processing",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "02:14",
+      "cat": "Performance",
+      "signal": "Prometheus + Datadog",
+      "hosting": "Azure",
+      "ci": "sap-app-prod-az01",
+      "sla": "4h \u2014 SLA MET (22m 14s)",
+      "chainId": "enterprise-it",
+      "appId": "sap-erp",
+      "desc": "SAP overnight batch processing stalled \u2014 847 FI documents queued. Dialog work process WP-04 holding BKPF/BSEG table lock for 27 minutes, blocking job cascade. Finance, AR, bank statement import and procurement approval all halted.",
+      "notes": "ZeroOps auto-resolved: stale session cancelled, lock released, all 4 downstream jobs restarted. 847 documents processed. Month-end close unaffected. SM04 lock age monitoring added to prevent recurrence.",
+      "intel": {
+        "rootCause": "SAP dialog work process WP-04 holding BKPF/BSEG table lock for 27 minutes \u2014 stale BATCH_FI session not released, blocking RFBIBL00 background job and cascading to 3 downstream jobs",
+        "agentConfidence": 91,
+        "recommendation": "Stale session cancelled autonomously. New SM04 lock age alert added at 10-minute threshold. KEDB updated KB-AG-SAP-001.",
+        "cause": {
+          "primary": "Stale dialog session BATCH_FI holding BKPF table lock \u2014 background job cascade blocked",
+          "conf": 91,
+          "mech": "SAP dialog work process WP-04 acquired a lock on the BKPF/BSEG tables during FI document posting. The session became unresponsive but did not release the lock. The background job RFBIBL00 (document posting) was waiting on this lock, causing a cascade: RFDABL00 (AR), RFEBBU00 (bank statements) and MM60 (procurement) all queued behind it.",
+          "chain": [
+            {
+              "node": "BATCH_FI Dialog Session",
+              "d": "Unresponsive \u2014 holding BKPF/BSEG lock for 27 min",
+              "s": "RED"
+            },
+            {
+              "node": "RFBIBL00 (FI Posting)",
+              "d": "Stalled \u2014 waiting on table lock \u2014 847 documents queued",
+              "s": "RED"
+            },
+            {
+              "node": "RFDABL00 / RFEBBU00 / MM60",
+              "d": "All blocked \u2014 cascade downstream jobs queued",
+              "s": "RED"
+            },
+            {
+              "node": "Finance & Procurement",
+              "d": "Invoice generation, bank import, PO approval all halted",
+              "s": "RED"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 02:14",
+              "v": "sap_batch_queue_depth 847 \u2014 threshold 500 breached"
+            },
+            {
+              "icon": "\ud83d\udc36",
+              "t": "Datadog \u00b7 02:14",
+              "v": "SAP work process utilisation 94% \u2014 dialog pool saturated"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "SAP SM37 \u00b7 02:15",
+              "v": "RFBIBL00 ACTIVE 27 min with no progress \u2014 lock wait confirmed"
+            },
+            {
+              "icon": "\ud83e\udd16",
+              "t": "RCA Engine \u00b7 02:16",
+              "v": "Pattern match: INC0001987 \u00b7 91% similarity \u00b7 same WP lock pattern"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001987",
+            "date": "6 weeks ago",
+            "sim": 91,
+            "res": "Manual SM04 session cancel by BASIS team",
+            "mttr": "1h 42m",
+            "out": "Temporary \u2014 no monitoring added",
+            "by": "Raj Patel"
+          },
+          {
+            "id": "INC0001821",
+            "date": "14 weeks ago",
+            "sim": 74,
+            "res": "SAP restart required \u2014 lock not released",
+            "mttr": "2h 18m",
+            "out": "Temporary",
+            "by": "Anna Fischer"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Detect queue depth breach",
+            "auto": true,
+            "cmd": "prometheus: sap_batch_queue_depth > 500",
+            "note": "Auto-detected \u2014 triggers at 500 documents"
+          },
+          {
+            "n": 2,
+            "title": "Identify stale lock via SM04",
+            "auto": true,
+            "cmd": "RFC call: SUSR_USER_LOGOFF \u00b7 SM04 session list",
+            "note": "Lock age > 10 min flagged as stale"
+          },
+          {
+            "n": 3,
+            "title": "Cancel stale dialog session",
+            "auto": true,
+            "cmd": "RFC: TH_DELETE_USER \u00b7 session BATCH_FI WP-04",
+            "note": "Risk score 17 \u2014 Sentinel approved"
+          },
+          {
+            "n": 4,
+            "title": "Validate lock release",
+            "auto": true,
+            "cmd": "SM12: confirm BKPF/BSEG locks cleared",
+            "note": "Confirm before checking downstream"
+          },
+          {
+            "n": 5,
+            "title": "Validate downstream jobs",
+            "auto": true,
+            "cmd": "SM37: confirm RFDABL00, RFEBBU00, MM60 ACTIVE",
+            "note": "All 4 jobs must be running"
+          },
+          {
+            "n": 6,
+            "title": "Add preventive alert",
+            "auto": true,
+            "cmd": "prometheus rule: sap_wp_lock_age_minutes > 10",
+            "note": "Prevents recurrence \u2014 was unmonitored"
+          }
+        ]
+      }
+    },
+    {
+      "id": "INC0002101",
+      "pri": "P1",
+      "svc": "IMPAX/EI App Server",
+      "status": "In Progress",
+      "by": "Liam Jennings",
+      "at": "02:47",
+      "cat": "Performance",
+      "hosting": "Partner DC",
+      "ci": "pacs-app-prod-01",
+      "sla": "4h \u2014 breached 18min",
+      "chainId": "pacs-platform",
+      "appId": "pacs-app",
+      "desc": "PACS application server JVM heap exhausted \u2014 DICOM receiver unresolved heap leak. 847 image retrievals failing. Radiology workflow impacted across 6 hospital sites.",
+      "notes": "Heap at 98%. OOM kills every 4-7 minutes. Rolling restart partial relief only. Code fix required in DICOM receiver thread pool.",
+      "intel": {
+        "rootCause": "PACS JVM heap exhausted \u2014 DICOM receiver thread pool object reference leak in DicomReceiverThread.java causing linear heap growth",
+        "agentConfidence": 91,
+        "recommendation": "Rolling restart with -Xmx12g patch applied. Code fix tracked in ServiceNow CHG-8821. 30-day monitoring window active.",
+        "cause": {
+          "primary": "DicomReceiverThread.java object reference leak \u2014 heap growing 0.8% per minute",
+          "conf": 91,
+          "mech": "DICOM receiver threads are not releasing dataset objects after processing. Linear heap growth of 0.8% per minute leads to OOM kills every 4-7 minutes. 6 hospital sites losing image retrieval capability.",
+          "chain": [
+            {
+              "node": "DICOM Receiver Thread",
+              "d": "Object references not released in finally block",
+              "s": "RED"
+            },
+            {
+              "node": "JVM Heap",
+              "d": "Growing 0.8%/min \u2014 reached 98% triggering OOM kill",
+              "s": "RED"
+            },
+            {
+              "node": "IMPAX App Server",
+              "d": "Pods restarting \u2014 DICOM retrieval failing",
+              "s": "RED"
+            },
+            {
+              "node": "6 Hospital Sites",
+              "d": "Radiologists unable to retrieve images \u2014 workflow halted",
+              "s": "RED"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 02:47",
+              "v": "heap_used_ratio > 0.95 on pacs-app-prod-01 \u2014 OOM kill imminent"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "Datadog APM \u00b7 02:45",
+              "v": "DICOM retrieval success rate dropped to 12% \u2014 847 failures"
+            },
+            {
+              "icon": "\ud83d\udd0d",
+              "t": "Elasticsearch \u00b7 02:44",
+              "v": "DicomReceiverThread FATAL \u2014 object retention leak pattern confirmed"
+            },
+            {
+              "icon": "\ud83e\udd16",
+              "t": "Alert Correlator \u00b7 02:47",
+              "v": "186 Prometheus alerts correlated \u2192 1 P1 incident raised"
+            },
+            {
+              "icon": "\ud83c\udfe5",
+              "t": "Dynatrace \u00b7 02:48",
+              "v": "6 hospital site connections degraded \u2014 radiology workflow impacted"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0002065",
+            "date": "Today 08:15",
+            "sim": 94,
+            "res": "Gateway restart and queue replay \u2014 847 messages delivered",
+            "mttr": "18m 22s",
+            "out": "Permanent \u2014 code fix scheduled",
+            "by": "ZeroOps AI"
+          },
+          {
+            "id": "INC0001998",
+            "date": "3 weeks ago",
+            "sim": 78,
+            "res": "JVM heap -Xmx increase as interim fix",
+            "mttr": "42m",
+            "out": "Temporary \u2014 recurred",
+            "by": "Liam Jennings"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Capture heap dump",
+            "auto": true,
+            "cmd": "kubectl exec pacs-app-prod-01 -- jmap -dump:format=b,file=/tmp/heap-INC0002101.hprof",
+            "note": "Preserve forensic evidence before restart"
+          },
+          {
+            "n": 2,
+            "title": "Rolling restart",
+            "auto": true,
+            "cmd": "kubectl rollout restart deployment/pacs-app --strategy=RollingUpdate",
+            "note": "Zero-downtime \u2014 one pod at a time"
+          },
+          {
+            "n": 3,
+            "title": "Apply heap config patch",
+            "auto": true,
+            "cmd": "kubectl patch configmap pacs-jvm-config --patch '{JVM_OPTS: -Xmx12g}'",
+            "note": "Interim relief while code fix developed"
+          },
+          {
+            "n": 4,
+            "title": "Validate all hospital sites",
+            "auto": true,
+            "cmd": "kubectl exec pacs-app-prod-01 -- curl -s /health",
+            "note": "Confirm all 6 sites restored"
+          },
+          {
+            "n": 5,
+            "title": "Create ServiceNow change request",
+            "auto": true,
+            "cmd": "ServiceNow POST /change/CHG-8821",
+            "note": "DicomReceiverThread.java permanent fix"
+          },
+          {
+            "n": 6,
+            "title": "Close INC0002101",
+            "auto": true,
+            "cmd": "ServiceNow PATCH INC0002101 state=Resolved",
+            "note": "Auto-close with resolution evidence attached"
+          }
+        ]
+      },
+      "signal": "Prometheus"
+    },
+    {
+      "id": "INC0002098",
+      "pri": "P1",
+      "svc": "HL7 Gateway",
+      "status": "Open",
+      "by": "Sofia Reyes",
+      "at": "02:14",
+      "cat": "Availability",
+      "hosting": "Partner DC",
+      "ci": "hl7-gateway-prod",
+      "sla": "4h \u2014 breached 2min",
+      "chainId": "integration-layer",
+      "appId": "hl7-gateway",
+      "desc": "HL7 ADT/ORM message queue backing up \u2014 2,847 messages unprocessed. Patient admission and order routing delayed across all connected hospital sites.",
+      "notes": "Consumer thread deadlock under morning peak load. Queue growing at 340 messages/min. Patient data flow blocked.",
+      "intel": {
+        "rootCause": "HL7 Gateway consumer thread deadlock \u2014 DB connection pool exhaustion under morning peak load causing 2,847 message queue backup",
+        "agentConfidence": 88,
+        "recommendation": "HiTL gateway restart approved. Queue replayed. DB connection pool increase to 50 recommended to prevent recurrence.",
+        "cause": {
+          "primary": "HL7 consumer thread deadlock \u2014 DB connection pool exhausted at 20 connections under peak load",
+          "conf": 88,
+          "mech": "Morning peak load of 340 HL7 messages/minute exceeded the DB connection pool limit of 20 connections. Threads entered deadlock waiting for connections. Queue backed up to 2,847 messages blocking all patient ADT/ORM flows.",
+          "chain": [
+            {
+              "node": "Morning Peak Load",
+              "d": "340 HL7 messages/min \u2014 70% above normal baseline",
+              "s": "AMBER"
+            },
+            {
+              "node": "DB Connection Pool",
+              "d": "20 connections exhausted \u2014 threads waiting on lock",
+              "s": "RED"
+            },
+            {
+              "node": "Consumer Thread Deadlock",
+              "d": "All 12 consumer threads BLOCKED",
+              "s": "RED"
+            },
+            {
+              "node": "HL7 Message Queue",
+              "d": "2,847 messages unprocessed \u2014 growing at 340/min",
+              "s": "RED"
+            },
+            {
+              "node": "Patient ADT/ORM Flow",
+              "d": "All hospital admission and order routing blocked",
+              "s": "RED"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Datadog \u00b7 02:14",
+              "v": "hl7_queue_depth > 2,000 \u2014 consumer threads not draining"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "Dynatrace \u00b7 02:13",
+              "v": "HL7 consumer threads BLOCKED \u2014 DB connection lock contention"
+            },
+            {
+              "icon": "\ud83d\udd0d",
+              "t": "Elasticsearch \u00b7 02:12",
+              "v": "Thread dump: 12/12 consumer threads in BLOCKED state"
+            },
+            {
+              "icon": "\ud83e\udd16",
+              "t": "Alert Correlator \u00b7 02:14",
+              "v": "P1 raised \u2014 patient data flow blocked across all sites"
+            },
+            {
+              "icon": "\u26a1",
+              "t": "RCA Engine \u00b7 02:16",
+              "v": "Root cause: DB pool exhaustion \u2014 matches INC0002065 pattern (88% sim)"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0002065",
+            "date": "Today 08:15",
+            "sim": 88,
+            "res": "Gateway restart and queue replay \u2014 same deadlock pattern",
+            "mttr": "18m 22s",
+            "out": "Temporary \u2014 recurred same day",
+            "by": "ZeroOps AI"
+          },
+          {
+            "id": "INC0001874",
+            "date": "6 weeks ago",
+            "sim": 71,
+            "res": "Gateway restart during maintenance window",
+            "mttr": "1h 12m",
+            "out": "Temporary \u2014 underlying pool config unchanged",
+            "by": "Sofia Reyes"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Confirm thread deadlock",
+            "auto": true,
+            "cmd": "kubectl exec hl7-gateway -- jstack | grep BLOCKED",
+            "note": "Verify deadlock before restart"
+          },
+          {
+            "n": 2,
+            "title": "HiTL approval for restart",
+            "auto": false,
+            "cmd": "ServiceNow HiTL \u2014 patient data flow impact",
+            "note": "Risk score 34 \u2014 approval required"
+          },
+          {
+            "n": 3,
+            "title": "Restart HL7 Gateway",
+            "auto": true,
+            "cmd": "kubectl rollout restart deployment/hl7-gateway",
+            "note": "Clears thread deadlock and connection pool"
+          },
+          {
+            "n": 4,
+            "title": "Replay message queue",
+            "auto": true,
+            "cmd": "hl7-replay --from-dead-letter --count 2847",
+            "note": "Deliver all queued messages in order"
+          },
+          {
+            "n": 5,
+            "title": "Validate HL7 success rate",
+            "auto": true,
+            "cmd": "datadog metric: hl7_success_rate > 99%",
+            "note": "Confirm normal processing restored"
+          },
+          {
+            "n": 6,
+            "title": "Close INC0002098",
+            "auto": true,
+            "cmd": "ServiceNow PATCH INC0002098 state=Resolved",
+            "note": "Attach queue replay confirmation"
+          }
+        ]
+      },
+      "signal": "Datadog"
+    },
+    {
+      "id": "INC0002095",
+      "pri": "P2",
+      "svc": "DICOM Store",
+      "status": "In Progress",
+      "by": "Raj Patel",
+      "at": "01:30",
+      "cat": "Capacity",
+      "hosting": "Partner DC",
+      "ci": "vna-archive-prod",
+      "sla": "8h \u2014 2h remaining",
+      "chainId": "archive-vna",
+      "appId": "vna-store",
+      "desc": "DICOM archive partition /vna at 91% capacity. Study ingest will fail at 95% \u2014 estimated 4 hours at current ingestion rate.",
+      "notes": "Auto-cleanup scheduled but insufficient. Emergency expansion or archive tier migration required.",
+      "intel": {
+        "rootCause": "DICOM archive partition /vna at 91% capacity \u2014 ingest failure imminent at 95% within 4 hours at current 2.4 TB/day rate",
+        "agentConfidence": 96,
+        "recommendation": "Emergency Azure Blob tier migration for studies > 2 years. NFS expansion via Azure NetApp Files as secondary option.",
+        "cause": {
+          "primary": "VNA storage partition /vna at 91% \u2014 breach at 95% in approximately 4 hours",
+          "conf": 96,
+          "mech": "DICOM study ingest at 2.4 TB/day has exhausted scheduled cleanup cycles. Partition will reach 95% threshold \u2014 at which point all new study ingest will fail \u2014 within 4 hours at current rate.",
+          "chain": [
+            {
+              "node": "DICOM Ingest Rate",
+              "d": "2.4 TB/day \u2014 exceeding cleanup capacity",
+              "s": "AMBER"
+            },
+            {
+              "node": "Partition /vna",
+              "d": "91% full \u2014 4h to breach at current rate",
+              "s": "AMBER"
+            },
+            {
+              "node": "Study Ingest",
+              "d": "Will fail at 95% \u2014 radiology workflow blocked",
+              "s": "RED"
+            },
+            {
+              "node": "Archive Tier",
+              "d": "Old studies not migrated \u2014 no headroom created",
+              "s": "AMBER"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 01:30",
+              "v": "vna_partition_used_ratio 0.91 \u2014 above 0.90 critical threshold"
+            },
+            {
+              "icon": "\ud83d\udcc8",
+              "t": "Capacity Planner \u00b7 01:31",
+              "v": "Growth trajectory: breach at 95% in 3.8 hours at 2.4TB/day"
+            },
+            {
+              "icon": "\ud83d\uddc4",
+              "t": "Azure Monitor \u00b7 01:32",
+              "v": "Azure Blob tier eligible studies: 47TB \u2014 immediate migration available"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001921",
+            "date": "8 weeks ago",
+            "sim": 91,
+            "res": "Emergency NFS expansion \u2014 10TB added",
+            "mttr": "2h 14m",
+            "out": "Temporary \u2014 no archive tiering implemented",
+            "by": "Raj Patel"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Trigger Azure Blob migration",
+            "auto": false,
+            "cmd": "azure-cli storage tier --studies >2yr --target cool",
+            "note": "HiTL required \u2014 data movement operation"
+          },
+          {
+            "n": 2,
+            "title": "Monitor partition headroom",
+            "auto": true,
+            "cmd": "prometheus query: vna_partition_used_ratio",
+            "note": "Alert if crosses 93% before migration completes"
+          },
+          {
+            "n": 3,
+            "title": "NFS expansion if needed",
+            "auto": false,
+            "cmd": "azure netapp files volume expand --size +10TB",
+            "note": "Secondary option if migration insufficient"
+          },
+          {
+            "n": 4,
+            "title": "Update capacity thresholds",
+            "auto": true,
+            "cmd": "prometheus alert: warn@80% critical@90%",
+            "note": "Earlier warning at 80% gives 8-day lead time"
+          }
+        ]
+      },
+      "signal": "Prometheus"
+    },
+    {
+      "id": "INC0002092",
+      "pri": "P2",
+      "svc": "RUBEE Orchestrator",
+      "status": "In Progress",
+      "by": "Anna Fischer",
+      "at": "00:55",
+      "cat": "Performance",
+      "hosting": "Partner DC",
+      "ci": "rubee-orch-prod",
+      "sla": "8h \u2014 4h remaining",
+      "chainId": "clinical-workflow",
+      "appId": "rubee-orch",
+      "desc": "RUBEE Orchestrator thread pool 85% saturated at morning peak. Worklist distribution to radiologists delayed by 8-12 minutes.",
+      "notes": "Thread pool ceiling 200 workers. Peak load hitting 170+. Auto-scale config not applied after last maintenance window.",
+      "intel": {
+        "rootCause": "RUBEE Orchestrator thread pool 85% saturated \u2014 auto-scale config not applied after last maintenance window",
+        "agentConfidence": 87,
+        "recommendation": "Apply Kubernetes HPA for RUBEE deployment. Immediate thread pool increase to 400 pending HiTL approval.",
+        "cause": {
+          "primary": "RUBEE thread pool ceiling 200 workers \u2014 auto-scale config removed during maintenance",
+          "conf": 87,
+          "mech": "During last maintenance window the Kubernetes HPA config was not reapplied. Thread pool ceiling of 200 workers is insufficient for morning peak of 170+ concurrent worklist requests. Radiologist worklist distribution delayed 8-12 minutes.",
+          "chain": [
+            {
+              "node": "Maintenance Window",
+              "d": "HPA config not reapplied \u2014 auto-scale disabled",
+              "s": "AMBER"
+            },
+            {
+              "node": "Morning Peak Load",
+              "d": "170/200 workers active \u2014 85% saturation",
+              "s": "AMBER"
+            },
+            {
+              "node": "Worklist Distribution",
+              "d": "8-12 minute delay \u2014 radiologists waiting",
+              "s": "AMBER"
+            },
+            {
+              "node": "Radiology Throughput",
+              "d": "Report turnaround time increasing",
+              "s": "AMBER"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Dynatrace \u00b7 00:55",
+              "v": "rubee_thread_pool_utilisation 85% \u2014 above 80% alert threshold"
+            },
+            {
+              "icon": "\u23f1",
+              "t": "Datadog APM \u00b7 00:56",
+              "v": "Worklist distribution latency 8.4 min \u2014 SLA is 2 min"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "Elasticsearch \u00b7 00:57",
+              "v": "RUBEE worker thread queue depth growing \u2014 HPA not active"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001988",
+            "date": "5 weeks ago",
+            "sim": 84,
+            "res": "Manual thread pool increase to 300 \u2014 resolved within 1h",
+            "mttr": "58m",
+            "out": "Temporary \u2014 HPA still not applied",
+            "by": "Anna Fischer"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Increase thread pool ceiling",
+            "auto": false,
+            "cmd": "kubectl patch deployment rubee-orch --patch '{maxWorkers: 400}'",
+            "note": "HiTL required \u2014 service configuration change"
+          },
+          {
+            "n": 2,
+            "title": "Apply HPA config",
+            "auto": true,
+            "cmd": "kubectl apply -f rubee-hpa.yaml",
+            "note": "Prevents recurrence \u2014 scales on CPU > 70%"
+          },
+          {
+            "n": 3,
+            "title": "Validate worklist latency",
+            "auto": true,
+            "cmd": "datadog metric: rubee_worklist_latency < 120s",
+            "note": "Confirm distribution back within SLA"
+          }
+        ]
+      },
+      "signal": "Dynatrace"
+    },
+    {
+      "id": "INC0002089",
+      "pri": "P2",
+      "svc": "Long-Term Archive",
+      "status": "Open",
+      "by": "Liam Jennings",
+      "at": "00:10",
+      "cat": "Data Integrity",
+      "hosting": "Azure",
+      "ci": "lta-replication-prod",
+      "sla": "8h \u2014 5h remaining",
+      "chainId": "archive-vna",
+      "appId": "lta-archive",
+      "desc": "VNA archive replication lag 14 seconds \u2014 threshold is 5 seconds. Study retrieval from long-term archive intermittently failing for studies older than 2 years.",
+      "notes": "Replication slot accumulating WAL. Similar to INC0002065 pattern \u2014 inactive slot not cleaned up after maintenance.",
+      "intel": {
+        "rootCause": "PostgreSQL replication slot accumulating WAL \u2014 inactive slot left after maintenance causing 14-second replication lag",
+        "agentConfidence": 92,
+        "recommendation": "Drop inactive replication slot, trigger CHECKPOINT, monitor lag return to < 5 seconds.",
+        "cause": {
+          "primary": "Inactive PostgreSQL replication slot accumulating WAL \u2014 lag 14s vs 5s SLA",
+          "conf": 92,
+          "mech": "An inactive replication slot was left after the last maintenance window. PostgreSQL retains WAL segments for all active slots \u2014 including inactive ones. WAL accumulation is causing replication lag of 14 seconds, intermittently blocking retrieval of studies older than 2 years.",
+          "chain": [
+            {
+              "node": "Maintenance Window",
+              "d": "Replication slot not cleaned up \u2014 left inactive",
+              "s": "AMBER"
+            },
+            {
+              "node": "WAL Accumulation",
+              "d": "PostgreSQL retaining WAL for inactive slot",
+              "s": "AMBER"
+            },
+            {
+              "node": "Replication Lag",
+              "d": "14 seconds \u2014 SLA is 5 seconds",
+              "s": "AMBER"
+            },
+            {
+              "node": "LTA Retrieval",
+              "d": "Studies > 2 years intermittently failing",
+              "s": "AMBER"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 00:10",
+              "v": "pg_replication_lag_seconds 14.2 \u2014 above 5s SLA threshold"
+            },
+            {
+              "icon": "\ud83d\uddc4",
+              "t": "Elasticsearch \u00b7 00:11",
+              "v": "pg_replication_slots: slot_name=lta_replica active=false \u2014 WAL accumulating"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "Datadog \u00b7 00:12",
+              "v": "LTA study retrieval: 34% failure rate on studies older than 2 years"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0002031",
+            "date": "4 weeks ago",
+            "sim": 96,
+            "res": "Dropped inactive slot, CHECKPOINT \u2014 lag resolved in 8 min",
+            "mttr": "12m",
+            "out": "Permanent \u2014 slot monitoring alert added",
+            "by": "ZeroOps AI"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Identify inactive slot",
+            "auto": true,
+            "cmd": "psql: SELECT slot_name, active FROM pg_replication_slots WHERE active=false",
+            "note": "Confirm slot is genuinely inactive"
+          },
+          {
+            "n": 2,
+            "title": "Drop inactive slot",
+            "auto": true,
+            "cmd": "psql: SELECT pg_drop_replication_slot('lta_replica')",
+            "note": "Risk score 18 \u2014 auto-approved"
+          },
+          {
+            "n": 3,
+            "title": "Trigger CHECKPOINT",
+            "auto": true,
+            "cmd": "psql: CHECKPOINT",
+            "note": "Flush WAL backlog \u2014 lag should resolve within 10 min"
+          },
+          {
+            "n": 4,
+            "title": "Monitor replication lag",
+            "auto": true,
+            "cmd": "prometheus: pg_replication_lag_seconds < 5",
+            "note": "Confirm return to SLA within 15 min"
+          }
+        ]
+      },
+      "signal": "Prometheus"
+    },
+    {
+      "id": "INC0002086",
+      "pri": "P3",
+      "svc": "Worklist Engine",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "22:30",
+      "cat": "Performance",
+      "hosting": "Partner DC",
+      "ci": "worklist-engine-prod",
+      "sla": "SLA Met",
+      "chainId": "clinical-workflow",
+      "appId": "worklist-engine",
+      "desc": "Morning worklist queue depth reached 1,204 studies \u2014 above 1,000 alert threshold. Auto-rebalanced across 3 reading stations.",
+      "notes": "ZeroOps auto-resolved: rebalanced queue in 4 min 22 sec. No radiologist impact.",
+      "intel": {
+        "rootCause": "Worklist queue depth reached 1,204 studies \u2014 morning peak exceeded single reading station capacity. Auto-rebalanced by ZeroOps.",
+        "agentConfidence": 99,
+        "recommendation": "Resolved autonomously. Consider pre-emptive rebalancing trigger at 800 studies to provide earlier relief.",
+        "cause": {
+          "primary": "Worklist queue depth 1,204 \u2014 morning peak overwhelmed single station assignment",
+          "conf": 99,
+          "mech": "Morning radiology peak caused single reading station to accumulate 1,204 studies in queue. ZeroOps detected the depth breach and auto-rebalanced across 3 reading stations in 4 minutes 22 seconds. No radiologist impact.",
+          "chain": [
+            {
+              "node": "Morning Radiology Peak",
+              "d": "Study volume 3x normal \u2014 single station assignment",
+              "s": "AMBER"
+            },
+            {
+              "node": "Queue Depth 1,204",
+              "d": "Above 1,000 alert threshold \u2014 action triggered",
+              "s": "AMBER"
+            },
+            {
+              "node": "ZeroOps Auto-Rebalance",
+              "d": "Redistributed across 3 stations in 4m 22s",
+              "s": "GREEN"
+            },
+            {
+              "node": "Resolution",
+              "d": "Queue depth normalised \u2014 no radiologist impact",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 22:30",
+              "v": "worklist_queue_depth 1,204 \u2014 above 1,000 alert threshold"
+            },
+            {
+              "icon": "\ud83e\udd16",
+              "t": "Alert Correlator \u00b7 22:30",
+              "v": "Auto-rebalance triggered \u2014 distributing across 3 reading stations"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 22:34",
+              "v": "Queue depth 412 \u2014 within normal range. Auto-resolved."
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001967",
+            "date": "2 weeks ago",
+            "sim": 89,
+            "res": "Auto-rebalanced by ZeroOps \u2014 3m 44s",
+            "mttr": "3m 44s",
+            "out": "Permanent \u2014 auto-rebalance policy active",
+            "by": "ZeroOps AI"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Detect queue depth breach",
+            "auto": true,
+            "cmd": "prometheus alert: worklist_queue_depth > 1000",
+            "note": "ZeroOps triggered automatically"
+          },
+          {
+            "n": 2,
+            "title": "Rebalance across stations",
+            "auto": true,
+            "cmd": "rubee-cli rebalance --stations 3 --strategy=round-robin",
+            "note": "Auto-approved \u2014 risk score 8"
+          },
+          {
+            "n": 3,
+            "title": "Validate queue depth",
+            "auto": true,
+            "cmd": "prometheus: worklist_queue_depth < 500",
+            "note": "Confirm normalised \u2014 close ticket"
+          }
+        ]
+      },
+      "signal": "Datadog"
+    },
+    {
+      "id": "INC0002083",
+      "pri": "P3",
+      "svc": "FHIR R4 API",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "20:15",
+      "cat": "Availability",
+      "hosting": "Azure",
+      "ci": "fhir-api-prod",
+      "sla": "SLA Met",
+      "chainId": "integration-layer",
+      "appId": "fhir-api",
+      "desc": "FHIR R4 API returning 503 errors on /ImagingStudy endpoint. 47 API consumers affected for 6 minutes.",
+      "notes": "ZeroOps auto-resolved: pod restart triggered in 3 min 18 sec. Root cause: memory pressure from large DICOM metadata payload.",
+      "intel": {
+        "rootCause": "FHIR R4 API pod OOMKill \u2014 memory pressure from large DICOM metadata payload causing 503 errors on /ImagingStudy endpoint",
+        "agentConfidence": 94,
+        "recommendation": "Pod restarted \u2014 resolved. Memory limit increase from 512Mi to 1Gi recommended to prevent recurrence.",
+        "cause": {
+          "primary": "FHIR API pod OOMKilled \u2014 large DICOM metadata payload exceeded 512Mi memory limit",
+          "conf": 94,
+          "mech": "A large DICOM metadata payload on the /ImagingStudy endpoint caused the FHIR API pod to exceed its 512Mi memory limit. OOMKill triggered. ZeroOps detected the pod failure and executed an automatic restart in 3 minutes 18 seconds.",
+          "chain": [
+            {
+              "node": "Large DICOM Payload",
+              "d": "ImagingStudy query returning metadata for 2,400+ studies",
+              "s": "AMBER"
+            },
+            {
+              "node": "Memory Limit 512Mi",
+              "d": "Pod exceeded limit \u2014 OOMKill triggered",
+              "s": "RED"
+            },
+            {
+              "node": "FHIR API 503 Errors",
+              "d": "47 API consumers affected for 6 minutes",
+              "s": "RED"
+            },
+            {
+              "node": "ZeroOps Pod Restart",
+              "d": "Detected and restarted in 3m 18s",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 20:15",
+              "v": "fhir_api_error_rate 100% \u2014 pod OOMKilled"
+            },
+            {
+              "icon": "\ud83e\udd16",
+              "t": "Alert Correlator \u00b7 20:15",
+              "v": "FHIR API 503 errors \u2014 pod restart triggered automatically"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 20:18",
+              "v": "FHIR API availability 99.97% restored \u2014 47 consumers unblocked"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001844",
+            "date": "3 weeks ago",
+            "sim": 82,
+            "res": "Pod restart \u2014 same OOMKill pattern on large payload",
+            "mttr": "8m",
+            "out": "Temporary \u2014 memory limit unchanged",
+            "by": "ZeroOps AI"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Detect OOMKill",
+            "auto": true,
+            "cmd": "kubectl get events | grep OOMKilled",
+            "note": "Auto-detected by Alert Correlator"
+          },
+          {
+            "n": 2,
+            "title": "Restart FHIR API pod",
+            "auto": true,
+            "cmd": "kubectl rollout restart deployment/fhir-api",
+            "note": "Risk score 12 \u2014 fully autonomous"
+          },
+          {
+            "n": 3,
+            "title": "Increase memory limit",
+            "auto": true,
+            "cmd": "kubectl patch deployment fhir-api --patch '{resources: {limits: {memory: 1Gi}}}'",
+            "note": "Prevents recurrence \u2014 applied post-restart"
+          }
+        ]
+      },
+      "signal": "Datadog"
+    },
+    {
+      "id": "INC0002080",
+      "pri": "P2",
+      "svc": "AI Inference Engine",
+      "status": "Open",
+      "by": "Anna Fischer",
+      "at": "19:45",
+      "cat": "Performance",
+      "hosting": "Azure",
+      "ci": "ai-inference-prod",
+      "sla": "8h \u2014 6h remaining",
+      "chainId": "radiology-ai",
+      "appId": "ai-inference",
+      "desc": "Radiology AI inference latency increased from 140ms to 890ms. GPU memory fragmentation after 72h continuous operation. Auto-triage accuracy dropping.",
+      "notes": "Scheduled GPU restart needed. Latency SLA is 200ms. Currently at 890ms \u2014 impacting radiologist workflow.",
+      "intel": {
+        "rootCause": "Radiology AI GPU memory fragmentation after 72 hours continuous operation \u2014 inference latency increased from 140ms to 890ms",
+        "agentConfidence": 89,
+        "recommendation": "Scheduled GPU restart during low-activity window (02:00-04:00). Implement 72h auto-restart schedule to prevent recurrence.",
+        "cause": {
+          "primary": "GPU memory fragmentation after 72h continuous operation \u2014 latency 890ms vs 200ms SLA",
+          "conf": 89,
+          "mech": "The AI Inference Engine GPU accumulates memory fragmentation during continuous operation. After 72 hours without restart, fragmentation causes inference latency to increase from baseline 140ms to 890ms \u2014 4.5x above the 200ms SLA. A scheduled restart during low-activity hours defragments GPU memory.",
+          "chain": [
+            {
+              "node": "72h Continuous Operation",
+              "d": "GPU memory fragmentation accumulating",
+              "s": "AMBER"
+            },
+            {
+              "node": "GPU Memory 94% Fragmented",
+              "d": "Effective available memory severely reduced",
+              "s": "AMBER"
+            },
+            {
+              "node": "Inference Latency 890ms",
+              "d": "4.5x above 200ms SLA \u2014 radiologist AI triage impacted",
+              "s": "AMBER"
+            },
+            {
+              "node": "AI Accuracy 94.2%",
+              "d": "Accuracy within range \u2014 latency only, not accuracy",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 19:45",
+              "v": "ai_inference_latency_p99 890ms \u2014 SLA 200ms (4.5x breach)"
+            },
+            {
+              "icon": "\ud83e\udde0",
+              "t": "Datadog APM \u00b7 19:46",
+              "v": "GPU memory fragmentation 94% \u2014 72h uptime confirmed"
+            },
+            {
+              "icon": "\ud83d\udcc8",
+              "t": "Capacity Planner \u00b7 19:47",
+              "v": "Pattern: latency degrades linearly after 60h \u2014 schedule restart at 72h"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001901",
+            "date": "3 weeks ago",
+            "sim": 97,
+            "res": "Scheduled GPU restart \u2014 latency restored to 140ms",
+            "mttr": "12m",
+            "out": "Temporary \u2014 no auto-restart schedule in place",
+            "by": "Anna Fischer"
+          },
+          {
+            "id": "INC0001834",
+            "date": "6 weeks ago",
+            "sim": 95,
+            "res": "Emergency GPU restart \u2014 same fragmentation pattern",
+            "mttr": "18m",
+            "out": "Temporary \u2014 recurring every 72h",
+            "by": "Anna Fischer"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Schedule restart window",
+            "auto": true,
+            "cmd": "cron: kubectl rollout restart deployment/ai-inference at 02:00",
+            "note": "Low-activity window \u2014 02:00-04:00"
+          },
+          {
+            "n": 2,
+            "title": "GPU restart",
+            "auto": true,
+            "cmd": "kubectl rollout restart deployment/ai-inference",
+            "note": "Risk score 22 \u2014 auto-approved"
+          },
+          {
+            "n": 3,
+            "title": "Validate inference latency",
+            "auto": true,
+            "cmd": "prometheus: ai_inference_latency_p99 < 200ms",
+            "note": "Confirm return to baseline 140ms"
+          },
+          {
+            "n": 4,
+            "title": "Apply 72h restart schedule",
+            "auto": true,
+            "cmd": "kubectl apply -f ai-inference-restart-cronjob.yaml",
+            "note": "Prevents recurrence permanently"
+          }
+        ]
+      },
+      "signal": "Prometheus"
+    },
+    {
+      "id": "INC0002077",
+      "pri": "P1",
+      "svc": "Multi-Tenant API",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "18:22",
+      "cat": "Availability",
+      "hosting": "Azure",
+      "ci": "api-gateway-prod",
+      "sla": "SLA Met",
+      "chainId": "integration-layer",
+      "appId": "api-gateway",
+      "desc": "Multi-tenant API rate limiter misconfiguration causing 429 errors for 3 hospital tenant namespaces. 312 API calls rejected.",
+      "notes": "ZeroOps auto-resolved: rate limit config corrected in 8 min 44 sec. Root cause: config drift after last deployment.",
+      "intel": {
+        "rootCause": "Multi-tenant API rate limiter misconfiguration \u2014 config drift after deployment caused 429 errors for 3 hospital tenant namespaces",
+        "agentConfidence": 97,
+        "recommendation": "Rate limit config corrected. Config drift monitoring enabled. GitOps deployment validation recommended.",
+        "cause": {
+          "primary": "API rate limiter config drift post-deployment \u2014 3 tenant namespaces incorrectly throttled",
+          "conf": 97,
+          "mech": "A deployment of the API Gateway introduced a rate limiter config that incorrectly throttled 3 hospital tenant namespaces to 10 requests/minute instead of 1,000. ZeroOps detected the 429 error pattern and corrected the config automatically.",
+          "chain": [
+            {
+              "node": "API Gateway Deployment",
+              "d": "Rate limiter config overwritten \u2014 3 namespaces affected",
+              "s": "RED"
+            },
+            {
+              "node": "429 Errors",
+              "d": "312 API calls rejected \u2014 hospital integrations failing",
+              "s": "RED"
+            },
+            {
+              "node": "ZeroOps Config Correction",
+              "d": "Rate limit restored to 1,000/min in 8m 44s",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Datadog \u00b7 18:22",
+              "v": "api_error_rate_429 > 50% for 3 tenant namespaces"
+            },
+            {
+              "icon": "\ud83d\udd0d",
+              "t": "RCA Engine \u00b7 18:23",
+              "v": "Config drift detected \u2014 rate_limit changed from 1000 to 10 post-deployment"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 18:31",
+              "v": "Rate limit restored \u2014 429 errors cleared, all tenants operational"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001756",
+            "date": "10 weeks ago",
+            "sim": 79,
+            "res": "Manual config rollback \u2014 took 1h 22m to diagnose",
+            "mttr": "1h 22m",
+            "out": "Temporary \u2014 drift detection not in place",
+            "by": "Raj Patel"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Identify affected namespaces",
+            "auto": true,
+            "cmd": "kubectl get configmap api-rate-limits -o yaml | grep rateLimit",
+            "note": "Compare against GitOps baseline"
+          },
+          {
+            "n": 2,
+            "title": "Restore rate limit config",
+            "auto": true,
+            "cmd": "kubectl patch configmap api-rate-limits --patch '{rate_limit: 1000}'",
+            "note": "Risk score 14 \u2014 auto-approved"
+          },
+          {
+            "n": 3,
+            "title": "Enable config drift monitoring",
+            "auto": true,
+            "cmd": "zeroops drift-monitor enable --namespace api-gateway",
+            "note": "Alerts on any future config divergence from baseline"
+          }
+        ]
+      },
+      "signal": "Datadog"
+    },
+    {
+      "id": "INC0002074",
+      "pri": "P3",
+      "svc": "DICOM Router",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "16:00",
+      "cat": "Config",
+      "hosting": "Partner DC",
+      "ci": "dicom-router-prod",
+      "sla": "SLA Met",
+      "chainId": "pacs-platform",
+      "appId": "dicom-router",
+      "desc": "DICOM router AE title misconfiguration after network maintenance \u2014 23 studies misrouted to incorrect reading station.",
+      "notes": "ZeroOps auto-resolved: AE title mapping corrected, misrouted studies redelivered in 6 min 12 sec.",
+      "intel": {
+        "rootCause": "DICOM router AE title misconfiguration after network maintenance \u2014 23 studies routed to incorrect reading station",
+        "agentConfidence": 97,
+        "recommendation": "AE title mapping corrected and validated. Post-maintenance config verification checklist recommended.",
+        "cause": {
+          "primary": "DICOM AE title mapping corrupted post-network maintenance \u2014 studies misrouted",
+          "conf": 97,
+          "mech": "Network maintenance reset the DICOM router AE title mapping table. 23 studies were routed to an incorrect reading station before ZeroOps detected the pattern. Misrouted studies were redelivered after AE title correction.",
+          "chain": [
+            {
+              "node": "Network Maintenance",
+              "d": "AE title mapping table reset to defaults",
+              "s": "AMBER"
+            },
+            {
+              "node": "Misrouted Studies",
+              "d": "23 studies sent to incorrect reading station",
+              "s": "AMBER"
+            },
+            {
+              "node": "ZeroOps Detection",
+              "d": "AE title mismatch detected in DICOM router logs",
+              "s": "GREEN"
+            },
+            {
+              "node": "Resolution",
+              "d": "Mapping corrected \u2014 23 studies redelivered in 6m 12s",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udccb",
+              "t": "Prometheus \u00b7 16:00",
+              "v": "dicom_routing_errors > 0 \u2014 AE title mismatch pattern detected"
+            },
+            {
+              "icon": "\ud83d\udd0d",
+              "t": "RCA Engine \u00b7 16:01",
+              "v": "AE title mapping diverged from CMDB baseline post-maintenance"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 16:06",
+              "v": "23 misrouted studies redelivered \u2014 routing restored to baseline"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001698",
+            "date": "8 weeks ago",
+            "sim": 88,
+            "res": "AE title mapping restored from CMDB baseline",
+            "mttr": "22m",
+            "out": "Permanent \u2014 baseline validation added",
+            "by": "ZeroOps AI"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Detect AE title mismatch",
+            "auto": true,
+            "cmd": "dicom-router validate --against cmdb-baseline",
+            "note": "Identify diverged AE title entries"
+          },
+          {
+            "n": 2,
+            "title": "Restore AE title mapping",
+            "auto": true,
+            "cmd": "dicom-router restore --from-cmdb",
+            "note": "Risk score 11 \u2014 fully autonomous"
+          },
+          {
+            "n": 3,
+            "title": "Redeliver misrouted studies",
+            "auto": true,
+            "cmd": "dicom-router reroute --studies 23 --destination correct-station",
+            "note": "Deliver all 23 studies to correct station"
+          },
+          {
+            "n": 4,
+            "title": "Validate routing accuracy",
+            "auto": true,
+            "cmd": "prometheus: dicom_routing_errors == 0",
+            "note": "Confirm no further misrouting"
+          }
+        ]
+      },
+      "signal": "Prometheus"
+    },
+    {
+      "id": "INC0002071",
+      "pri": "P2",
+      "svc": "IMPAX/EI App Server",
+      "status": "Resolved",
+      "by": "Raj Patel",
+      "at": "14:30",
+      "cat": "Security",
+      "hosting": "Partner DC",
+      "ci": "pacs-app-prod-01",
+      "sla": "SLA Met",
+      "chainId": "pacs-platform",
+      "appId": "pacs-app",
+      "desc": "CVE-2024-9812 identified in DICOM Toolkit dependency. Patch assessment and controlled upgrade required within 72h compliance window.",
+      "notes": "Resolved: patch applied via controlled change window. Change Validator auto-approved risk score 18/100.",
+      "intel": {
+        "rootCause": "CVE-2024-9812 identified in DICOM Toolkit dependency \u2014 patch assessment and controlled upgrade required within 72h compliance window",
+        "agentConfidence": 99,
+        "recommendation": "Patch applied via controlled change window. Change Validator confirmed clean deployment. No further action required.",
+        "cause": {
+          "primary": "CVE-2024-9812 \u2014 CVSS 7.8 HIGH \u2014 DICOM Toolkit v3.4.1 arbitrary code execution vulnerability",
+          "conf": 99,
+          "mech": "Security scan identified CVE-2024-9812 in DICOM Toolkit v3.4.1 \u2014 a high-severity arbitrary code execution vulnerability. Compliance policy requires patch within 72 hours. ZeroOps prepared patch assessment and coordinated controlled upgrade via Change Validator.",
+          "chain": [
+            {
+              "node": "Security Scan",
+              "d": "CVE-2024-9812 CVSS 7.8 HIGH detected in DICOM Toolkit",
+              "s": "RED"
+            },
+            {
+              "node": "Compliance Window",
+              "d": "72-hour patch requirement \u2014 clock started 14:30",
+              "s": "AMBER"
+            },
+            {
+              "node": "Controlled Upgrade",
+              "d": "ZeroOps coordinated patch via change window",
+              "s": "GREEN"
+            },
+            {
+              "node": "Resolution",
+              "d": "DICOM Toolkit v3.4.2 deployed \u2014 vulnerability closed",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udd12",
+              "t": "Dynatrace \u00b7 14:30",
+              "v": "CVE-2024-9812 detected in dicom-toolkit:3.4.1 \u2014 CVSS 7.8 HIGH"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "RCA Engine \u00b7 14:31",
+              "v": "Patch v3.4.2 available \u2014 risk score 18 \u2014 controlled upgrade recommended"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 15:44",
+              "v": "Patch deployed successfully \u2014 CVE-2024-9812 closed \u2014 compliance maintained"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001812",
+            "date": "12 weeks ago",
+            "sim": 76,
+            "res": "CVE patched via controlled change window",
+            "mttr": "1h 14m",
+            "out": "Permanent \u2014 patch deployed",
+            "by": "Raj Patel"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Assess patch availability",
+            "auto": true,
+            "cmd": "docker pull dicom-toolkit:3.4.2 && scan",
+            "note": "Confirm patch resolves CVE-2024-9812"
+          },
+          {
+            "n": 2,
+            "title": "Deploy via change window",
+            "auto": true,
+            "cmd": "kubectl set image deployment/pacs-app dicom-toolkit=3.4.2",
+            "note": "Risk score 18 \u2014 auto-approved"
+          },
+          {
+            "n": 3,
+            "title": "Validate clean deployment",
+            "auto": true,
+            "cmd": "trivy scan pacs-app:latest | grep CVE-2024-9812",
+            "note": "Confirm vulnerability closed"
+          },
+          {
+            "n": 4,
+            "title": "Update compliance record",
+            "auto": true,
+            "cmd": "ServiceNow CMDB: patch_status=compliant",
+            "note": "Record within 72h window"
+          }
+        ]
+      },
+      "signal": "Dynatrace"
+    },
+    {
+      "id": "INC0002068",
+      "pri": "P3",
+      "svc": "Compression Engine",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "11:00",
+      "cat": "Performance",
+      "hosting": "Partner DC",
+      "ci": "compression-engine-prod",
+      "sla": "SLA Met",
+      "chainId": "pacs-platform",
+      "appId": "compression-engine",
+      "desc": "DICOM image compression throughput dropped 60% after overnight batch. Worker thread starvation under concurrent load.",
+      "notes": "ZeroOps auto-resolved: thread pool rebalanced in 2 min 8 sec. No study delivery impact.",
+      "intel": {
+        "rootCause": "DICOM compression engine worker thread starvation \u2014 concurrent load during overnight batch caused throughput drop of 60%",
+        "agentConfidence": 96,
+        "recommendation": "Thread pool rebalanced autonomously in 2m 8s. Pre-batch thread pool pre-scaling recommended before overnight jobs.",
+        "cause": {
+          "primary": "Compression worker thread starvation under concurrent overnight batch load",
+          "conf": 96,
+          "mech": "Overnight batch processing and concurrent daytime compression requests competed for the same 48-worker thread pool. Batch jobs held 41 workers leaving only 7 for interactive compression \u2014 causing 60% throughput drop. ZeroOps rebalanced the thread pool in 2m 8s.",
+          "chain": [
+            {
+              "node": "Overnight Batch",
+              "d": "41/48 workers consumed by batch processing",
+              "s": "AMBER"
+            },
+            {
+              "node": "Interactive Compression",
+              "d": "7 workers remaining \u2014 60% throughput drop",
+              "s": "AMBER"
+            },
+            {
+              "node": "ZeroOps Rebalance",
+              "d": "Thread pool priority rebalanced in 2m 8s",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Prometheus \u00b7 11:00",
+              "v": "compression_throughput_ratio 0.40 \u2014 60% below baseline"
+            },
+            {
+              "icon": "\ud83d\udccb",
+              "t": "Elasticsearch \u00b7 11:01",
+              "v": "compression_worker_available 7 \u2014 batch jobs holding 41/48 threads"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 11:02",
+              "v": "Thread pool rebalanced \u2014 compression throughput restored to 100%"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0001778",
+            "date": "7 weeks ago",
+            "sim": 91,
+            "res": "Thread pool priority rebalanced \u2014 4m 12s",
+            "mttr": "4m 12s",
+            "out": "Temporary \u2014 batch priority config unchanged",
+            "by": "ZeroOps AI"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Detect thread starvation",
+            "auto": true,
+            "cmd": "prometheus: compression_worker_available < 10",
+            "note": "Auto-detected by Alert Correlator"
+          },
+          {
+            "n": 2,
+            "title": "Rebalance thread pool",
+            "auto": true,
+            "cmd": "compression-engine rebalance --batch-max 32 --interactive-min 16",
+            "note": "Risk score 9 \u2014 fully autonomous"
+          },
+          {
+            "n": 3,
+            "title": "Validate throughput",
+            "auto": true,
+            "cmd": "prometheus: compression_throughput_ratio > 0.95",
+            "note": "Confirm full throughput restored"
+          }
+        ]
+      },
+      "signal": "Prometheus"
+    },
+    {
+      "id": "INC0002065",
+      "pri": "P1",
+      "svc": "HL7 Gateway",
+      "status": "Auto-Resolved",
+      "by": "ZeroOps AI",
+      "at": "08:15",
+      "cat": "Availability",
+      "hosting": "Partner DC",
+      "ci": "hl7-gateway-prod",
+      "sla": "SLA Met",
+      "chainId": "integration-layer",
+      "appId": "hl7-gateway",
+      "desc": "HL7 gateway consumer thread deadlock during morning peak. 847 ADT messages unprocessed for 12 minutes.",
+      "notes": "ZeroOps auto-resolved: gateway restart and queue replay in 18 min 22 sec. Root cause: same thread pool pattern as INC0002098.",
+      "intel": {
+        "rootCause": "HL7 Gateway consumer thread deadlock during morning peak \u2014 same DB connection pool exhaustion pattern as INC0002098. Auto-resolved by ZeroOps.",
+        "agentConfidence": 94,
+        "recommendation": "Resolved autonomously in 18m 22s. DB connection pool increase to 50 urgently needed \u2014 same pattern recurred as INC0002098 today.",
+        "cause": {
+          "primary": "HL7 consumer thread deadlock \u2014 DB pool exhausted at morning peak (same as INC0002098)",
+          "conf": 94,
+          "mech": "Morning peak ADT message volume exceeded DB connection pool capacity of 20 connections. Consumer thread deadlock caused 847 messages to back up over 12 minutes. ZeroOps autonomously restarted the gateway and replayed all messages.",
+          "chain": [
+            {
+              "node": "Morning Peak 08:00-08:30",
+              "d": "ADT volume 280 msg/min \u2014 peak demand",
+              "s": "AMBER"
+            },
+            {
+              "node": "DB Pool Exhausted",
+              "d": "20 connections consumed \u2014 threads deadlocked",
+              "s": "RED"
+            },
+            {
+              "node": "847 Messages Queued",
+              "d": "12 minutes of patient flow blocked",
+              "s": "RED"
+            },
+            {
+              "node": "ZeroOps Auto-Resolution",
+              "d": "Restart + queue replay \u2014 18m 22s total",
+              "s": "GREEN"
+            }
+          ],
+          "signals": [
+            {
+              "icon": "\ud83d\udcca",
+              "t": "Datadog \u00b7 08:15",
+              "v": "hl7_queue_depth 847 \u2014 consumer threads not processing"
+            },
+            {
+              "icon": "\ud83e\udd16",
+              "t": "Alert Correlator \u00b7 08:15",
+              "v": "P1 raised \u2014 same pattern as previous INC0001874"
+            },
+            {
+              "icon": "\u2705",
+              "t": "Change Validator \u00b7 08:33",
+              "v": "Queue replayed \u2014 847 messages delivered \u2014 INC0002065 auto-closed"
+            }
+          ]
+        },
+        "similar": [
+          {
+            "id": "INC0002098",
+            "date": "Today 02:14",
+            "sim": 98,
+            "res": "Gateway restart + queue replay \u2014 recurred same day",
+            "mttr": "24m 18s",
+            "out": "Temporary \u2014 DB pool still at 20 connections",
+            "by": "ZeroOps AI"
+          },
+          {
+            "id": "INC0001874",
+            "date": "6 weeks ago",
+            "sim": 71,
+            "res": "Manual restart during maintenance window",
+            "mttr": "1h 12m",
+            "out": "Temporary",
+            "by": "Sofia Reyes"
+          }
+        ],
+        "runbook": [
+          {
+            "n": 1,
+            "title": "Restart HL7 Gateway",
+            "auto": true,
+            "cmd": "kubectl rollout restart deployment/hl7-gateway",
+            "note": "Risk score 18 \u2014 auto-approved this time (pattern known)"
+          },
+          {
+            "n": 2,
+            "title": "Replay message queue",
+            "auto": true,
+            "cmd": "hl7-replay --from-dead-letter --count 847",
+            "note": "All messages delivered in order"
+          },
+          {
+            "n": 3,
+            "title": "Raise Problem record",
+            "auto": true,
+            "cmd": "ServiceNow PRB-AG-00017 \u2014 HL7 DB pool recurring failure",
+            "note": "2nd occurrence \u2014 permanent fix required urgently"
+          }
+        ]
+      },
+      "signal": "Datadog"
+    }
+  ]
+}

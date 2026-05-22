@@ -1,0 +1,638 @@
+{
+  "domains": [
+    {
+      "id": "pacs-platform",
+      "name": "PACS Platform",
+      "icon": "\ud83d\uddbc",
+      "status": "RED",
+      "uptime": 72,
+      "hosting": "Partner DC",
+      "hostingColor": "#64748B",
+      "sessions": 847,
+      "trend": [89, 87, 84, 80, 76, 74, 72, 72],
+      "up": 72,
+      "apps": [
+        {
+          "id": "pacs-app",
+          "name": "IMPAX/EI App Server",
+          "status": "RED",
+          "perf": 68,
+          "infra": [
+            {
+              "c": "heap",
+              "label": "JVM Heap",
+              "val": "98%",
+              "unit": "%",
+              "m": 98,
+              "anom": true,
+              "detail": "Heap exhausted \u2014 OOM kills every 4-7 min",
+              "h": "RED"
+            },
+            {
+              "c": "recv",
+              "label": "DICOM Receiver",
+              "val": "847 failing",
+              "unit": "",
+              "m": 0,
+              "anom": true,
+              "detail": "Image retrievals failing \u2014 heap leak unresolved",
+              "h": "RED"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "91%",
+              "unit": "%",
+              "m": 91,
+              "anom": true,
+              "detail": "CPU elevated from continuous GC pressure",
+              "h": "RED"
+            }
+          ],
+          "resolvedInfra": [
+            {
+              "c": "heap",
+              "label": "JVM Heap",
+              "val": "12%",
+              "unit": "%",
+              "m": 12,
+              "anom": false,
+              "detail": "Heap normalised after rolling restart + config patch",
+              "h": "GREEN"
+            },
+            {
+              "c": "recv",
+              "label": "DICOM Receiver",
+              "val": "Running",
+              "unit": "",
+              "m": 100,
+              "anom": false,
+              "detail": "Image retrievals restored \u2014 all 847 requeued",
+              "h": "GREEN"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "38%",
+              "unit": "%",
+              "m": 38,
+              "anom": false,
+              "detail": "CPU normalised post-recovery",
+              "h": "GREEN"
+            }
+          ]
+        },
+        {
+          "id": "dicom-router",
+          "name": "DICOM Router",
+          "status": "GREEN",
+          "perf": 96,
+          "infra": [
+            {
+              "c": "route",
+              "label": "Routing",
+              "val": "Healthy",
+              "unit": "",
+              "m": 100,
+              "anom": false,
+              "detail": "AE title mappings correct",
+              "h": "GREEN"
+            },
+            {
+              "c": "thru",
+              "label": "Throughput",
+              "val": "1,247/hr",
+              "unit": "",
+              "m": 82,
+              "anom": false,
+              "detail": "Normal throughput",
+              "h": "GREEN"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "22%",
+              "unit": "%",
+              "m": 22,
+              "anom": false,
+              "detail": "CPU stable",
+              "h": "GREEN"
+            }
+          ]
+        },
+        {
+          "id": "compression-engine",
+          "name": "Compression Engine",
+          "status": "GREEN",
+          "perf": 94,
+          "infra": [
+            {
+              "c": "thru",
+              "label": "Throughput",
+              "val": "Normal",
+              "unit": "",
+              "m": 100,
+              "anom": false,
+              "detail": "Thread pool rebalanced \u2014 compression normal",
+              "h": "GREEN"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "41%",
+              "unit": "%",
+              "m": 41,
+              "anom": false,
+              "detail": "CPU stable",
+              "h": "GREEN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "clinical-workflow",
+      "name": "Clinical Workflow",
+      "icon": "\u2695",
+      "status": "AMBER",
+      "uptime": 84,
+      "hosting": "Partner DC",
+      "hostingColor": "#64748B",
+      "sessions": 1204,
+      "trend": [92, 90, 88, 87, 85, 84, 84, 84],
+      "up": 84,
+      "apps": [
+        {
+          "id": "rubee-orch",
+          "name": "RUBEE Orchestrator",
+          "status": "AMBER",
+          "perf": 79,
+          "infra": [
+            {
+              "c": "pool",
+              "label": "Thread Pool",
+              "val": "85% saturated",
+              "unit": "%",
+              "m": 85,
+              "anom": true,
+              "detail": "170/200 workers active \u2014 auto-scale not configured",
+              "h": "AMBER"
+            },
+            {
+              "c": "lag",
+              "label": "Worklist Lag",
+              "val": "8-12 min",
+              "unit": "",
+              "m": 60,
+              "anom": true,
+              "detail": "Radiologist worklist delayed under peak load",
+              "h": "AMBER"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "61%",
+              "unit": "%",
+              "m": 61,
+              "anom": false,
+              "detail": "CPU elevated but not critical",
+              "h": "AMBER"
+            }
+          ]
+        },
+        {
+          "id": "worklist-engine",
+          "name": "Worklist Engine",
+          "status": "GREEN",
+          "perf": 91,
+          "infra": [
+            {
+              "c": "depth",
+              "label": "Queue Depth",
+              "val": "412 studies",
+              "unit": "",
+              "m": 41,
+              "anom": false,
+              "detail": "Auto-rebalanced \u2014 within normal range",
+              "h": "GREEN"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "34%",
+              "unit": "%",
+              "m": 34,
+              "anom": false,
+              "detail": "CPU stable",
+              "h": "GREEN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "integration-layer",
+      "name": "Integration Layer",
+      "icon": "\ud83d\udd17",
+      "status": "RED",
+      "uptime": 81,
+      "hosting": "Partner DC",
+      "hostingColor": "#64748B",
+      "sessions": 2847,
+      "trend": [94, 92, 90, 88, 85, 83, 81, 81],
+      "up": 81,
+      "apps": [
+        {
+          "id": "hl7-gateway",
+          "name": "HL7 Gateway",
+          "status": "RED",
+          "perf": 34,
+          "infra": [
+            {
+              "c": "queue",
+              "label": "Message Queue",
+              "val": "2,847 pending",
+              "unit": "",
+              "m": 0,
+              "anom": true,
+              "detail": "Consumer thread deadlock \u2014 queue growing 340/min",
+              "h": "RED"
+            },
+            {
+              "c": "thrd",
+              "label": "Consumer Threads",
+              "val": "Deadlocked",
+              "unit": "",
+              "m": 0,
+              "anom": true,
+              "detail": "Thread pool exhausted under morning peak",
+              "h": "RED"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "88%",
+              "unit": "%",
+              "m": 88,
+              "anom": true,
+              "detail": "CPU elevated from retry storms",
+              "h": "RED"
+            }
+          ],
+          "resolvedInfra": [
+            {
+              "c": "queue",
+              "label": "Message Queue",
+              "val": "Clear",
+              "unit": "",
+              "m": 0,
+              "anom": false,
+              "detail": "2,847 messages replayed and delivered",
+              "h": "GREEN"
+            },
+            {
+              "c": "thrd",
+              "label": "Consumer Threads",
+              "val": "Running",
+              "unit": "",
+              "m": 100,
+              "anom": false,
+              "detail": "Thread pool recovered after gateway restart",
+              "h": "GREEN"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "31%",
+              "unit": "%",
+              "m": 31,
+              "anom": false,
+              "detail": "CPU normalised",
+              "h": "GREEN"
+            }
+          ]
+        },
+        {
+          "id": "fhir-api",
+          "name": "FHIR R4 API",
+          "status": "GREEN",
+          "perf": 97,
+          "infra": [
+            {
+              "c": "avail",
+              "label": "Availability",
+              "val": "99.97%",
+              "unit": "%",
+              "m": 99,
+              "anom": false,
+              "detail": "Pod restarted and healthy",
+              "h": "GREEN"
+            },
+            {
+              "c": "lat",
+              "label": "Latency",
+              "val": "142ms",
+              "unit": "",
+              "m": 85,
+              "anom": false,
+              "detail": "Within SLA",
+              "h": "GREEN"
+            }
+          ]
+        },
+        {
+          "id": "api-gateway",
+          "name": "Multi-Tenant API Gateway",
+          "status": "GREEN",
+          "perf": 98,
+          "infra": [
+            {
+              "c": "rate",
+              "label": "Rate Limiter",
+              "val": "Configured",
+              "unit": "",
+              "m": 100,
+              "anom": false,
+              "detail": "Config drift corrected \u2014 all tenants healthy",
+              "h": "GREEN"
+            },
+            {
+              "c": "lat",
+              "label": "Latency",
+              "val": "28ms",
+              "unit": "",
+              "m": 98,
+              "anom": false,
+              "detail": "API response time normal",
+              "h": "GREEN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "archive-vna",
+      "name": "Archive & VNA",
+      "icon": "\ud83d\uddc4",
+      "status": "AMBER",
+      "uptime": 88,
+      "hosting": "Azure",
+      "hostingColor": "#0078D4",
+      "sessions": 312,
+      "trend": [96, 94, 93, 91, 90, 89, 88, 88],
+      "up": 88,
+      "apps": [
+        {
+          "id": "vna-store",
+          "name": "DICOM Store (VNA)",
+          "status": "AMBER",
+          "perf": 71,
+          "infra": [
+            {
+              "c": "disk",
+              "label": "Partition /vna",
+              "val": "91% full",
+              "unit": "%",
+              "m": 91,
+              "anom": true,
+              "detail": "Study ingest will fail at 95% \u2014 4h at current rate",
+              "h": "AMBER"
+            },
+            {
+              "c": "ing",
+              "label": "Ingest Rate",
+              "val": "2.4 TB/day",
+              "unit": "",
+              "m": 70,
+              "anom": false,
+              "detail": "Normal ingest rate",
+              "h": "AMBER"
+            },
+            {
+              "c": "cpu",
+              "label": "CPU",
+              "val": "44%",
+              "unit": "%",
+              "m": 44,
+              "anom": false,
+              "detail": "CPU stable",
+              "h": "GREEN"
+            }
+          ]
+        },
+        {
+          "id": "lta-archive",
+          "name": "Long-Term Archive",
+          "status": "AMBER",
+          "perf": 76,
+          "infra": [
+            {
+              "c": "rep",
+              "label": "Replication Lag",
+              "val": "14 sec",
+              "unit": "",
+              "m": 40,
+              "anom": true,
+              "detail": "Threshold 5 sec \u2014 WAL accumulating on inactive slot",
+              "h": "AMBER"
+            },
+            {
+              "c": "retr",
+              "label": "Retrieval",
+              "val": "Intermittent",
+              "unit": "",
+              "m": 60,
+              "anom": true,
+              "detail": "Studies >2yr failing retrieval intermittently",
+              "h": "AMBER"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radiology-ai",
+      "name": "Radiology AI",
+      "icon": "\ud83e\udde0",
+      "status": "AMBER",
+      "uptime": 91,
+      "hosting": "Azure",
+      "hostingColor": "#0078D4",
+      "sessions": 156,
+      "trend": [98, 97, 96, 95, 94, 93, 91, 91],
+      "up": 91,
+      "apps": [
+        {
+          "id": "ai-inference",
+          "name": "AI Inference Engine",
+          "status": "AMBER",
+          "perf": 62,
+          "infra": [
+            {
+              "c": "lat",
+              "label": "Inference Latency",
+              "val": "890ms",
+              "unit": "",
+              "m": 30,
+              "anom": true,
+              "detail": "SLA 200ms \u2014 GPU memory fragmentation after 72h",
+              "h": "AMBER"
+            },
+            {
+              "c": "gpu",
+              "label": "GPU Memory",
+              "val": "94% fragmented",
+              "unit": "%",
+              "m": 94,
+              "anom": true,
+              "detail": "Scheduled restart needed to defragment",
+              "h": "AMBER"
+            },
+            {
+              "c": "acc",
+              "label": "AI Accuracy",
+              "val": "94.2%",
+              "unit": "%",
+              "m": 94,
+              "anom": false,
+              "detail": "Accuracy within acceptable range",
+              "h": "GREEN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enterprise-it",
+      "name": "Enterprise Applications",
+      "icon": "\ud83c\udfe2",
+      "status": "GREEN",
+      "uptime": 99,
+      "hosting": "Azure",
+      "hostingColor": "#0078D4",
+      "sessions": 3200,
+      "trend": [99, 99, 99, 99, 99, 99, 99, 99],
+      "up": 99,
+      "apps": [
+        {
+          "id": "keycloak-iam",
+          "name": "Keycloak IAM",
+          "status": "GREEN",
+          "perf": 98,
+          "infra": [
+            {
+              "c": "auth",
+              "label": "Auth Success",
+              "val": "99.97%",
+              "unit": "%",
+              "m": 99,
+              "anom": false,
+              "detail": "SSO and token refresh healthy",
+              "h": "GREEN"
+            },
+            {
+              "c": "ses",
+              "label": "Active Sessions",
+              "val": "3,247",
+              "unit": "",
+              "m": 65,
+              "anom": false,
+              "detail": "Normal session load",
+              "h": "GREEN"
+            }
+          ]
+        },
+        {
+          "id": "sap-erp",
+          "name": "SAP ERP (Azure)",
+          "status": "AMBER",
+          "perf": 58,
+          "infra": [
+            {
+              "c": "batch",
+              "label": "Batch Queue",
+              "val": "847 stuck",
+              "unit": "",
+              "m": 0,
+              "anom": true,
+              "detail": "RFBIBL00 stalled \u2014 BKPF lock contention \u2014 cascade blocked",
+              "h": "RED"
+            },
+            {
+              "c": "wp",
+              "label": "Work Processes",
+              "val": "94% utilized",
+              "unit": "%",
+              "m": 94,
+              "anom": true,
+              "detail": "Dialog pool saturated \u2014 background jobs starved",
+              "h": "RED"
+            },
+            {
+              "c": "lock",
+              "label": "Table Locks",
+              "val": "BKPF/BSEG",
+              "unit": "",
+              "m": 0,
+              "anom": true,
+              "detail": "WP-04 lock held 27 min \u2014 stale BATCH_FI session",
+              "h": "RED"
+            },
+            {
+              "c": "cpu",
+              "label": "Azure CPU",
+              "val": "61%",
+              "unit": "%",
+              "m": 61,
+              "anom": false,
+              "detail": "CPU elevated from lock wait overhead",
+              "h": "AMBER"
+            }
+          ],
+          "resolvedInfra": [
+            {
+              "c": "batch",
+              "label": "Batch Queue",
+              "val": "Clear",
+              "unit": "",
+              "m": 0,
+              "anom": false,
+              "detail": "847 documents posted \u2014 all jobs completed",
+              "h": "GREEN"
+            },
+            {
+              "c": "wp",
+              "label": "Work Processes",
+              "val": "41% utilized",
+              "unit": "%",
+              "m": 41,
+              "anom": false,
+              "detail": "Dialog and background balanced \u2014 WP-04 free",
+              "h": "GREEN"
+            },
+            {
+              "c": "lock",
+              "label": "Table Locks",
+              "val": "None",
+              "unit": "",
+              "m": 0,
+              "anom": false,
+              "detail": "BKPF/BSEG locks released \u2014 session cancelled",
+              "h": "GREEN"
+            },
+            {
+              "c": "cpu",
+              "label": "Azure CPU",
+              "val": "38%",
+              "unit": "%",
+              "m": 38,
+              "anom": false,
+              "detail": "CPU normalised post-recovery",
+              "h": "GREEN"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

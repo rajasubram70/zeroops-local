@@ -1,0 +1,109 @@
+{
+  "_notes": "Canon Europa roles",
+  "navItems": [
+    {
+      "id": "cmd",
+      "label": "Command Centre",
+      "icon": "\u25c8",
+      "acc": "cmd"
+    },
+    {
+      "id": "inc",
+      "label": "Incidents",
+      "icon": "\u26a1",
+      "acc": "inc"
+    },
+    {
+      "id": "topo",
+      "label": "Service Map",
+      "icon": "\ud83d\uddfa",
+      "acc": "topo"
+    },
+    {
+      "id": "req",
+      "label": "Service Requests",
+      "icon": "\ud83d\udccb",
+      "acc": "req"
+    },
+    {
+      "id": "mim",
+      "label": "MIM",
+      "icon": "\ud83d\udea8",
+      "acc": "mim"
+    },
+    {
+      "id": "wf",
+      "label": "Workflows",
+      "icon": "\u2699",
+      "acc": "wf"
+    },
+    {
+      "id": "reports",
+      "label": "Reports",
+      "icon": "\ud83d\udcca",
+      "acc": "reports"
+    },
+    {
+      "id": "agents",
+      "label": "Agents & KB",
+      "icon": "\ud83e\udd16",
+      "acc": "agents"
+    },
+    {
+      "id": "chat",
+      "label": "Ask ZOVA",
+      "icon": "\ud83d\udcac",
+      "acc": "chat"
+    },
+    {
+      "id": "transfer",
+      "label": "Transfer Readiness",
+      "icon": "\ud83d\udd04",
+      "acc": "transfer"
+    }
+  ],
+  "roles": [
+    {
+      "id": "aiops",
+      "label": "AIOps Engineer",
+      "color": "#CC0000",
+      "description": "Full platform access \u2014 all ZeroOps capabilities",
+      "access": [
+        "cmd",
+        "inc",
+        "topo",
+        "req",
+        "mim",
+        "wf",
+        "reports",
+        "agents",
+        "chat",
+        "transfer"
+      ]
+    },
+    {
+      "id": "exec",
+      "label": "IT Operations Director",
+      "color": "#7C3AED",
+      "description": "Executive view \u2014 KPIs, ROI, reports",
+      "access": ["cmd", "reports", "chat", "transfer"]
+    },
+    {
+      "id": "oracle",
+      "label": "Oracle Platform Lead",
+      "color": "#CC0000",
+      "description": "Oracle EBS, OCI and Informatica operations",
+      "access": [
+        "cmd",
+        "inc",
+        "topo",
+        "req",
+        "wf",
+        "reports",
+        "agents",
+        "chat",
+        "transfer"
+      ]
+    }
+  ]
+}

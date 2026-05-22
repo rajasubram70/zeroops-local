@@ -1,0 +1,99 @@
+{
+  "_notes": "Role definitions for Twinings demo. Finance/Procurement in audience so exec sees ROI reports.",
+  "roles": [
+    {
+      "id": "noc",
+      "label": "Service Desk Operator",
+      "description": "Frontline service desk \u2014 manages incidents and requests",
+      "access": ["cmd", "inc", "req"],
+      "color": "#0078D4"
+    },
+    {
+      "id": "aiops",
+      "label": "AIOps Engineer",
+      "description": "Platform engineer \u2014 full ZeroOps access",
+      "access": [
+        "cmd",
+        "inc",
+        "topo",
+        "req",
+        "wf",
+        "reports",
+        "agents",
+        "chat",
+        "mim",
+        "transfer"
+      ],
+      "color": "#7c3aed"
+    },
+    {
+      "id": "exec",
+      "label": "IT Director",
+      "description": "IT leadership \u2014 KPIs, ROI and business value",
+      "access": ["cmd", "reports", "transfer"],
+      "color": "#00693E"
+    }
+  ],
+  "navItems": [
+    {
+      "id": "cmd",
+      "label": "Dashboard",
+      "icon": "\u2b21",
+      "acc": "cmd"
+    },
+    {
+      "id": "inc",
+      "label": "Incidents",
+      "icon": "\ud83d\udea8",
+      "acc": "inc"
+    },
+    {
+      "id": "topo",
+      "label": "Service Map",
+      "icon": "\ud83d\uddfa",
+      "acc": "topo"
+    },
+    {
+      "id": "req",
+      "label": "Requests",
+      "icon": "\ud83d\udccb",
+      "acc": "req"
+    },
+    {
+      "id": "mim",
+      "label": "MIM",
+      "icon": "\ud83d\udea8",
+      "acc": "mim"
+    },
+    {
+      "id": "wf",
+      "label": "Workflows",
+      "icon": "\u27f3",
+      "acc": "wf"
+    },
+    {
+      "id": "reports",
+      "label": "Reports",
+      "icon": "\ud83d\udcca",
+      "acc": "reports"
+    },
+    {
+      "id": "agents",
+      "label": "Agents & KB",
+      "icon": "\u25c8",
+      "acc": "agents"
+    },
+    {
+      "id": "chat",
+      "label": "AI Assistant",
+      "icon": "\ud83e\udd16",
+      "acc": "chat"
+    },
+    {
+      "id": "transfer",
+      "label": "Transfer Readiness",
+      "icon": "\ud83d\udd04",
+      "acc": "transfer"
+    }
+  ]
+}

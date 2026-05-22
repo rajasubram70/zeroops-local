@@ -1,0 +1,187 @@
+{
+  "_schema": "ZeroOps Metrics v1.0",
+  "_customer": "Ericsson IT",
+  "_notes": "Drives KPI tiles, Business Value chart, and before/after snapshot. mttr values in minutes. All percentage values 0-100. csat on a 0-5 scale. history runs oldest to newest — first entry is go-live baseline.",
+
+  "kpis": {
+    "mttr_current_min": 31,
+    "mttr_baseline_min": 186,
+    "auto_fix_rate_pct": 73,
+    "auto_fix_baseline_pct": 28,
+    "alert_noise_red_pct": 99.3,
+    "raw_alerts_per_day": 47000,
+    "actionable_alerts_per_day": 340,
+    "csat_current": 4.4,
+    "csat_baseline": 3.1,
+    "ticket_deflection_pct": 81,
+    "ticket_deflection_baseline_pct": 31,
+    "engineers_impacted_today": 2400,
+    "open_requests": 47,
+    "auto_fulfil_rate_pct": 84
+  },
+
+  "history": [
+    {
+      "month": "Oct'25",
+      "mttr": 186,
+      "autoFix": 28,
+      "deflection": 31,
+      "fcr": 38,
+      "noiseRed": 42,
+      "csat": 3.1
+    },
+    {
+      "month": "Nov'25",
+      "mttr": 162,
+      "autoFix": 34,
+      "deflection": 37,
+      "fcr": 44,
+      "noiseRed": 51,
+      "csat": 3.2
+    },
+    {
+      "month": "Dec'25",
+      "mttr": 141,
+      "autoFix": 41,
+      "deflection": 44,
+      "fcr": 51,
+      "noiseRed": 62,
+      "csat": 3.4
+    },
+    {
+      "month": "Jan'26",
+      "mttr": 118,
+      "autoFix": 48,
+      "deflection": 52,
+      "fcr": 58,
+      "noiseRed": 71,
+      "csat": 3.6
+    },
+    {
+      "month": "Feb'26",
+      "mttr": 94,
+      "autoFix": 55,
+      "deflection": 61,
+      "fcr": 65,
+      "noiseRed": 81,
+      "csat": 3.8
+    },
+    {
+      "month": "Mar'26",
+      "mttr": 74,
+      "autoFix": 62,
+      "deflection": 69,
+      "fcr": 72,
+      "noiseRed": 88,
+      "csat": 4.0
+    },
+    {
+      "month": "Apr'26",
+      "mttr": 58,
+      "autoFix": 67,
+      "deflection": 74,
+      "fcr": 77,
+      "noiseRed": 92,
+      "csat": 4.1
+    },
+    {
+      "month": "May'26",
+      "mttr": 47,
+      "autoFix": 70,
+      "deflection": 77,
+      "fcr": 80,
+      "noiseRed": 95,
+      "csat": 4.2
+    },
+    {
+      "month": "Jun'26",
+      "mttr": 38,
+      "autoFix": 72,
+      "deflection": 79,
+      "fcr": 82,
+      "noiseRed": 97,
+      "csat": 4.3
+    },
+    {
+      "month": "Jul'26",
+      "mttr": 34,
+      "autoFix": 73,
+      "deflection": 80,
+      "fcr": 83,
+      "noiseRed": 98,
+      "csat": 4.4
+    },
+    {
+      "month": "Aug'26",
+      "mttr": 31,
+      "autoFix": 73,
+      "deflection": 81,
+      "fcr": 84,
+      "noiseRed": 99,
+      "csat": 4.4
+    }
+  ],
+
+  "snapshot": [
+    {
+      "metric": "Mean Time to Resolve (MTTR)",
+      "before": "186 min",
+      "after": "31 min",
+      "delta": "↓ 83%",
+      "good": true
+    },
+    {
+      "metric": "Incidents Resolved Autonomously",
+      "before": "0%",
+      "after": "73%",
+      "delta": "↑ +73pp",
+      "good": true
+    },
+    {
+      "metric": "Alert Noise Seen by Engineers",
+      "before": "47,000/day",
+      "after": "340/day",
+      "delta": "↓ 99.3%",
+      "good": true
+    },
+    {
+      "metric": "Engineer Time on Toil",
+      "before": "~60%",
+      "after": "~18%",
+      "delta": "↓ 42pp",
+      "good": true
+    },
+    {
+      "metric": "Mean Time to Detect (MTTD)",
+      "before": "18 min",
+      "after": "1.2 min",
+      "delta": "↓ 93%",
+      "good": true
+    },
+    {
+      "metric": "Customer Satisfaction (CSAT)",
+      "before": "3.1 / 5",
+      "after": "4.4 / 5",
+      "delta": "↑ +1.3",
+      "good": true
+    },
+    {
+      "metric": "Ticket Deflection Rate",
+      "before": "31%",
+      "after": "81%",
+      "delta": "↑ +50pp",
+      "good": true
+    }
+  ],
+
+  "roi": {
+    "engineer_hourly_rate_usd": 150,
+    "incidents_per_month": 13,
+    "avg_mttr_minutes": 31,
+    "manual_mttr_minutes": 186,
+    "alert_volume_per_day": 47000,
+    "alert_noise_pct": 99.3,
+    "avg_alert_triage_minutes": 5,
+    "llm_cost_per_month_usd": 44
+  }
+}

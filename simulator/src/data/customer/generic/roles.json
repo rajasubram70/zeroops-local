@@ -1,0 +1,113 @@
+{
+  "roles": [
+    {
+      "id": "exec",
+      "name": "Sarah Mitchell",
+      "title": "Chief Information Officer",
+      "dept": "IT Leadership",
+      "avatar": "SM",
+      "color": "#7C3AED",
+      "access": ["cmd", "reports"],
+      "industry": "Enterprise IT Operations"
+    },
+    {
+      "id": "itdir",
+      "name": "James O'Brien",
+      "title": "IT Director",
+      "dept": "IT Operations",
+      "avatar": "JO",
+      "color": "#2563EB",
+      "access": ["cmd", "inc", "requests", "reports"],
+      "industry": "Enterprise IT Operations"
+    },
+    {
+      "id": "pm",
+      "name": "Priya Sharma",
+      "title": "Service Delivery Manager",
+      "dept": "Service Management",
+      "avatar": "PS",
+      "color": "#16A34A",
+      "access": ["cmd", "inc", "requests", "wf", "reports"],
+      "industry": "Enterprise IT Operations"
+    },
+    {
+      "id": "architect",
+      "name": "David Chen",
+      "title": "Enterprise Architect",
+      "dept": "Architecture",
+      "avatar": "DC",
+      "color": "#0891B2",
+      "access": ["cmd", "inc", "topo", "agents", "wf", "requests", "reports"],
+      "industry": "Enterprise IT Operations"
+    },
+    {
+      "id": "aiops",
+      "name": "Alex Rivera",
+      "title": "AIOps Engineer",
+      "dept": "Platform Engineering",
+      "avatar": "AR",
+      "color": "#EA580C",
+      "access": [
+        "cmd",
+        "inc",
+        "topo",
+        "agents",
+        "wf",
+        "requests",
+        "reports",
+        "sdlc"
+      ],
+      "industry": "Enterprise IT Operations"
+    }
+  ],
+  "navItems": [
+    {
+      "acc": "cmd",
+      "label": "Command Centre",
+      "icon": "\u26a1",
+      "pillar": "common"
+    },
+    {
+      "acc": "sdlc",
+      "label": "AI SDLC",
+      "icon": "\ud83d\udd27",
+      "pillar": "dev"
+    },
+    {
+      "acc": "inc",
+      "label": "Incidents",
+      "icon": "\ud83d\udea8",
+      "pillar": "ops"
+    },
+    {
+      "acc": "topo",
+      "label": "Service Map",
+      "icon": "\ud83d\uddfa",
+      "pillar": "ops"
+    },
+    {
+      "acc": "wf",
+      "label": "Workflows",
+      "icon": "\u25b6",
+      "pillar": "ops"
+    },
+    {
+      "acc": "requests",
+      "label": "Service Requests",
+      "icon": "\ud83d\udccb",
+      "pillar": "ops"
+    },
+    {
+      "acc": "agents",
+      "label": "Agents & KB",
+      "icon": "\ud83e\udd16",
+      "pillar": "ops"
+    },
+    {
+      "acc": "reports",
+      "label": "Reports",
+      "icon": "\ud83d\udcca",
+      "pillar": "ops"
+    }
+  ]
+}

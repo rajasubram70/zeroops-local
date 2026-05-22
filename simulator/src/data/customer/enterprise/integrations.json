@@ -1,0 +1,232 @@
+{
+  "groups": [
+    {
+      "cat": "Monitoring & Observability",
+      "color": "#2563EB",
+      "items": [
+        {
+          "name": "Prometheus",
+          "status": "Live",
+          "agent": "Alert Correlator, Capacity Planner",
+          "last": "2s ago",
+          "icon": "📊",
+          "highlight": true,
+          "note": "Primary metrics platform — JVM heap, DICOM throughput, Kubernetes pod health, VNA storage capacity. ZeroOps ingests all Prometheus alerts and correlates to single incidents."
+        },
+        {
+          "name": "Datadog",
+          "status": "Live",
+          "agent": "Alert Correlator, Log Analyzer",
+          "last": "4s ago",
+          "icon": "🐶",
+          "highlight": true,
+          "note": "APM and log monitoring — HL7 message queue depth, FHIR API latency, RUBEE orchestrator performance. Primary source for HL7 and integration alerts."
+        },
+        {
+          "name": "Dynatrace",
+          "status": "Live",
+          "agent": "Alert Correlator, RCA Engine",
+          "last": "6s ago",
+          "icon": "🔍",
+          "note": "Full-stack observability — PACS application performance, RUBEE thread pool, CVE vulnerability detection. Complements Prometheus for application-layer insights."
+        },
+        {
+          "name": "Elasticsearch",
+          "status": "Live",
+          "agent": "Log Analyzer, RCA Engine",
+          "last": "3s ago",
+          "icon": "🔎",
+          "note": "Log aggregation — DICOM receiver thread dumps, HL7 consumer logs, Kubernetes pod events. RCA Engine queries Elasticsearch for historical pattern matching."
+        }
+      ]
+    },
+    {
+      "cat": "ITSM & Service Management",
+      "color": "#7C3AED",
+      "items": [
+        {
+          "name": "ServiceNow",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent, Change Validator",
+          "last": "8s ago",
+          "icon": "🎫",
+          "highlight": true,
+          "note": "Enterprise's ITSM system of record. ZeroOps auto-creates incidents, updates status at each remediation step and auto-closes on resolution. Full audit trail in ServiceNow. HiTL approvals delivered via ServiceNow tasks."
+        }
+      ]
+    },
+    {
+      "cat": "Automation & Orchestration",
+      "color": "#16A34A",
+      "items": [
+        {
+          "name": "Kubernetes",
+          "status": "Live",
+          "agent": "Remediation Agent, Capacity Planner",
+          "last": "3s ago",
+          "icon": "⚙",
+          "highlight": true,
+          "note": "Container orchestration — PACS rolling restarts, FHIR API pod management, RUBEE scaling. All ZeroOps remediation actions execute via Kubernetes API. Zero-downtime rolling restart strategy applied."
+        },
+        {
+          "name": "Ansible",
+          "status": "Live",
+          "agent": "Remediation Agent",
+          "last": "10s ago",
+          "icon": "🔧",
+          "note": "Infrastructure automation — VM configuration, network maintenance validation, post-maintenance config verification. Complements Kubernetes for non-containerised components."
+        },
+        {
+          "name": "Azure DevOps / Jenkins",
+          "status": "Live",
+          "agent": "Remediation Agent",
+          "last": "on demand",
+          "icon": "🚀",
+          "note": "CI/CD pipeline integration — Problem Management code fixes handed to Jenkins/Azure DevOps for deployment. ZeroOps triggers pipeline and monitors handoff. Control passed to Enterprise release management."
+        }
+      ]
+    },
+    {
+      "cat": "ERP & Enterprise Apps",
+      "color": "#7C3AED",
+      "items": [
+        {
+          "id": "sap-calm",
+          "name": "SAP Cloud ALM",
+          "icon": "\u2699",
+          "status": "Connected",
+          "desc": "SAP landscape monitoring and alerting"
+        },
+        {
+          "id": "sap-grc",
+          "name": "SAP GRC",
+          "icon": "\ud83d\udd10",
+          "status": "Connected",
+          "desc": "Governance, risk and compliance"
+        },
+        {
+          "id": "ariba",
+          "name": "SAP Ariba",
+          "icon": "\ud83d\uded2",
+          "status": "Connected",
+          "desc": "Procurement workflow monitoring"
+        }
+      ]
+    },
+    {
+      "cat": "Identity & Access",
+      "color": "#2563EB",
+      "items": [
+        {
+          "id": "azure-ad",
+          "name": "Azure Active Directory",
+          "icon": "\ud83d\udc65",
+          "status": "Connected",
+          "desc": "Identity provider and SSO"
+        },
+        {
+          "id": "okta",
+          "name": "Okta",
+          "icon": "\ud83d\udd11",
+          "status": "Connected",
+          "desc": "MFA and SSO gateway"
+        },
+        {
+          "id": "cyberark",
+          "name": "CyberArk",
+          "icon": "\ud83d\udee1",
+          "status": "Connected",
+          "desc": "Privileged access management"
+        }
+      ]
+    },
+    {
+      "cat": "Integration & Gateway",
+      "color": "#D97706",
+      "items": [
+        {
+          "name": "EDI Gateway",
+          "status": "Live",
+          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
+          "last": "just now",
+          "icon": "🏥",
+          "highlight": true,
+          "note": "Patient data integration — ADT and ORM message routing across all hospital sites. Consumer thread deadlock monitoring. Gateway restart requires HiTL approval — patient data flow impact."
+        },
+        {
+          "name": "Multi-Tenant API Gateway",
+          "status": "Live",
+          "agent": "Alert Correlator, Change Validator",
+          "last": "8s ago",
+          "icon": "🌐",
+          "note": "API gateway for hospital tenant namespaces. Rate limiter config drift detection — auto-corrected on divergence from GitOps baseline."
+        }
+      ]
+    },
+    {
+      "cat": "Archive & Storage",
+      "color": "#0891b2",
+      "items": [
+        {
+          "name": "Virtual Storage",
+          "status": "Live",
+          "agent": "Capacity Planner, Alert Correlator",
+          "last": "10s ago",
+          "icon": "🗄",
+          "highlight": true,
+          "note": "Long-term DICOM study archive — partition capacity monitored at 80%/90%/95% thresholds. Emergency Azure Blob tier migration auto-triggered at 90%. Current rate 2.4 TB/day."
+        },
+        {
+          "name": "Long-Term Archive (PostgreSQL)",
+          "status": "Live",
+          "agent": "RCA Engine, Remediation Agent",
+          "last": "12s ago",
+          "icon": "🗃",
+          "note": "PostgreSQL-backed long-term archive. Replication slot monitoring — inactive slots dropped automatically to prevent WAL accumulation. Replication lag SLA: 5 seconds."
+        },
+        {
+          "name": "Azure Monitor",
+          "status": "Live",
+          "agent": "Capacity Planner",
+          "last": "2 min ago",
+          "icon": "☁",
+          "note": "Azure-hosted components — Archive VNA, Radiology AI, Enterprise Applications. Resource utilisation trending and breach prediction."
+        }
+      ]
+    },
+    {
+      "cat": "CI/CD & DevOps",
+      "color": "#2563EB",
+      "items": [
+        {
+          "id": "jenkins",
+          "name": "Jenkins",
+          "icon": "\ud83d\udd27",
+          "status": "Connected",
+          "desc": "CI/CD pipeline orchestration"
+        },
+        {
+          "id": "github",
+          "name": "GitHub Enterprise",
+          "icon": "\ud83d\udc19",
+          "status": "Connected",
+          "desc": "Source control and PR management"
+        },
+        {
+          "id": "ansible",
+          "name": "Ansible",
+          "icon": "\u26a1",
+          "status": "Connected",
+          "desc": "Configuration management and remediation"
+        },
+        {
+          "id": "kubernetes",
+          "name": "Kubernetes",
+          "icon": "\u2638",
+          "status": "Connected",
+          "desc": "Container orchestration"
+        }
+      ]
+    }
+  ]
+}

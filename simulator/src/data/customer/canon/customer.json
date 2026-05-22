@@ -1,0 +1,333 @@
+{
+  "name": "Canon Europa N.V",
+  "shortName": "Canon Europa",
+  "logoText": "CANON",
+  "logoSubtext": "Futuristic IT Operations",
+  "logo": "\ud83d\udcf7",
+  "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Canon_wordmark.svg",
+  "accentColor": "#CC0000",
+  "tagline": "Printing \u00b7 Medical \u00b7 Imaging \u00b7 Industrial \u00b7 OCI + Azure \u00b7 39 Countries",
+  "industry": "Printing, Medical, Imaging and Industrial",
+  "country": "Netherlands / UK",
+  "employees": "13,300",
+  "hq": "London (UK) \u00b7 Amstelveen (Netherlands)",
+  "itsm": "XURRENT (SaaS \u00b7 moderately customised)",
+  "primaryCloud": "OCI (Oracle Cloud Infrastructure) + Azure",
+  "monitoring": "ELK Stack \u00b7 Oracle Enterprise Manager (OEM)",
+  "automation": "Custom Scripts \u00b7 Native Automation \u00b7 ELK Dashboards",
+  "dcLocations": ["Amstelveen (Netherlands)", "Venlo (Netherlands)"],
+  "previousAIOps": [],
+  "incumbents": [],
+  "demoBrief": "RFP procurement. No previous AIOps. Cost -30%, MTTR -60%, AI-led operations, zero-ticketing. Baseline MTTR 6-7 business days. Oracle/OCI estate. EBS and Informatica 24x7 teams. FAM=TCS outsourced.",
+  "transferConfig": {
+    "programme": "Canon Europa \u00b7 TCS-to-GCC Operations Transfer",
+    "from": "TCS Managed Services \u2014 incl. FAM outsourced team (70%)",
+    "to": "Canon GCC Hyderabad (30%)",
+    "handoverDate": "Jun 2027",
+    "tcsLocation": "TCS Delivery Centre",
+    "gccLocation": "Canon GCC Hyderabad",
+    "readiness": {
+      "overall": 64,
+      "categories": [
+        {
+          "id": "runbooks",
+          "icon": "\ud83d\udccb",
+          "label": "Runbooks & SOPs",
+          "color": "#2563EB",
+          "pct": 78,
+          "count": 19,
+          "total": 25,
+          "detail": "ZeroOps auto-generated 19 validated runbooks from 6 months of live incident resolution. Informatica and Oracle EBS OTC complete."
+        },
+        {
+          "id": "kb",
+          "icon": "\ud83e\udde0",
+          "label": "Knowledge Base",
+          "color": "#7C3AED",
+          "pct": 70,
+          "count": 14,
+          "total": 20,
+          "detail": "14 KB articles built automatically from resolved incidents \u2014 no manual authoring. Pattern confidence scores attached to every article."
+        },
+        {
+          "id": "automation",
+          "icon": "\u26a1",
+          "label": "Automation Coverage",
+          "color": "#16A34A",
+          "pct": 62,
+          "count": 15,
+          "total": 24,
+          "detail": "Informatica auto-recovery (91%) and Oracle EBS ship confirm reprocessing (75%) fully automated. DD mandate and Primavera correction in progress."
+        },
+        {
+          "id": "shadowing",
+          "icon": "\ud83d\udc65",
+          "label": "GCC Shadowing",
+          "color": "#D97706",
+          "pct": 50,
+          "count": 10,
+          "total": 20,
+          "detail": "GCC team shadowing live incidents via ZeroOps for 3 months. Informatica and Oracle EBS OTC sessions complete. Oracle Finance and Primavera scheduled."
+        },
+        {
+          "id": "testing",
+          "icon": "\ud83e\uddea",
+          "label": "GCC Go-Live Testing",
+          "color": "#0891B2",
+          "pct": 35,
+          "count": 4,
+          "total": 10,
+          "detail": "Parallel run testing complete for Informatica recovery. Oracle EBS ship confirm testing underway. Oracle Finance Q1 2027."
+        },
+        {
+          "id": "documentation",
+          "icon": "\ud83d\udcd6",
+          "label": "Tribal Knowledge",
+          "color": "#DC2626",
+          "pct": 60,
+          "count": 12,
+          "total": 20,
+          "detail": "12 critical patterns documented \u2014 quarter-end EBS procedures captured from Dec 2026 close. 8 remaining including Accenture DD coordination."
+        }
+      ]
+    },
+    "risks": [
+      {
+        "severity": "HIGH",
+        "label": "FAM Team Knowledge Transfer \u2014 TCS Outsourced Integration Ops",
+        "mitigation": "FAM team (TCS) manual Informatica ops now 91% automated by ZeroOps. GCC inherits automation, not manual runbooks. Remaining 9% complex cases documented in KB-CN-001.",
+        "owner": "TCS Delivery Lead + Canon IT"
+      },
+      {
+        "severity": "MEDIUM",
+        "label": "Oracle EBS Quarter-End Procedures \u2014 Dec'26 Close Captured",
+        "mitigation": "Dec 2026 quarter-end close fully documented by ZeroOps \u2014 8 resolution patterns added to KB automatically. Mar 2027 close will be the final validation before handover.",
+        "owner": "TCS Oracle Lead"
+      },
+      {
+        "severity": "MEDIUM",
+        "label": "Accenture DD Rerun Coordination \u2014 GCC Relationship Establishing",
+        "mitigation": "Accenture integration handover session completed. ZeroOps auto-notification handles 80% of coordination. GCC team introduced to Accenture contacts.",
+        "owner": "Canon IT Director"
+      },
+      {
+        "severity": "LOW",
+        "label": "XURRENT Admin Access \u2014 GCC Fully Provisioned",
+        "mitigation": "XURRENT SaaS admin roles provisioned for GCC team in month 3. All incident workflows tested and validated.",
+        "owner": "Canon IT"
+      },
+      {
+        "severity": "LOW",
+        "label": "OCI Console Access \u2014 GCC Operational",
+        "mitigation": "OCI IAM roles provisioned and validated in month 2. GCC team operating OCI console independently.",
+        "owner": "Canon IT"
+      }
+    ],
+    "ktProgress": [
+      {
+        "month": "Jun'26",
+        "runbooks": 2,
+        "kb": 2,
+        "automation": 2,
+        "shadowing": 1
+      },
+      {
+        "month": "Jul'26",
+        "runbooks": 5,
+        "kb": 5,
+        "automation": 5,
+        "shadowing": 3
+      },
+      {
+        "month": "Aug'26",
+        "runbooks": 8,
+        "kb": 8,
+        "automation": 8,
+        "shadowing": 5
+      },
+      {
+        "month": "Sep'26",
+        "runbooks": 12,
+        "kb": 10,
+        "automation": 11,
+        "shadowing": 7
+      },
+      {
+        "month": "Oct'26",
+        "runbooks": 15,
+        "kb": 12,
+        "automation": 13,
+        "shadowing": 8
+      },
+      {
+        "month": "Nov'26",
+        "runbooks": 17,
+        "kb": 13,
+        "automation": 14,
+        "shadowing": 9
+      },
+      {
+        "month": "Dec'26",
+        "runbooks": 19,
+        "kb": 14,
+        "automation": 15,
+        "shadowing": 10
+      },
+      {
+        "month": "Jan'27",
+        "runbooks": 21,
+        "kb": 16,
+        "automation": 17,
+        "shadowing": 13,
+        "forecast": true
+      },
+      {
+        "month": "Feb'27",
+        "runbooks": 22,
+        "kb": 17,
+        "automation": 19,
+        "shadowing": 15,
+        "forecast": true
+      },
+      {
+        "month": "Mar'27",
+        "runbooks": 23,
+        "kb": 18,
+        "automation": 21,
+        "shadowing": 17,
+        "forecast": true
+      },
+      {
+        "month": "Apr'27",
+        "runbooks": 24,
+        "kb": 19,
+        "automation": 22,
+        "shadowing": 18,
+        "forecast": true
+      },
+      {
+        "month": "May'27",
+        "runbooks": 25,
+        "kb": 20,
+        "automation": 24,
+        "shadowing": 20,
+        "forecast": true
+      },
+      {
+        "month": "Jun'27",
+        "runbooks": 25,
+        "kb": 20,
+        "automation": 24,
+        "shadowing": 20,
+        "forecast": true,
+        "handover": true
+      }
+    ],
+    "currentCoverage": 70,
+    "targetCoverage": 30,
+    "domains": [
+      {
+        "id": "oracle-erp",
+        "icon": "\ud83c\udfed",
+        "label": "Oracle Core ERP",
+        "color": "#CC0000",
+        "tcs": {
+          "apps": 3,
+          "alerts": 1840,
+          "incidents": 124,
+          "autoRate": 42
+        },
+        "gcc": {
+          "apps": 3,
+          "alerts": 1840,
+          "incidents": 124,
+          "autoRate": 42
+        },
+        "status": "LIVE",
+        "readiness": 60,
+        "apps": ["BizOps (Oracle SCM)", "Oracle Finance", "Oracle EBS OTC"],
+        "runbookCoverage": 72,
+        "automationRate": 42,
+        "note": "Ship confirm auto-resolved 75% of cases. Quarter-end procedures documented from Dec'26 close.",
+        "detail": "Complex Oracle estate. Ship confirm and DD auth runbooks complete. Quarter-end procedures captured."
+      },
+      {
+        "id": "integration",
+        "icon": "\ud83d\udd00",
+        "label": "Integration & Middleware",
+        "color": "#7C3AED",
+        "tcs": {
+          "apps": 2,
+          "alerts": 980,
+          "incidents": 62,
+          "autoRate": 68
+        },
+        "gcc": {
+          "apps": 2,
+          "alerts": 980,
+          "incidents": 62,
+          "autoRate": 68
+        },
+        "status": "LIVE",
+        "readiness": 74,
+        "apps": ["Informatica IICS", "Primavera"],
+        "runbookCoverage": 82,
+        "automationRate": 68,
+        "note": "Informatica auto-recovery at 91% after 6 months. GCC team fully trained on ZeroOps-assisted recovery.",
+        "detail": "Informatica 91% automated. Primavera invoice correction active. GCC shadowing complete."
+      },
+      {
+        "id": "crm-digital",
+        "icon": "\u2601",
+        "label": "CRM & Digital",
+        "color": "#00A1E0",
+        "tcs": {
+          "apps": 2,
+          "alerts": 420,
+          "incidents": 18,
+          "autoRate": 72
+        },
+        "gcc": {
+          "apps": 2,
+          "alerts": 420,
+          "incidents": 18,
+          "autoRate": 72
+        },
+        "status": "IN TRANSFER",
+        "readiness": 80,
+        "apps": ["Salesforce CRM", "Pearlchain CPQ"],
+        "runbookCoverage": 78,
+        "automationRate": 72,
+        "note": "Ready for GCC handover. Low incident frequency \u2014 GCC team onboarded and shadowing complete.",
+        "detail": "Low complexity. GCC team trained. Scheduled for Q1 2027 handover."
+      },
+      {
+        "id": "analytics",
+        "icon": "\ud83d\udcca",
+        "label": "Analytics & Reporting",
+        "color": "#D97706",
+        "tcs": {
+          "apps": 1,
+          "alerts": 160,
+          "incidents": 8,
+          "autoRate": 85
+        },
+        "gcc": {
+          "apps": 1,
+          "alerts": 160,
+          "incidents": 8,
+          "autoRate": 85
+        },
+        "status": "IN TRANSFER",
+        "readiness": 88,
+        "apps": ["OAS Analytics"],
+        "runbookCoverage": 88,
+        "automationRate": 85,
+        "note": "Highest readiness \u2014 OAS feed freshness fully automated. GCC team ready for live handover.",
+        "detail": "Ready for handover. Automated data freshness. Minimal manual intervention required."
+      }
+    ]
+  },
+  "onCallBurden": "24x7 \u2014 EBS and Informatica teams operate around the clock to prevent and manage incidents",
+  "famTeam": "FAM team = TCS outsourced \u2014 manual integration ops being replaced by ZeroOps autonomous recovery"
+}

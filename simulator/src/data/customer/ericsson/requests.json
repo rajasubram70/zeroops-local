@@ -1,0 +1,351 @@
+{
+  "_schema": "ZeroOps Service Requests v1.0",
+  "_customer": "Ericsson IT",
+  "_notes": "Drives the Requests page catalogue and queue. autoRate 0-100 (percentage auto-fulfilled). risk: LOW|MEDIUM|HIGH. For new customers replace categories, request names, tools, and hosting values.",
+  "stats": {
+    "openNow": 47,
+    "autoRate": 84,
+    "avgFulfilTime": "4.2 min",
+    "deflectedToday": 89,
+    "totalToday": 312,
+    "autoFulfilled": 262,
+    "avgTime": "4.2 min",
+    "awaitingApproval": 8,
+    "slaBreaches": 0,
+    "timeSavedMins": 9847,
+    "itRequests": 247,
+    "sapRequests": 65
+  },
+  "catalogue": [
+    {
+      "id": "RC001",
+      "category": "IT",
+      "type": "Access & Identity",
+      "requests": [
+        {
+          "name": "Azure AD / Entra ID group access",
+          "monthly": 847,
+          "autoRate": 91,
+          "avgTime": "3 min",
+          "risk": "LOW",
+          "tool": "MS Graph API + Entra",
+          "hosting": "Azure"
+        },
+        {
+          "name": "GitLab project/group access",
+          "monthly": 612,
+          "autoRate": 88,
+          "avgTime": "4 min",
+          "risk": "LOW",
+          "tool": "GitLab API + SailPoint",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "Jira project access + permissions",
+          "monthly": 441,
+          "autoRate": 84,
+          "avgTime": "3 min",
+          "risk": "LOW",
+          "tool": "Jira API + SailPoint",
+          "hosting": "Azure"
+        },
+        {
+          "name": "Confluence space access",
+          "monthly": 287,
+          "autoRate": 91,
+          "avgTime": "2 min",
+          "risk": "LOW",
+          "tool": "Confluence API",
+          "hosting": "Azure"
+        },
+        {
+          "name": "CyberArk PAM privileged access",
+          "monthly": 94,
+          "autoRate": 0,
+          "avgTime": "Manual",
+          "risk": "HIGH",
+          "tool": "CyberArk PAM + CAB",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "Zscaler ZPA application access",
+          "monthly": 234,
+          "autoRate": 89,
+          "avgTime": "3 min",
+          "risk": "LOW",
+          "tool": "Zscaler API",
+          "hosting": "Cloud"
+        },
+        {
+          "name": "User account creation (new hire)",
+          "monthly": 312,
+          "autoRate": 94,
+          "avgTime": "5 min",
+          "risk": "LOW",
+          "tool": "MS Graph + SailPoint + SAP",
+          "hosting": "Azure"
+        },
+        {
+          "name": "User deactivation (leaver)",
+          "monthly": 198,
+          "autoRate": 98,
+          "avgTime": "3 min",
+          "risk": "LOW",
+          "tool": "MS Graph + SailPoint + SAP",
+          "hosting": "Azure"
+        },
+        {
+          "name": "Password reset / MFA re-enrol",
+          "monthly": 1247,
+          "autoRate": 100,
+          "avgTime": "45 sec",
+          "risk": "LOW",
+          "tool": "MS Graph API",
+          "hosting": "Azure"
+        }
+      ]
+    },
+    {
+      "id": "RC002",
+      "category": "IT",
+      "type": "Engineering Platform",
+      "requests": [
+        {
+          "name": "GitLab CI/CD runner quota increase",
+          "monthly": 87,
+          "autoRate": 82,
+          "avgTime": "5 min",
+          "risk": "LOW",
+          "tool": "GitLab API + K8s",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "Nexus repository creation",
+          "monthly": 44,
+          "autoRate": 94,
+          "avgTime": "2 min",
+          "risk": "LOW",
+          "tool": "Nexus API",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "SonarQube project creation",
+          "monthly": 62,
+          "autoRate": 100,
+          "avgTime": "60 sec",
+          "risk": "LOW",
+          "tool": "SonarQube API",
+          "hosting": "Azure"
+        },
+        {
+          "name": "Jenkins shared library access",
+          "monthly": 38,
+          "autoRate": 87,
+          "avgTime": "4 min",
+          "risk": "LOW",
+          "tool": "Jenkins API",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "Engineering software licence (JetBrains/MATLAB)",
+          "monthly": 156,
+          "autoRate": 78,
+          "avgTime": "6 min",
+          "risk": "MEDIUM",
+          "tool": "FlexLM + Entitlement",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "Docker / container registry access",
+          "monthly": 94,
+          "autoRate": 96,
+          "avgTime": "90 sec",
+          "risk": "LOW",
+          "tool": "Harbor API",
+          "hosting": "Ericsson DC"
+        }
+      ]
+    },
+    {
+      "id": "RC003",
+      "category": "IT",
+      "type": "Device & Collaboration",
+      "requests": [
+        {
+          "name": "M365 licence assignment",
+          "monthly": 287,
+          "autoRate": 96,
+          "avgTime": "2 min",
+          "risk": "LOW",
+          "tool": "MS Graph API",
+          "hosting": "Azure"
+        },
+        {
+          "name": "Teams channel / guest access",
+          "monthly": 198,
+          "autoRate": 100,
+          "avgTime": "60 sec",
+          "risk": "LOW",
+          "tool": "MS Graph API",
+          "hosting": "Azure"
+        },
+        {
+          "name": "Laptop / device request (new)",
+          "monthly": 124,
+          "autoRate": 0,
+          "avgTime": "3 days",
+          "risk": "LOW",
+          "tool": "ServiceNow + Procurement",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "VPN certificate renewal",
+          "monthly": 341,
+          "autoRate": 100,
+          "avgTime": "45 sec",
+          "risk": "LOW",
+          "tool": "Zscaler API",
+          "hosting": "Cloud"
+        }
+      ]
+    },
+    {
+      "id": "RC004",
+      "category": "Business",
+      "type": "SAP & Finance",
+      "requests": [
+        {
+          "name": "SAP role assignment",
+          "monthly": 447,
+          "autoRate": 71,
+          "avgTime": "8 min",
+          "risk": "MEDIUM",
+          "tool": "SAP GRC + SailPoint",
+          "hosting": "Azure"
+        },
+        {
+          "name": "SAP Firefighter (emergency access)",
+          "monthly": 28,
+          "autoRate": 0,
+          "avgTime": "Manual",
+          "risk": "HIGH",
+          "tool": "SAP GRC + CAB approval",
+          "hosting": "Azure"
+        },
+        {
+          "name": "SAP transport request approval",
+          "monthly": 312,
+          "autoRate": 64,
+          "avgTime": "12 min",
+          "risk": "MEDIUM",
+          "tool": "SAP CTS + Change Validator",
+          "hosting": "Azure"
+        },
+        {
+          "name": "Concur expense category unlock",
+          "monthly": 87,
+          "autoRate": 89,
+          "avgTime": "3 min",
+          "risk": "LOW",
+          "tool": "SAP Concur API",
+          "hosting": "Azure"
+        }
+      ]
+    },
+    {
+      "id": "RC005",
+      "category": "Infrastructure",
+      "type": "Cloud & Infrastructure",
+      "requests": [
+        {
+          "name": "Azure VM resize request",
+          "monthly": 44,
+          "autoRate": 0,
+          "avgTime": "CAB",
+          "risk": "HIGH",
+          "tool": "Azure ARM + CAB",
+          "hosting": "Azure"
+        },
+        {
+          "name": "K8s namespace / quota request",
+          "monthly": 67,
+          "autoRate": 84,
+          "avgTime": "6 min",
+          "risk": "LOW",
+          "tool": "K8s API",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "SSL certificate renewal",
+          "monthly": 28,
+          "autoRate": 96,
+          "avgTime": "2 min",
+          "risk": "LOW",
+          "tool": "Cert Manager API",
+          "hosting": "Ericsson DC"
+        },
+        {
+          "name": "DNS record change",
+          "monthly": 34,
+          "autoRate": 78,
+          "avgTime": "5 min",
+          "risk": "MEDIUM",
+          "tool": "Azure DNS API",
+          "hosting": "Azure"
+        }
+      ]
+    }
+  ],
+  "queue": [
+    {
+      "id": "REQ0048847",
+      "type": "Access & Identity",
+      "request": "Azure AD group access \u2014 engineering-platform-leads",
+      "user": "a.fischer@ericsson.com",
+      "status": "Auto-fulfilling",
+      "eta": "2 min",
+      "risk": "LOW",
+      "auto": true
+    },
+    {
+      "id": "REQ0048844",
+      "type": "SAP & Finance",
+      "request": "SAP Firefighter access \u2014 period-end close",
+      "user": "r.patel@ericsson.com",
+      "status": "Pending approval",
+      "eta": "CAB",
+      "risk": "HIGH",
+      "auto": false
+    },
+    {
+      "id": "REQ0048841",
+      "type": "Engineering",
+      "request": "GitLab runner quota +8 pods \u2014 SWENG-1247",
+      "user": "p.nair@ericsson.com",
+      "status": "Auto-fulfilling",
+      "eta": "3 min",
+      "risk": "LOW",
+      "auto": true
+    },
+    {
+      "id": "REQ0048838",
+      "type": "Device",
+      "request": "M365 E5 licence \u2014 new hire L.Schmidt",
+      "user": "it.ops@ericsson.com",
+      "status": "Completed",
+      "eta": "Done",
+      "risk": "LOW",
+      "auto": true
+    },
+    {
+      "id": "REQ0048835",
+      "type": "Access & Identity",
+      "request": "CyberArk PAM \u2014 production database admin",
+      "user": "k.weber@ericsson.com",
+      "status": "Pending CAB",
+      "eta": "72h",
+      "risk": "HIGH",
+      "auto": false
+    }
+  ]
+}

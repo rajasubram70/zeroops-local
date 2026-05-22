@@ -1,0 +1,65 @@
+{
+  "_schema": "ZeroOps Roles v1.0",
+  "_notes": "Defines user roles and nav access. Each role maps to a login credential in credentials.json. access is an array of nav item ids — only listed items appear in that role's sidebar. navItems defines the full nav bar in order — add/remove/reorder here to change the sidebar for all roles.",
+
+  "_nav_ids": {
+    "cmd": "Dashboards — ZeroOps command centre with live metrics",
+    "inc": "Incidents — Active and resolved incident list",
+    "mim": "MIM — Major Incident Management command room",
+    "req": "Requests — Service request catalogue and queue",
+    "topo": "Service Map — Application topology and health",
+    "agents": "Agents & KB — Agent definitions and knowledge base",
+    "wf": "Workflows — Scenario simulation and pillar demos",
+    "reports": "Reports — Monthly value, RCA, SD intelligence, MIM",
+    "chat": "AI Assistant — GPT-4o chat with full ZeroOps context"
+  },
+
+  "roles": [
+    {
+      "id": "noc",
+      "label": "L2/L3 Engineer",
+      "icon": "🖥",
+      "desc": "Monitor incidents, trigger healthchecks, view dashboards and MIM",
+      "color": "#3b82f6",
+      "access": ["cmd", "inc", "mim", "req", "topo", "chat"]
+    },
+    {
+      "id": "aiops",
+      "label": "Rapid Response SRE Team",
+      "icon": "⚡",
+      "desc": "Full access — agents, topology, workflows, knowledge base, AI chat, reports",
+      "color": "#8b5cf6",
+      "access": [
+        "cmd",
+        "inc",
+        "mim",
+        "req",
+        "topo",
+        "agents",
+        "wf",
+        "reports",
+        "chat"
+      ]
+    },
+    {
+      "id": "exec",
+      "label": "Executive",
+      "icon": "📊",
+      "desc": "Command centre and reports — business value and KPI overview",
+      "color": "#22c55e",
+      "access": ["cmd", "reports"]
+    }
+  ],
+
+  "navItems": [
+    { "id": "cmd", "icon": "⊡", "label": "Dashboards", "acc": "cmd" },
+    { "id": "inc", "icon": "⚠", "label": "Incidents", "acc": "inc" },
+    { "id": "mim", "icon": "🚨", "label": "MIM", "acc": "mim" },
+    { "id": "req", "icon": "📋", "label": "Requests", "acc": "req" },
+    { "id": "topo", "icon": "◉", "label": "Service Map", "acc": "topo" },
+    { "id": "wf", "icon": "⟳", "label": "Workflows", "acc": "wf" },
+    { "id": "agents", "icon": "◈", "label": "Agents & KB", "acc": "agents" },
+    { "id": "reports", "icon": "↓", "label": "Reports", "acc": "reports" },
+    { "id": "chat", "icon": "◎", "label": "AI Assistant", "acc": "chat" }
+  ]
+}

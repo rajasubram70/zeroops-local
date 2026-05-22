@@ -1,0 +1,12 @@
+{
+  "name": "Enterprise IT Operations",
+  "shortName": "Enterprise Demo",
+  "logo": "\ud83c\udfe2",
+  "industry": "Cross-Industry",
+  "itsm": "ServiceNow",
+  "accentColor": "#2563EB",
+  "description": "Generic enterprise IT operations demo \u2014 AI-infused autonomous operations across ERP, HR, Supply Chain and Engineering domains",
+  "users": "15,000+",
+  "countries": 12,
+  "tagline": "Autonomous IT Operations at Enterprise Scale"
+}

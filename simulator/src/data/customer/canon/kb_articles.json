@@ -1,0 +1,187 @@
+{
+  "_notes": "Canon Europa KB articles \u2014 Oracle/Informatica estate",
+  "articles": [
+    {
+      "id": "KB-CN-001",
+      "title": "Informatica Job Failure \u2014 Auto-Recovery Runbook",
+      "category": "Integration",
+      "status": "ACTIVE",
+      "confidence": 91,
+      "summary": "End-to-end recovery for Informatica IICS job failures on OCI including batch status reset, transit file recovery and job restart.",
+      "related_incidents": ["65501787", "65482341", "65461092"],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent"],
+      "tags": ["Informatica", "Integration", "OCI", "Job Recovery"],
+      "sections": [
+        {
+          "title": "Detecting the Failure",
+          "content": "ELK alert fires when Informatica job enters FAILED state. OEM confirms job unscheduled. ZeroOps checks transit directory for stuck files. All three conditions must be assessed before recovery.",
+          "heading": "Detecting the Failure",
+          "body": "ELK alert fires when Informatica job enters FAILED state. OEM confirms job unscheduled. ZeroOps checks transit directory for stuck files. All three conditions must be assessed before recovery."
+        },
+        {
+          "title": "Root Cause Patterns",
+          "content": "Most common: upstream null field causing parse failure. Second most common: OCI connectivity blip causing job timeout. Third: batch status corruption after concurrent conflict. Pattern confidence 91% from 18 resolved incidents.",
+          "heading": "Root Cause Patterns",
+          "body": "Most common: upstream null field causing parse failure. Second most common: OCI connectivity blip causing job timeout. Third: batch status corruption after concurrent conflict. Pattern confidence 91% from 18 resolved incidents."
+        },
+        {
+          "title": "Auto-Recovery Steps",
+          "content": "1. Reset batch status for failed outbound jobs. 2. Move unprocessed files from transit to landing directory. 3. Retrigger inbound job processing. 4. Restart generic/other integration jobs. 5. Reschedule any unscheduled jobs. 6. Validate downstream data flow \u2014 EBS, Salesforce, Pearlchain.",
+          "heading": "Auto-Recovery Steps",
+          "body": "1. Reset batch status for failed outbound jobs. 2. Move unprocessed files from transit to landing directory. 3. Retrigger inbound job processing. 4. Restart generic/other integration jobs. 5. Reschedule any unscheduled jobs. 6. Validate downstream data flow \u2014 EBS, Salesforce, Pearlchain."
+        },
+        {
+          "title": "Escalation Triggers",
+          "content": "Escalate to TAM admin if: file count in transit exceeds 100, job failure rate > 50% in one hour, or downstream EBS revenue data not received by 06:00 business start.",
+          "heading": "Escalation Triggers",
+          "body": "Escalate to TAM admin if: file count in transit exceeds 100, job failure rate > 50% in one hour, or downstream EBS revenue data not received by 06:00 business start."
+        }
+      ],
+      "relatedIncidents": ["65501787", "65482341", "65461092"]
+    },
+    {
+      "id": "KB-CN-002",
+      "title": "Oracle EBS Ship Confirmation \u2014 Stuck Order Recovery",
+      "category": "Order to Cash",
+      "status": "ACTIVE",
+      "confidence": 89,
+      "summary": "Recovery for Oracle EBS WSH ship confirmation failures \u2014 concurrent reprocessing, inventory interface clearing and DB-level fixes.",
+      "related_incidents": ["65504576", "65483876", "65469254", "65442187"],
+      "relatedAgents": ["Oracle Ops Agent", "RCA Engine", "Remediation Agent"],
+      "tags": ["Oracle EBS", "Ship Confirmation", "WSH", "OTC", "Revenue"],
+      "sections": [
+        {
+          "title": "Failure Signature",
+          "content": "OEM alert: WSH concurrent requests stuck > 30 minutes. Orders in Shipped or Awaiting Closure status. Inventory interface shows pending transactions. Revenue recognition blocked.",
+          "heading": "Failure Signature",
+          "body": "OEM alert: WSH concurrent requests stuck > 30 minutes. Orders in Shipped or Awaiting Closure status. Inventory interface shows pending transactions. Revenue recognition blocked."
+        },
+        {
+          "title": "Root Cause Chain",
+          "content": "MTL_TRANSACTIONS_INTERFACE records not clearing \u2192 ship confirm concurrent request fails \u2192 order cannot close \u2192 revenue recognition blocked \u2192 period-end risk.",
+          "heading": "Root Cause Chain",
+          "body": "MTL_TRANSACTIONS_INTERFACE records not clearing \u2192 ship confirm concurrent request fails \u2192 order cannot close \u2192 revenue recognition blocked \u2192 period-end risk."
+        },
+        {
+          "title": "Auto-Recovery (32 of 38 pattern)",
+          "content": "Run WSHFSTRX concurrent request for eligible stuck orders. Clear MTL_TRANSACTIONS_INTERFACE pending transactions. Validate ship confirmation completes. Confirm order moves to Closed status.",
+          "heading": "Auto-Recovery (32 of 38 pattern)",
+          "body": "Run WSHFSTRX concurrent request for eligible stuck orders. Clear MTL_TRANSACTIONS_INTERFACE pending transactions. Validate ship confirmation completes. Confirm order moves to Closed status."
+        },
+        {
+          "title": "DB-Level Fix (requires HiTL)",
+          "content": "For orders where inventory interface cannot be cleared via concurrent: DBA reviews MTL_TRANSACTIONS_INTERFACE directly. Finance lead approves data fix. ZeroOps executes approved SQL after sign-off.",
+          "heading": "DB-Level Fix (requires HiTL)",
+          "body": "For orders where inventory interface cannot be cleared via concurrent: DBA reviews MTL_TRANSACTIONS_INTERFACE directly. Finance lead approves data fix. ZeroOps executes approved SQL after sign-off."
+        },
+        {
+          "title": "Period-End Escalation",
+          "content": "During month-end or quarter-end: all stuck ship confirms are treated as P1. Escalate to Finance Director if revenue impact > $500K. ZeroOps pre-clears ship confirm queue daily at 05:00 before business start.",
+          "heading": "Period-End Escalation",
+          "body": "During month-end or quarter-end: all stuck ship confirms are treated as P1. Escalate to Finance Director if revenue impact > $500K. ZeroOps pre-clears ship confirm queue daily at 05:00 before business start."
+        }
+      ],
+      "relatedIncidents": ["65504576", "65483876", "65469254", "65442187"]
+    },
+    {
+      "id": "KB-CN-003",
+      "title": "Oracle EBS Direct Debit Authorisation Failure",
+      "category": "Finance / Collections",
+      "status": "ACTIVE",
+      "confidence": 82,
+      "summary": "Recovery for DD authorisation failures caused by bank mandate expiry \u2014 AR reversal, mandate correction and Accenture rerun coordination.",
+      "related_incidents": ["65505018", "65474918", "65449673"],
+      "relatedAgents": [
+        "Oracle Ops Agent",
+        "Remediation Agent",
+        "Alert Correlator"
+      ],
+      "tags": ["Oracle EBS", "Direct Debit", "AR", "Collections", "Mandate"],
+      "sections": [
+        {
+          "title": "Prevention \u2014 Pre-DD Mandate Scan",
+          "content": "ZeroOps runs mandate validation scan 5 days before each scheduled DD run. Identifies expiring mandates. Notifies collections team to renew before run executes. Prevents the failure rather than recovering from it.",
+          "heading": "Prevention \u2014 Pre-DD Mandate Scan",
+          "body": "ZeroOps runs mandate validation scan 5 days before each scheduled DD run. Identifies expiring mandates. Notifies collections team to renew before run executes. Prevents the failure rather than recovering from it."
+        },
+        {
+          "title": "Recovery When Failure Occurs",
+          "content": "1. Identify all invoices not picked in DD run. 2. Reverse impacted AR receipts. 3. Share invoice list with Canon IT and collectors. 4. Canon IT corrects mandate in Oracle AR backend. 5. Confirm fix to Accenture team. 6. Accenture reruns DD \u2014 ZeroOps identifies earliest available window vs default next-week schedule.",
+          "heading": "Recovery When Failure Occurs",
+          "body": "1. Identify all invoices not picked in DD run. 2. Reverse impacted AR receipts. 3. Share invoice list with Canon IT and collectors. 4. Canon IT corrects mandate in Oracle AR backend. 5. Confirm fix to Accenture team. 6. Accenture reruns DD \u2014 ZeroOps identifies earliest available window vs default next-week schedule."
+        },
+        {
+          "title": "SLA Improvement",
+          "content": "Manual process: 1 week for Accenture rerun. ZeroOps: 4 hours \u2014 same-period resolution in most cases. Key: mandate fix is automated, Accenture notification is automated, and ZeroOps identifies next available rerun window rather than defaulting to weekly schedule.",
+          "heading": "SLA Improvement",
+          "body": "Manual process: 1 week for Accenture rerun. ZeroOps: 4 hours \u2014 same-period resolution in most cases. Key: mandate fix is automated, Accenture notification is automated, and ZeroOps identifies next available rerun window rather than defaulting to weekly schedule."
+        }
+      ],
+      "relatedIncidents": ["65505018", "65474918", "65449673"]
+    },
+    {
+      "id": "KB-CN-004",
+      "title": "Primavera Invoice Delivery \u2014 Header/Line Mismatch Correction",
+      "category": "Finance / Invoice",
+      "status": "ACTIVE",
+      "confidence": 84,
+      "summary": "Auto-correction for Primavera invoice delivery failures caused by header amount vs line sum mismatch from Informatica rounding errors.",
+      "related_incidents": ["65510242", "65480234", "65458901"],
+      "relatedAgents": ["Remediation Agent", "Log Analyzer"],
+      "tags": ["Primavera", "Invoice", "Informatica", "NSO"],
+      "sections": [
+        {
+          "title": "Root Cause",
+          "content": "Informatica data transformation applies rounding to individual line amounts. Accumulated rounding difference causes header total to differ from sum of lines. Primavera strict validation rejects delivery.",
+          "heading": "Root Cause",
+          "body": "Informatica data transformation applies rounding to individual line amounts. Accumulated rounding difference causes header total to differ from sum of lines. Primavera strict validation rejects delivery."
+        },
+        {
+          "title": "Auto-Correction (within tolerance)",
+          "content": "ZeroOps validates header/line totals before Informatica delivers to Primavera. For discrepancies within \u20ac0.50 tolerance: auto-adjust header to match line sum. Re-trigger delivery. No NSO involvement required.",
+          "heading": "Auto-Correction (within tolerance)",
+          "body": "ZeroOps validates header/line totals before Informatica delivers to Primavera. For discrepancies within \u20ac0.50 tolerance: auto-adjust header to match line sum. Re-trigger delivery. No NSO involvement required."
+        },
+        {
+          "title": "Manual Review (outside tolerance)",
+          "content": "For discrepancies > \u20ac0.50: flag for NSO SPOC review. ZeroOps prepares correction summary. NSO reviews and approves. ZeroOps applies correction and retriggers delivery.",
+          "heading": "Manual Review (outside tolerance)",
+          "body": "For discrepancies > \u20ac0.50: flag for NSO SPOC review. ZeroOps prepares correction summary. NSO reviews and approves. ZeroOps applies correction and retriggers delivery."
+        },
+        {
+          "title": "Prevention",
+          "content": "ZeroOps pre-validates Informatica invoice output before sending to Primavera. Catches 75% of mismatches before delivery attempt \u2014 avoiding the failure entirely.",
+          "heading": "Prevention",
+          "body": "ZeroOps pre-validates Informatica invoice output before sending to Primavera. Catches 75% of mismatches before delivery attempt \u2014 avoiding the failure entirely."
+        }
+      ],
+      "relatedIncidents": ["65510242", "65480234", "65458901"]
+    },
+    {
+      "id": "KB-CN-005",
+      "title": "OAS Data Freshness \u2014 Informatica Feed Recovery",
+      "category": "Analytics",
+      "status": "ACTIVE",
+      "confidence": 88,
+      "summary": "Automatic detection and recovery for stale OAS dashboards caused by Informatica feed delays.",
+      "related_incidents": ["65514548", "65473456"],
+      "relatedAgents": ["Alert Correlator", "Remediation Agent"],
+      "tags": ["OAS", "Oracle Analytics", "Informatica", "Data Freshness"],
+      "sections": [
+        {
+          "title": "Detection",
+          "content": "ZeroOps monitors Informatica\u2192OAS feed freshness every 15 minutes. Alert triggers when data age exceeds 2 hours. Business users typically notice stale reports at 08:00 business start \u2014 ZeroOps detects and recovers before they do.",
+          "heading": "Detection",
+          "body": "ZeroOps monitors Informatica\u2192OAS feed freshness every 15 minutes. Alert triggers when data age exceeds 2 hours. Business users typically notice stale reports at 08:00 business start \u2014 ZeroOps detects and recovers before they do."
+        },
+        {
+          "title": "Recovery",
+          "content": "1. Identify which Informatica feed job has delayed. 2. Restart feed job if stopped. 3. Trigger OAS cache refresh after feed completes. 4. Validate report data updated. MTTR: 20-45 minutes autonomously.",
+          "heading": "Recovery",
+          "body": "1. Identify which Informatica feed job has delayed. 2. Restart feed job if stopped. 3. Trigger OAS cache refresh after feed completes. 4. Validate report data updated. MTTR: 20-45 minutes autonomously."
+        }
+      ],
+      "relatedIncidents": ["65514548", "65473456"]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "agfa",
+  "name": "AGFA HealthCare IT",
+  "shortName": "AGFA HIT",
+  "tagline": "Enterprise Imaging Platform Operations",
+  "logo": "🏥",
+  "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/0/01/Agfa_logo.svg",
+  "accentColor": "#0891b2",
+  "industry": "Healthcare IT",
+  "region": "EMEA",
+  "users": 12000,
+  "countries": 18,
+  "itsm": "ServiceNow",
+  "monitoring": "Prometheus · Datadog · Dynatrace",
+  "cloud": "Azure (SAP) + Partner DC",
+  "initiative": "AIOps Transformation — Imaging Platform Stability",
+  "incumbent": "In-house + Managed Services",
+  "terminology": {
+    "valueChain": "Platform Service",
+    "valueChains": "Platform Services",
+    "incident": "Incident",
+    "incidents": "Incidents",
+    "agent": "AI Agent",
+    "agents": "AI Agents"
+  },
+  "contacts": [
+    { "name": "Dr. Stefan Müller", "role": "CTO", "persona": "exec" },
+    { "name": "Anna Fischer", "role": "IT Director", "persona": "itdir" },
+    { "name": "Raj Patel", "role": "Program Manager", "persona": "pm" },
+    {
+      "name": "Liam Jennings",
+      "role": "Enterprise Architect",
+      "persona": "architect"
+    },
+    { "name": "Sofia Reyes", "role": "AIOps Engineer", "persona": "aiops" }
+  ]
+}

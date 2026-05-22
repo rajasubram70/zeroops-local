@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Docker volumes (don't commit data)
+volumes/
+data/
+
+# Sensitive
+*.key
+*.pem
+secrets/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Vite cache
+simulator/.vite/
+simulator/node_modules/
+simulator/dist/

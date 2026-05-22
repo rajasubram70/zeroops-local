@@ -1,0 +1,309 @@
+{
+  "agents": [
+    {
+      "id": "alert-correlator",
+      "name": "Alert Correlator",
+      "icon": "\ud83d\udd0d",
+      "desc": "Ingests and correlates ELK and Oracle OEM alerts. 4,000/day \u2192 320 actionable.",
+      "description": "Correlates ELK Stack and Oracle Enterprise Manager alerts across Oracle EBS, Informatica, Salesforce, Primavera and OCI infrastructure.",
+      "model": "Claude Sonnet",
+      "provider": "Anthropic",
+      "runs": 1842,
+      "success": "98.4%",
+      "tokens": "694K",
+      "costOK": "$0.001",
+      "human": "0%",
+      "status": "Active",
+      "ok": 98,
+      "dur": "0.6s",
+      "tokensMonth": "694K",
+      "tools": [
+        "ELK Stack",
+        "Oracle OEM",
+        "XURRENT API",
+        "Oracle DB Logs",
+        "Informatica IICS Logs"
+      ],
+      "integrations": [
+        "ELK Stack",
+        "Oracle Enterprise Manager",
+        "XURRENT",
+        "Oracle DB",
+        "Informatica IICS",
+        "OCI Monitoring"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Improving",
+        "delta": "+2.8% this month"
+      },
+      "anatomy": {
+        "trigger": "ELK or OEM alert fires",
+        "process": "Correlate \u2192 Deduplicate \u2192 Prioritise \u2192 Route",
+        "output": "Single XURRENT incident with confidence score"
+      }
+    },
+    {
+      "id": "rca-engine",
+      "name": "RCA Engine",
+      "icon": "\ud83e\udde0",
+      "desc": "Root cause analysis across Oracle EBS, Informatica, OCI and Salesforce dependency chains.",
+      "description": "Traverses Oracle EBS concurrent request logs, Informatica execution history, OCI metrics and Salesforce integration traces to identify root cause.",
+      "model": "Claude Sonnet",
+      "provider": "Anthropic",
+      "runs": 741,
+      "success": "93.8%",
+      "tokens": "2.2M",
+      "costOK": "$0.021",
+      "human": "11%",
+      "status": "Active",
+      "ok": 94,
+      "dur": "32s",
+      "tokensMonth": "2.2M",
+      "tools": [
+        "Oracle EBS Concurrent Logs",
+        "Informatica IICS Execution History",
+        "OCI Metrics",
+        "Oracle OEM",
+        "Oracle AR Logs"
+      ],
+      "integrations": [
+        "Oracle EBS",
+        "Informatica IICS",
+        "OCI",
+        "Oracle Finance",
+        "Oracle SCM",
+        "Primavera",
+        "Salesforce API",
+        "OAS"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Improving",
+        "delta": "+3.1% this month"
+      },
+      "anatomy": {
+        "trigger": "Incident created by Alert Correlator",
+        "process": "Dependency graph traversal \u2192 Root cause hypothesis \u2192 Confidence scoring",
+        "output": "Root cause with confidence score and pre-approved remediation plan"
+      }
+    },
+    {
+      "id": "log-analyzer",
+      "name": "Log Analyzer",
+      "icon": "\ud83d\udccb",
+      "desc": "Analyses Oracle EBS concurrent request logs, Informatica execution logs and ELK log streams.",
+      "description": "Deep log analysis across Oracle Forms, Concurrent Processing, Informatica job logs and OCI infrastructure logs.",
+      "model": "Claude Sonnet",
+      "provider": "Anthropic",
+      "runs": 628,
+      "success": "96.9%",
+      "tokens": "1.6M",
+      "costOK": "$0.011",
+      "human": "2%",
+      "status": "Active",
+      "ok": 97,
+      "dur": "18s",
+      "tokensMonth": "1.6M",
+      "tools": [
+        "Oracle EBS Concurrent Logs",
+        "Informatica IICS Job Logs",
+        "ELK Log Streams",
+        "Oracle DB Alert Logs",
+        "OCI Logs"
+      ],
+      "integrations": [
+        "Oracle EBS",
+        "Informatica IICS",
+        "ELK Stack",
+        "Oracle DB",
+        "OCI",
+        "Oracle OEM",
+        "XURRENT Audit"
+      ],
+      "drift": {
+        "dir": "stable",
+        "label": "Stable",
+        "delta": ""
+      },
+      "anatomy": {
+        "trigger": "RCA Engine requests log analysis",
+        "process": "Log ingestion \u2192 Pattern matching \u2192 Anomaly detection \u2192 Timeline reconstruction",
+        "output": "Structured findings with causal timeline"
+      }
+    },
+    {
+      "id": "remediation-agent",
+      "name": "Remediation Agent",
+      "icon": "\u26a1",
+      "desc": "Executes pre-approved remediations: Informatica job restarts, Oracle EBS reprocessing, AR reversals.",
+      "description": "Runs pre-approved automation scripts for Informatica recovery, Oracle EBS ship confirm reprocessing, Primavera invoice correction and AR mandate fixes.",
+      "model": "GPT-4o",
+      "provider": "OpenAI",
+      "runs": 412,
+      "success": "90.8%",
+      "tokens": "541K",
+      "costOK": "$0.014",
+      "human": "21%",
+      "status": "Active",
+      "ok": 91,
+      "dur": "38s",
+      "tokensMonth": "541K",
+      "tools": [
+        "Informatica IICS REST API",
+        "Oracle EBS Concurrent Manager",
+        "Oracle AR API",
+        "Primavera REST",
+        "XURRENT API",
+        "Python Scripts"
+      ],
+      "integrations": [
+        "Informatica IICS",
+        "Oracle EBS",
+        "Oracle AR",
+        "Oracle Finance",
+        "Primavera",
+        "XURRENT",
+        "Python/Bash Scripts",
+        "Accenture API"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Improving",
+        "delta": "+1.9% this month"
+      },
+      "anatomy": {
+        "trigger": "RCA Engine approves remediation plan",
+        "process": "Risk scoring \u2192 Pre-approved script match \u2192 Execution \u2192 Validation",
+        "output": "Remediation executed with full audit trail in XURRENT"
+      }
+    },
+    {
+      "id": "change-validator",
+      "name": "Change Validator",
+      "icon": "\u2705",
+      "desc": "Validates all changes against Oracle EBS config, Informatica schedules and XURRENT CMDB.",
+      "description": "Validates Oracle EBS, Informatica and OCI changes \u2014 XURRENT CMDB sync, risk assessment, rollback readiness.",
+      "model": "Claude Sonnet",
+      "provider": "Anthropic",
+      "runs": 218,
+      "success": "100%",
+      "tokens": "94K",
+      "costOK": "$0.000",
+      "human": "16%",
+      "status": "Active",
+      "ok": 100,
+      "dur": "9s",
+      "tokensMonth": "94K",
+      "tools": [
+        "XURRENT CMDB",
+        "Oracle EBS Config",
+        "Informatica IICS Schedules",
+        "OCI Config"
+      ],
+      "integrations": [
+        "XURRENT",
+        "Oracle EBS",
+        "Informatica IICS",
+        "OCI",
+        "Oracle Finance CMDB"
+      ],
+      "drift": {
+        "dir": "stable",
+        "label": "Stable",
+        "delta": ""
+      },
+      "anatomy": {
+        "trigger": "Remediation Agent requests change approval",
+        "process": "Risk assessment \u2192 CMDB check \u2192 Approval routing \u2192 Execution gate",
+        "output": "Approved or escalated with risk score"
+      }
+    },
+    {
+      "id": "oracle-ops-agent",
+      "name": "Oracle Ops Agent",
+      "icon": "\ud83c\udfdb",
+      "desc": "Specialist agent for Oracle EBS concurrent processing, AR, OTC and OCI infrastructure operations.",
+      "description": "Deep Oracle EBS expertise \u2014 concurrent request management, ship confirm reprocessing, AR mandate handling, Informatica\u2192EBS integration health.",
+      "model": "Claude Sonnet",
+      "provider": "Anthropic",
+      "runs": 384,
+      "success": "94.3%",
+      "tokens": "892K",
+      "costOK": "$0.018",
+      "human": "14%",
+      "status": "Active",
+      "ok": 94,
+      "dur": "44s",
+      "tokensMonth": "892K",
+      "tools": [
+        "Oracle EBS Concurrent Manager",
+        "Oracle AR",
+        "Oracle WSH",
+        "MTL_TRANSACTIONS_INTERFACE",
+        "OCI Console"
+      ],
+      "integrations": [
+        "Oracle EBS R12",
+        "Oracle Financials Cloud",
+        "Oracle SCM Cloud",
+        "Oracle AR",
+        "Oracle OEM",
+        "OCI",
+        "XURRENT"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Improving",
+        "delta": "+4.2% this month"
+      },
+      "anatomy": {
+        "trigger": "Alert Correlator or RCA Engine identifies Oracle EBS issue",
+        "process": "Concurrent log analysis \u2192 Transaction inspection \u2192 Reprocessing \u2192 Validation",
+        "output": "Oracle EBS transaction cleared with revenue impact assessment"
+      }
+    },
+    {
+      "id": "capacity-planner",
+      "name": "Capacity Planner",
+      "icon": "\ud83d\udcca",
+      "desc": "Predictive capacity planning for OCI instances, Oracle DB and Informatica job scheduling.",
+      "description": "Forecasts OCI resource needs, Oracle DB growth, Informatica job slot requirements and period-end load spikes.",
+      "model": "Claude Haiku",
+      "provider": "Anthropic",
+      "runs": 142,
+      "success": "97.2%",
+      "tokens": "198K",
+      "costOK": "$0.011",
+      "human": "3%",
+      "status": "Active",
+      "ok": 97,
+      "dur": "22s",
+      "tokensMonth": "198K",
+      "tools": [
+        "OCI Metrics",
+        "Oracle OEM",
+        "ELK Dashboards",
+        "Informatica Job History"
+      ],
+      "integrations": [
+        "OCI Auto-scaling",
+        "Oracle OEM",
+        "ELK Stack",
+        "Oracle DB",
+        "Informatica IICS",
+        "XURRENT"
+      ],
+      "drift": {
+        "dir": "up",
+        "label": "\u2191 Improving",
+        "delta": "+2.4% this month"
+      },
+      "anatomy": {
+        "trigger": "Capacity threshold approaching or period-end forecast",
+        "process": "Usage trend analysis \u2192 Breach prediction \u2192 Pre-emptive action",
+        "output": "Scaled resource or scheduled maintenance window"
+      }
+    }
+  ]
+}

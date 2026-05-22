@@ -1,0 +1,217 @@
+{
+  "catalogue": [
+    {
+      "type": "Access & Identity",
+      "category": "Access & Identity",
+      "icon": "\ud83d\udd10",
+      "items": [
+        {
+          "id": "REQ-AG-001",
+          "name": "Keycloak SSO Role Assignment",
+          "sla": "4h",
+          "auto": "82%",
+          "volume": "45/month",
+          "baseline": "72h",
+          "desc": "Assign SSO role and application access via Keycloak IAM",
+          "monthly": 45
+        },
+        {
+          "id": "REQ-AG-002",
+          "name": "PACS Reading Station Access",
+          "sla": "8h",
+          "auto": "71%",
+          "volume": "18/month",
+          "baseline": "48h",
+          "desc": "Provision radiologist access to IMPAX reading station",
+          "monthly": 18
+        },
+        {
+          "id": "REQ-AG-003",
+          "name": "VPN & Remote Access",
+          "sla": "4h",
+          "auto": "88%",
+          "volume": "22/month",
+          "baseline": "24h",
+          "desc": "Configure VPN certificate and remote access for AGFA staff",
+          "monthly": 22
+        }
+      ]
+    },
+    {
+      "type": "PACS & Imaging",
+      "category": "PACS & Imaging",
+      "icon": "\ud83d\uddbc",
+      "items": [
+        {
+          "id": "REQ-AG-004",
+          "name": "DICOM Route Configuration",
+          "sla": "8h",
+          "auto": "91%",
+          "volume": "8/month",
+          "baseline": "96h",
+          "desc": "Add or modify DICOM AE title routing rules for new modality",
+          "monthly": 8
+        },
+        {
+          "id": "REQ-AG-005",
+          "name": "PACS Study Requeue",
+          "sla": "2h",
+          "auto": "94%",
+          "volume": "28/month",
+          "baseline": "4h",
+          "desc": "Requeue failed or misrouted DICOM studies to correct reading station",
+          "monthly": 28
+        },
+        {
+          "id": "REQ-AG-006",
+          "name": "Compression Profile Update",
+          "sla": "24h",
+          "auto": "76%",
+          "volume": "4/month",
+          "baseline": "72h",
+          "desc": "Modify DICOM compression settings for specific modality type",
+          "monthly": 4
+        }
+      ]
+    },
+    {
+      "type": "Integration & HL7",
+      "category": "Integration & HL7",
+      "icon": "\ud83d\udd17",
+      "items": [
+        {
+          "id": "REQ-AG-007",
+          "name": "HL7 Interface Configuration",
+          "sla": "24h",
+          "auto": "68%",
+          "volume": "5/month",
+          "baseline": "120h",
+          "desc": "Configure new HL7 ADT/ORM interface for hospital site connection",
+          "monthly": 5
+        },
+        {
+          "id": "REQ-AG-008",
+          "name": "FHIR API Access Request",
+          "sla": "8h",
+          "auto": "85%",
+          "volume": "12/month",
+          "baseline": "48h",
+          "desc": "Provision FHIR R4 API credentials and scopes for application",
+          "monthly": 12
+        },
+        {
+          "id": "REQ-AG-009",
+          "name": "HL7 Message Replay",
+          "sla": "2h",
+          "auto": "96%",
+          "volume": "31/month",
+          "baseline": "6h",
+          "desc": "Replay failed HL7 messages from dead letter queue",
+          "monthly": 31
+        }
+      ]
+    },
+    {
+      "type": "Infrastructure",
+      "category": "Infrastructure",
+      "icon": "\ud83c\udfd7",
+      "items": [
+        {
+          "id": "REQ-AG-010",
+          "name": "VNA Storage Expansion",
+          "sla": "24h",
+          "auto": "0%",
+          "volume": "3/month",
+          "baseline": "168h",
+          "desc": "Expand DICOM archive partition \u2014 requires change approval",
+          "monthly": 3
+        },
+        {
+          "id": "REQ-AG-011",
+          "name": "Kubernetes Resource Scaling",
+          "sla": "4h",
+          "auto": "78%",
+          "volume": "14/month",
+          "baseline": "24h",
+          "desc": "Adjust CPU/memory limits for AGFA platform pods",
+          "monthly": 14
+        },
+        {
+          "id": "REQ-AG-012",
+          "name": "Azure VM Right-Sizing",
+          "sla": "48h",
+          "auto": "0%",
+          "volume": "2/month",
+          "baseline": "240h",
+          "desc": "Resize Azure VM for SAP or PACS workload \u2014 requires CAB approval",
+          "monthly": 2
+        }
+      ]
+    }
+  ],
+  "open": [
+    {
+      "id": "REQ0047814",
+      "type": "Access & Identity",
+      "name": "Keycloak SSO Role Assignment",
+      "user": "j.patel@agfa.com",
+      "status": "Auto-Processing",
+      "sla": "4h",
+      "raised": "09:14",
+      "priority": "Standard"
+    },
+    {
+      "id": "REQ0047815",
+      "type": "PACS & Imaging",
+      "name": "PACS Study Requeue",
+      "user": "a.fischer@agfa.com",
+      "status": "Completed",
+      "sla": "2h",
+      "raised": "08:52",
+      "priority": "Standard"
+    },
+    {
+      "id": "REQ0047816",
+      "type": "Integration & HL7",
+      "name": "HL7 Message Replay",
+      "user": "noc@agfa.com",
+      "status": "Auto-Processing",
+      "sla": "2h",
+      "raised": "08:30",
+      "priority": "High"
+    },
+    {
+      "id": "REQ0047817",
+      "type": "Infrastructure",
+      "name": "VNA Storage Expansion",
+      "user": "l.jennings@agfa.com",
+      "status": "Pending Approval",
+      "sla": "24h",
+      "raised": "07:45",
+      "priority": "High"
+    },
+    {
+      "id": "REQ0047818",
+      "type": "PACS & Imaging",
+      "name": "DICOM Route Configuration",
+      "user": "s.reyes@agfa.com",
+      "status": "Completed",
+      "sla": "8h",
+      "raised": "Yesterday",
+      "priority": "Standard"
+    }
+  ],
+  "stats": {
+    "totalToday": 22,
+    "autoFulfilled": 14,
+    "autoRate": 64,
+    "avgTime": "6m",
+    "openNow": 8,
+    "awaitingApproval": 2,
+    "slaBreaches": 0,
+    "timeSavedMins": 248,
+    "itRequests": 12,
+    "sapRequests": 10,
+    "totalMonth": 192
+  }
+}

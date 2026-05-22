@@ -1,0 +1,149 @@
+{
+  "_notes": "Canon Europa \u2014 real service request data from workbook. 650 tickets/month total.",
+  "stats": {
+    "totalToday": 22,
+    "autoFulfilled": 8,
+    "autoRate": 36,
+    "avgTime": "4.8 hrs",
+    "openNow": 187,
+    "slaBreaches": 42,
+    "awaitingApproval": 18,
+    "timeSavedMins": 3240,
+    "itRequests": 14,
+    "sapRequests": 8
+  },
+  "catalogue": [
+    {
+      "id": "knowledge-issues",
+      "type": "Knowledge / Data Issues",
+      "category": "Knowledge",
+      "icon": "\ud83e\udde0",
+      "color": "#2563EB",
+      "requests": [
+        {
+          "id": "knowledge-issue",
+          "name": "Knowledge Issue Resolution",
+          "monthly": 250,
+          "autoRate": 45,
+          "avgTime": "4 hrs",
+          "baselineTime": "~2 elapsed days",
+          "risk": "LOW",
+          "hosting": "OCI",
+          "desc": "ZeroOps auto-diagnoses known knowledge issues via KB pattern matching. 45% resolved autonomously. Complex issues routed with full diagnostic context \u2014 reducing elapsed time from 2 days to same-day."
+        }
+      ]
+    },
+    {
+      "id": "change-requests",
+      "type": "Change Requests",
+      "category": "Change",
+      "icon": "\ud83d\udd27",
+      "color": "#D97706",
+      "requests": [
+        {
+          "id": "data-config-change",
+          "name": "Data / Configuration Change Request",
+          "monthly": 200,
+          "autoRate": 35,
+          "avgTime": "6 hrs",
+          "baselineTime": "3-6 elapsed days",
+          "risk": "MEDIUM",
+          "hosting": "OCI",
+          "desc": "ZeroOps validates change request against configuration baseline. Standard data changes auto-processed. Configuration changes prepared for user validation \u2014 reducing 3-6 day elapsed time to same-day with one approval."
+        }
+      ]
+    },
+    {
+      "id": "monitoring-action",
+      "type": "Monitoring & Remediation",
+      "category": "Operations",
+      "icon": "\ud83d\udce1",
+      "color": "#16A34A",
+      "requests": [
+        {
+          "id": "monitoring-action",
+          "name": "Monitoring Alert \u2014 Action Required",
+          "monthly": 100,
+          "autoRate": 65,
+          "avgTime": "45 min",
+          "baselineTime": "2-5 elapsed days",
+          "risk": "LOW",
+          "hosting": "OCI",
+          "desc": "ELK and OEM alerts requiring manual action. ZeroOps auto-remediates 65% via pre-approved scripts. Remaining 35% routed with full diagnostic context. Eliminates 2-5 day elapsed time for routine remediation."
+        }
+      ]
+    },
+    {
+      "id": "bug-fixes",
+      "type": "Bug Fixes",
+      "category": "Development",
+      "icon": "\ud83d\udc1b",
+      "color": "#7C3AED",
+      "requests": [
+        {
+          "id": "bug-fix",
+          "name": "Bug in Current Code \u2014 Fix Request",
+          "monthly": 100,
+          "autoRate": 15,
+          "avgTime": "5 days",
+          "baselineTime": "10-15 elapsed days",
+          "risk": "MEDIUM",
+          "hosting": "OCI",
+          "desc": "Goes through SDLC cycle. ZeroOps cannot eliminate the development cycle but accelerates it: auto-diagnoses root cause, prepares detailed bug report, runs pre-check validation \u2014 reducing 10-15 days to 5-7 days. 15% of bugs are configuration issues resolved autonomously."
+        }
+      ]
+    }
+  ],
+  "queue": [
+    {
+      "id": "REQ-CN-00914",
+      "type": "Knowledge Issue",
+      "requester": "operations@canon.eu",
+      "status": "Auto-Resolving",
+      "age": "28 min",
+      "priority": "P2",
+      "autoRate": 45,
+      "hosting": "OCI"
+    },
+    {
+      "id": "REQ-CN-00913",
+      "type": "Config Change",
+      "requester": "bizops@canon.eu",
+      "status": "Pending Approval",
+      "age": "1h 14min",
+      "priority": "P2",
+      "autoRate": 35,
+      "hosting": "OCI"
+    },
+    {
+      "id": "REQ-CN-00912",
+      "type": "Monitoring Action",
+      "requester": "itsupport@canon.eu",
+      "status": "Auto-Resolving",
+      "age": "44 min",
+      "priority": "P3",
+      "autoRate": 65,
+      "hosting": "OCI"
+    },
+    {
+      "id": "REQ-CN-00911",
+      "type": "Knowledge Issue",
+      "requester": "finance@canon.eu",
+      "status": "Queued",
+      "age": "2h 08min",
+      "priority": "P3",
+      "autoRate": 45,
+      "hosting": "OCI"
+    },
+    {
+      "id": "REQ-CN-00910",
+      "type": "Bug Fix",
+      "requester": "dev-team@canon.eu",
+      "status": "In Progress",
+      "age": "3h 22min",
+      "priority": "P2",
+      "autoRate": 15,
+      "hosting": "OCI"
+    }
+  ]
+}

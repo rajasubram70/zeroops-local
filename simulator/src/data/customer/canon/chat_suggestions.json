@@ -1,0 +1,36 @@
+{
+  "suggestions": [
+    {
+      "icon": "\ud83d\udd34",
+      "text": "What is ZeroOps doing right now about the Informatica job failures?"
+    },
+    {
+      "icon": "\ud83d\udcb0",
+      "text": "How does ZeroOps prevent Oracle EBS ship confirmation delays from impacting revenue booking?"
+    },
+    {
+      "icon": "\ud83c\udfe6",
+      "text": "Show me how ZeroOps reduces Direct Debit auth failure MTTR from 1 week to 4 hours"
+    },
+    {
+      "icon": "\u26a1",
+      "text": "What would happen to Oracle EBS and Salesforce if Informatica goes down right now?"
+    },
+    {
+      "icon": "\ud83d\udcca",
+      "text": "Calculate the ROI for Canon Europa if ZeroOps achieves 60% MTTR reduction and 30% cost saving"
+    },
+    {
+      "icon": "\ud83c\udfaf",
+      "text": "How does ZeroOps deliver the zero-ticketing experience Canon is targeting?"
+    },
+    {
+      "icon": "\ud83d\udca5",
+      "text": "What is the blast radius if Informatica goes down completely?"
+    },
+    {
+      "icon": "\ud83d\udd2e",
+      "text": "How does ZeroOps detect Primavera invoice failures before NSO teams are impacted?"
+    }
+  ]
+}

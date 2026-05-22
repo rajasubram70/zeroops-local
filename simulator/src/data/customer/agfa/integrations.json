@@ -1,0 +1,243 @@
+{
+  "groups": [
+    {
+      "cat": "Monitoring & Observability",
+      "color": "#2563EB",
+      "items": [
+        {
+          "name": "Prometheus",
+          "status": "Live",
+          "agent": "Alert Correlator, Capacity Planner",
+          "last": "2s ago",
+          "icon": "📊",
+          "highlight": true,
+          "note": "Primary metrics platform — JVM heap, DICOM throughput, Kubernetes pod health, VNA storage capacity. ZeroOps ingests all Prometheus alerts and correlates to single incidents."
+        },
+        {
+          "name": "Datadog",
+          "status": "Live",
+          "agent": "Alert Correlator, Log Analyzer",
+          "last": "4s ago",
+          "icon": "🐶",
+          "highlight": true,
+          "note": "APM and log monitoring — HL7 message queue depth, FHIR API latency, RUBEE orchestrator performance. Primary source for HL7 and integration alerts."
+        },
+        {
+          "name": "Dynatrace",
+          "status": "Live",
+          "agent": "Alert Correlator, RCA Engine",
+          "last": "6s ago",
+          "icon": "🔍",
+          "note": "Full-stack observability — PACS application performance, RUBEE thread pool, CVE vulnerability detection. Complements Prometheus for application-layer insights."
+        },
+        {
+          "name": "Elasticsearch",
+          "status": "Live",
+          "agent": "Log Analyzer, RCA Engine",
+          "last": "3s ago",
+          "icon": "🔎",
+          "note": "Log aggregation — DICOM receiver thread dumps, HL7 consumer logs, Kubernetes pod events. RCA Engine queries Elasticsearch for historical pattern matching."
+        }
+      ]
+    },
+    {
+      "cat": "ITSM & Service Management",
+      "color": "#7C3AED",
+      "items": [
+        {
+          "name": "ServiceNow",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent, Change Validator",
+          "last": "8s ago",
+          "icon": "🎫",
+          "highlight": true,
+          "note": "AGFA's ITSM system of record. ZeroOps auto-creates incidents, updates status at each remediation step and auto-closes on resolution. Full audit trail in ServiceNow. HiTL approvals delivered via ServiceNow tasks."
+        }
+      ]
+    },
+    {
+      "cat": "Automation & Orchestration",
+      "color": "#16A34A",
+      "items": [
+        {
+          "name": "Kubernetes",
+          "status": "Live",
+          "agent": "Remediation Agent, Capacity Planner",
+          "last": "3s ago",
+          "icon": "⚙",
+          "highlight": true,
+          "note": "Container orchestration — PACS rolling restarts, FHIR API pod management, RUBEE scaling. All ZeroOps remediation actions execute via Kubernetes API. Zero-downtime rolling restart strategy applied."
+        },
+        {
+          "name": "Ansible",
+          "status": "Live",
+          "agent": "Remediation Agent",
+          "last": "10s ago",
+          "icon": "🔧",
+          "note": "Infrastructure automation — VM configuration, network maintenance validation, post-maintenance config verification. Complements Kubernetes for non-containerised components."
+        },
+        {
+          "name": "Azure DevOps / Jenkins",
+          "status": "Live",
+          "agent": "Remediation Agent",
+          "last": "on demand",
+          "icon": "🚀",
+          "note": "CI/CD pipeline integration — Problem Management code fixes handed to Jenkins/Azure DevOps for deployment. ZeroOps triggers pipeline and monitors handoff. Control passed to AGFA release management."
+        }
+      ]
+    },
+    {
+      "cat": "PACS & Imaging Platform",
+      "color": "#DC2626",
+      "items": [
+        {
+          "name": "IMPAX/EI App Server",
+          "status": "Live",
+          "agent": "RCA Engine, Remediation Agent, Log Analyzer",
+          "last": "2s ago",
+          "icon": "🖼",
+          "highlight": true,
+          "note": "Core PACS application — DICOM image storage, retrieval and distribution across 6 hospital sites. JVM heap monitoring active. Rolling restart auto-approved at risk score 18."
+        },
+        {
+          "name": "DICOM Router",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent",
+          "last": "4s ago",
+          "icon": "🔀",
+          "note": "Routes DICOM studies to correct reading stations. AE title mapping validation against CMDB baseline after every maintenance window. Misrouting auto-corrected."
+        },
+        {
+          "name": "Compression Engine",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent",
+          "last": "6s ago",
+          "icon": "🗜",
+          "note": "DICOM image compression — worker thread pool monitoring. Auto-rebalance triggered when throughput drops below 80% baseline."
+        },
+        {
+          "name": "Worklist Engine",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent",
+          "last": "8s ago",
+          "icon": "📋",
+          "note": "Radiologist worklist distribution — queue depth monitoring at 1,000 study threshold. Auto-rebalance across reading stations in under 5 minutes."
+        }
+      ]
+    },
+    {
+      "cat": "Clinical Workflow",
+      "color": "#7C3AED",
+      "items": [
+        {
+          "name": "RUBEE Orchestrator",
+          "status": "Live",
+          "agent": "RCA Engine, Remediation Agent",
+          "last": "4s ago",
+          "icon": "⚕",
+          "highlight": true,
+          "note": "Clinical workflow orchestration — worklist scheduling, priority routing, radiologist assignment. Thread pool saturation monitoring. Auto-scale config managed by ZeroOps."
+        },
+        {
+          "name": "FHIR R4 API",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent",
+          "last": "6s ago",
+          "icon": "🔗",
+          "note": "HL7 FHIR interoperability layer — /ImagingStudy endpoint monitored for 503 errors and OOMKill events. Pod restart auto-approved at risk score 12."
+        }
+      ]
+    },
+    {
+      "cat": "Integration & HL7",
+      "color": "#D97706",
+      "items": [
+        {
+          "name": "HL7 Gateway",
+          "status": "Live",
+          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
+          "last": "just now",
+          "icon": "🏥",
+          "highlight": true,
+          "note": "Patient data integration — ADT and ORM message routing across all hospital sites. Consumer thread deadlock monitoring. Gateway restart requires HiTL approval — patient data flow impact."
+        },
+        {
+          "name": "Multi-Tenant API Gateway",
+          "status": "Live",
+          "agent": "Alert Correlator, Change Validator",
+          "last": "8s ago",
+          "icon": "🌐",
+          "note": "API gateway for hospital tenant namespaces. Rate limiter config drift detection — auto-corrected on divergence from GitOps baseline."
+        }
+      ]
+    },
+    {
+      "cat": "Archive & Storage",
+      "color": "#0891b2",
+      "items": [
+        {
+          "name": "VNA (DICOM Store)",
+          "status": "Live",
+          "agent": "Capacity Planner, Alert Correlator",
+          "last": "10s ago",
+          "icon": "🗄",
+          "highlight": true,
+          "note": "Long-term DICOM study archive — partition capacity monitored at 80%/90%/95% thresholds. Emergency Azure Blob tier migration auto-triggered at 90%. Current rate 2.4 TB/day."
+        },
+        {
+          "name": "Long-Term Archive (PostgreSQL)",
+          "status": "Live",
+          "agent": "RCA Engine, Remediation Agent",
+          "last": "12s ago",
+          "icon": "🗃",
+          "note": "PostgreSQL-backed long-term archive. Replication slot monitoring — inactive slots dropped automatically to prevent WAL accumulation. Replication lag SLA: 5 seconds."
+        },
+        {
+          "name": "Azure Monitor",
+          "status": "Live",
+          "agent": "Capacity Planner",
+          "last": "2 min ago",
+          "icon": "☁",
+          "note": "Azure-hosted components — Archive VNA, Radiology AI, Enterprise Applications. Resource utilisation trending and breach prediction."
+        }
+      ]
+    },
+    {
+      "cat": "Radiology AI",
+      "color": "#7C3AED",
+      "items": [
+        {
+          "name": "AI Inference Engine",
+          "status": "Live",
+          "agent": "Alert Correlator, Remediation Agent",
+          "last": "6s ago",
+          "icon": "🧠",
+          "highlight": true,
+          "note": "GPU-accelerated radiology AI — auto-triage and anomaly detection. GPU memory fragmentation monitoring — scheduled restart at 72h uptime. Inference latency SLA: 200ms."
+        }
+      ]
+    },
+    {
+      "cat": "Enterprise Applications",
+      "color": "#475569",
+      "items": [
+        {
+          "name": "Keycloak IAM",
+          "status": "Live",
+          "agent": "Alert Correlator, Change Validator",
+          "last": "8s ago",
+          "icon": "🔐",
+          "note": "Identity and access management — SSO, token refresh, role assignment. Auth success rate monitoring > 99.9%. Service Request auto-fulfilment for standard role assignments."
+        },
+        {
+          "name": "SAP ERP (Azure)",
+          "status": "Live",
+          "agent": "Alert Correlator, Capacity Planner",
+          "last": "10s ago",
+          "icon": "🏢",
+          "note": "SAP ERP on Azure — work process monitoring, dialog pool health. Hosted in Azure; AGFA enterprise applications scope."
+        }
+      ]
+    }
+  ]
+}
