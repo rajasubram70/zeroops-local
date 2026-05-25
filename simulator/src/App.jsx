@@ -9,6 +9,7 @@ import {
 import { useHealthcheck } from './hooks/useHealthcheck.js';
 import { useMetricsTicker } from './hooks/useMetricsTicker.js';
 import { useNotifications } from './hooks/useNotifications.js';
+import { useLiveData } from './hooks/useLiveData.js';
 
 import Login from './components/Login.jsx';
 import TopBar from './components/TopBar.jsx';
@@ -74,6 +75,52 @@ export default function App() {
   const [nav, setNav] = useState('cmd');
   const [industry, setIndustry] = useState(ACTIVE_INDUSTRY);
   const [chains, setChains] = useState(APP_DOMAINS);
+  const { data: liveMetrics } = useLiveData('/metrics', null);
+
+  useEffect(() => {
+    if (!liveMetrics) return;
+    setChains(prev => prev.map(ch => {
+      if (ch.id === 'live-api') {
+        const healthy = liveMetrics.api_health === 1;
+        const queueAnom = liveMetrics.queue_depth > 50;
+        return {
+          ...ch,
+          status: healthy ? (queueAnom ? 'AMBER' : 'GREEN') : 'RED',
+          uptime: healthy ? 99.9 : 0,
+          apps: ch.apps.map(app => ({
+            ...app,
+            status: healthy ? (queueAnom ? 'AMBER' : 'GREEN') : 'RED',
+            perf: healthy ? 98 : 0,
+            infra: app.infra.map(i => {
+              if (i.c === 'health') return { ...i, val: healthy ? 'Passing' : 'DOWN', m: healthy ? 100 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Web health endpoint OK' : 'Health check FAILING — container down' };
+              if (i.c === 'resp')   return { ...i, val: healthy ? '240ms' : 'Timeout', m: healthy ? 88 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Within SLA' : 'No response — container unreachable' };
+              if (i.c === 'cpu')    return { ...i, val: healthy ? '18%' : 'N/A', m: healthy ? 18 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Normal load' : 'Container down — no CPU data' };
+              if (i.c === 'sess')   return { ...i, val: healthy ? '38' : '0', m: healthy ? 60 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Normal session count' : 'No active sessions — container down' };
+              return i;
+            })
+          }))
+        };
+      }
+      if (ch.id === 'live-crm') {
+        const healthy = liveMetrics.crm_health === 1;
+        return {
+          ...ch,
+          status: healthy ? 'GREEN' : 'RED',
+          uptime: healthy ? 99.8 : 0,
+          apps: ch.apps.map(app => ({
+            ...app,
+            status: healthy ? 'GREEN' : 'RED',
+            perf: healthy ? 97 : 0,
+            infra: app.infra.map(i => {
+              if (i.c === 'health') return { ...i, val: healthy ? 'Passing' : 'DOWN', m: healthy ? 100 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Web health endpoint OK' : 'Health check FAILING — container down' };
+              return i;
+            })
+          }))
+        };
+      }
+      return ch;
+    }));
+  }, [liveMetrics]);
   const [incidents, setIncidents] = useState(INCIDENTS_DATA);
   const [chatOpen, setChatOpen] = useState(false);
   const [ariaOpen, setAriaOpen] = useState(false);

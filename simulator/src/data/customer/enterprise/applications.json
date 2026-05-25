@@ -1,5 +1,61 @@
 {
-  "domains": [
+  "chains": [
+        {
+      "id": "live-crm",
+      "name": "CRM Platform",
+      "icon": "🏢",
+      "status": "GREEN",
+      "uptime": 99.8,
+      "description": "Live Odoo CRM — ZeroOps monitored",
+      "apps": [
+        {
+          "id": "odoo-crm",
+          "name": "Odoo CRM",
+          "status": "GREEN",
+          "perf": 97,
+          "ver": "17.0",
+          "hosting": "Docker",
+          "hostingColor": "#0078D4",
+          "sessions": 38,
+          "uptime": 99.8,
+          "trend": [99, 100, 99, 99, 100, 99, 100, 99],
+          "up": 99,
+          "infra": [
+            { "c": "health","label": "Health Check",   "val": "Passing", "unit": "",  "m": 100, "anom": false, "detail": "Web health endpoint OK",     "h": "GREEN" }
+
+          ]
+        }
+      ]
+    },
+        {
+      "id": "live-api",
+      "name": "Enterprise Order API",
+      "icon": "⚡",
+      "status": "GREEN",
+      "uptime": 99.9,
+      "description": "Live enterprise order processing API — ZeroOps monitored",
+      "apps": [
+        {
+          "id": "demo-api",
+          "name": "Order Management API",
+          "status": "GREEN",
+          "perf": 98,
+          "ver": "v2.1",
+          "hosting": "Docker",
+          "hostingColor": "#0078D4",
+          "sessions": 142,
+          "uptime": 99.9,
+          "trend": [99, 99, 100, 99, 100, 99, 99, 100],
+          "up": 99,
+          "infra": [
+            { "c": "cpu",   "label": "CPU",           "val": "24%",     "unit": "%", "m": 24,  "anom": false, "detail": "Normal load",              "h": "GREEN" },
+            { "c": "req",   "label": "Request Rate",   "val": "0.4/s",   "unit": "",  "m": 80,  "anom": false, "detail": "Orders processing normally","h": "GREEN" },
+            { "c": "health","label": "Health Check",   "val": "Passing", "unit": "",  "m": 100, "anom": false, "detail": "All endpoints healthy",     "h": "GREEN" },
+            { "c": "queue", "label": "Order Queue",    "val": "0",       "unit": "",  "m": 100, "anom": false, "detail": "Queue depth normal",        "h": "GREEN" }
+          ]
+        }
+      ]
+    },
     {
       "id": "erp",
       "name": "ERP Landscape",
@@ -7,10 +63,6 @@
       "status": "AMBER",
       "uptime": 97.2,
       "description": "SAP S/4HANA core ERP, analytics and procurement",
-      "hostingColor": "#64748B",
-      "sessions": 847,
-      "trend": [89, 87, 84, 80, 76, 74, 72, 72],
-      "up": 72,
       "apps": [
         {
           "id": "s4hana",

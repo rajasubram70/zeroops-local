@@ -491,7 +491,7 @@ function AnatomyModal({ agent, onClose }) {
   const tags = safeArr(agent.tags);
   const drift = agent.drift || { dir: 'stable', label: 'Stable', delta: '' };
   const a = {
-    trigger: safeStr(agent.anatomy.trigger),
+    //trigger: safeStr(agent.anatomy.trigger),
     process: safeStr(agent.anatomy.process),
     output: safeStr(agent.anatomy.output),
     role: safeStr(agent.anatomy.role),
@@ -986,7 +986,7 @@ export default function AgentsKBPage({ runHC }) {
                   marginBottom: 9,
                 }}
               >
-                {agent.desc.substring(0, 80)}...
+                {agent.desc}
               </div>
               <div
                 style={{
@@ -1639,36 +1639,14 @@ export default function AgentsKBPage({ runHC }) {
                     <div
                       key={item.name}
                       style={{
-                        background: item.highlight
-                          ? 'rgba(37,99,235,0.06)'
-                          : C.PANEL,
-                        border: `2px solid ${
-                          item.highlight ? 'rgba(37,99,235,0.45)' : C.BORDER
-                        }`,
+
+                        border: `2px solid ${statusColor}25`,
                         borderRadius: 8,
                         padding: '11px 12px',
                         position: 'relative',
                       }}
                     >
-                      {item.highlight && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: -1,
-                            right: 8,
-                            background: '#2563EB',
-                            color: '#fff',
-                            fontSize: 8,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: 1.5,
-                            padding: '2px 7px',
-                            borderRadius: '0 0 5px 5px',
-                          }}
-                        >
-                          NEW
-                        </div>
-                      )}
+                      
                       <div
                         style={{
                           display: 'flex',

@@ -106,51 +106,7 @@ export default function Sidebar({
             />
           ))}
 
-        {/* DEV pillar */}
-        {allowed.some((i) => i.pillar === 'dev') && (
-          <>
-            <div
-              style={{
-                fontSize: 7,
-                color: '#16A34A',
-                letterSpacing: 3,
-                fontFamily: 'monospace',
-                margin: '10px 3px 5px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  height: 1,
-                  background: 'rgba(22,163,74,0.2)',
-                }}
-              />
-              DEV
-              <div
-                style={{
-                  flex: 1,
-                  height: 1,
-                  background: 'rgba(22,163,74,0.2)',
-                }}
-              />
-            </div>
-            {allowed
-              .filter((i) => i.pillar === 'dev')
-              .map((item) => (
-                <NavItem
-                  key={item.id}
-                  item={item}
-                  active={nav === item.id}
-                  alerts={alerts}
-                  onNav={onNav}
-                  accentColor="#16A34A"
-                />
-              ))}
-          </>
-        )}
+        
 
         {/* OPS pillar */}
         {allowed.some((i) => i.pillar === 'ops') && (
@@ -174,7 +130,7 @@ export default function Sidebar({
                   background: 'rgba(37,99,235,0.2)',
                 }}
               />
-              OPS
+              IT OPS
               <div
                 style={{
                   flex: 1,

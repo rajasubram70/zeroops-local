@@ -4,8 +4,260 @@ import { Tag, Lbl } from '../components/atoms.jsx';
 import { CUSTOMER, SCENARIOS_JSON } from '../data/customer/loader.js';
 
 // Use customer JSON scenarios if available, fall back to full Ericsson set
-const SCENARIOS =
-  SCENARIOS_JSON && SCENARIOS_JSON.length > 0 ? SCENARIOS_JSON : [];
+// ── LIVE DEMO SCENARIOS ────────────────────────────────────────
+const LIVE_SCENARIOS = [
+  {
+    id: 'live-crm-url-down',
+    title: 'CRM URL Down — Autonomous Recovery',
+    subtitle: 'INC-LIVE-001 · Odoo CRM · Container down · All CRM users blocked',
+    pillar: 1, icon: '🏢', appId: 'odoo-crm', chainId: 'live-crm',
+    pri: 'P1', mttr: '52 sec', agents: 4,
+    blastRadius: 'All CRM users — Odoo platform unavailable — zero access',
+    reversibility: 'HIGH — container restart, fully reversible, no data loss',
+    slaStatus: 'P1 SLA · MTTR 52s · SLA MET',
+    pillarLabel: 'Pillar 1 · Sentinel · Autonomous',
+    pillarColor: '#16A34A',
+    incident: 'INC-LIVE-001',
+    riskScore: 18,
+    category: 'Infrastructure · Container / CRM',
+    outcome: {
+      sla: '52s — SLA MET',
+      result: 'Odoo CRM restored — container restarted autonomously — zero human intervention',
+      mttr: '52 sec',
+      saved: '~15 min vs manual on-call',
+      agents: '4 agents',
+      autoSteps: '5/5 auto',
+      hitlSteps: '0 human gates',
+    },
+    steps: [
+      {
+        id: 's1', label: 'Alert Correlation', icon: '🔗', type: 'auto',
+        agent: 'Alert Correlator',
+        summary: 'Blackbox probe failure detected — CRMURLDown firing — INC-LIVE-001 raised',
+        highlight: true, duration: 4000,
+        events: [
+          { msg: 'Blackbox probe: http://odoo:8069/web/health — TIMEOUT after 3s', kind: 'warn', t: 500 },
+          { msg: 'Alert: CRMURLDown · severity=critical · pending 0m — immediate fire', kind: 'warn', t: 1500 },
+          { msg: 'Checking active_alerts — no suppression rules matched', kind: 'info', t: 2500 },
+          { msg: 'INC-LIVE-001 raised — P1 · Odoo CRM · all users blocked', kind: 'success', t: 3500 },
+        ],
+      },
+      {
+        id: 's2', label: 'Root Cause Analysis', icon: '🔍', type: 'auto',
+        agent: 'RCA Engine',
+        summary: 'Container stopped confirmed — risk 18 — Sentinel approved for autonomous execution',
+        highlight: true, duration: 5000,
+        events: [
+          { msg: 'Querying Docker daemon — odoo container status: exited', kind: 'warn', t: 600 },
+          { msg: 'Checking container logs — last event: external stop signal', kind: 'info', t: 1800 },
+          { msg: 'Root cause confirmed: container stopped — health endpoint unreachable', kind: 'warn', t: 3200 },
+          { msg: 'Risk score: 18/100 — Sentinel threshold clear · auto-execution approved', kind: 'success', t: 4500 },
+        ],
+      },
+      {
+        id: 's3', label: 'Container Restart', icon: '⚡', type: 'auto',
+        agent: 'Remediation Agent',
+        summary: 'docker compose start odoo executed — container restarting — health check passing',
+        highlight: true, duration: 5000,
+        events: [
+          { msg: 'Executing: docker compose start odoo', kind: 'info', t: 400 },
+          { msg: 'Container starting — Odoo initialising database connections', kind: 'info', t: 1800 },
+          { msg: 'Health check: GET /web/health → 200 OK · latency 180ms', kind: 'success', t: 3800 },
+          { msg: 'Odoo CRM operational — all CRM users restored', kind: 'success', t: 4600 },
+        ],
+      },
+      {
+        id: 's4', label: 'Bridge API Validation', icon: '📊', type: 'auto',
+        agent: 'Change Validator',
+        summary: 'crm_health=1 confirmed via Bridge API — Service Map updating to GREEN',
+        highlight: false, duration: 3000,
+        events: [
+          { msg: 'Bridge API poll: crm_health=1 — probe_success=1', kind: 'success', t: 800 },
+          { msg: 'Service Map: CRM Platform status → GREEN · health check → GREEN', kind: 'success', t: 2200 },
+        ],
+      },
+      {
+        id: 's5', label: 'Close & Log', icon: '✅', type: 'auto',
+        agent: 'Change Validator',
+        summary: 'Zammad ticket created and closed — MTTR 52s — Silent Ops Centre updated',
+        highlight: true, duration: 3000,
+        events: [
+          { msg: 'Zammad: ticket created and auto-closed · MTTR: 52s · P1 SLA MET', kind: 'success', t: 700 },
+          { msg: 'Grafana annotation posted — CRMURLDown resolved event', kind: 'success', t: 1600 },
+          { msg: 'Silent Ops Centre: autonomous resolution entry logged', kind: 'success', t: 2400 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'live-crm-slow',
+    title: 'CRM Slow Response — HiTL Guardian',
+    subtitle: 'INC-LIVE-002 · Odoo CRM · High latency · Slack approval required',
+    pillar: 2, icon: '🐢', appId: 'odoo-crm', chainId: 'live-crm',
+    pri: 'P2', mttr: '3 min 22 sec', agents: 4,
+    blastRadius: 'CRM users experiencing degraded response — active sessions impacted',
+    reversibility: 'HIGH — graceful restart, sessions terminated cleanly',
+    slaStatus: 'P2 SLA · MTTR 3m 22s · SLA MET',
+    pillarLabel: 'Pillar 2 · Guardian · One Human Gate',
+    pillarColor: '#2563EB',
+    incident: 'INC-LIVE-002',
+    riskScore: 42,
+    category: 'Performance · CRM / Odoo',
+    whyHitl: 'CRM slow response affects active user sessions — a restart will interrupt current work. Risk score 42 — above the autonomous threshold of 25. ZeroOps has diagnosed the root cause and prepared the restart plan, but requires one human confirmation before interrupting live sessions.',
+    remediationPlan: [
+      { n: 1, act: 'Detect latency breach via Blackbox probe — 5m pending elapsed', auto: true, risk: 'LOW' },
+      { n: 2, act: 'Human approval — graceful restart of Odoo container', auto: false, risk: 'MEDIUM' },
+      { n: 3, act: 'docker compose restart odoo — graceful termination of active sessions', auto: true, risk: 'LOW' },
+      { n: 4, act: 'Validate response time returns below 2s threshold', auto: true, risk: 'LOW' },
+      { n: 5, act: 'Close Zammad ticket and post Grafana annotation', auto: true, risk: 'LOW' },
+    ],
+    outcome: {
+      sla: '3m 22s — SLA MET',
+      result: 'Odoo CRM response normalised — graceful restart after 11s human approval',
+      mttr: '3 min 22 sec',
+      saved: '~45 min vs manual diagnosis + restart',
+      agents: '4 agents',
+      autoSteps: '4/5 auto',
+      hitlSteps: '1 HiTL gate',
+    },
+    steps: [
+      {
+        id: 's1', label: 'Alert Correlation', icon: '🔗', type: 'auto',
+        agent: 'Alert Correlator',
+        summary: 'CRMSlowResponse detected — probe latency >2s for 5min — INC-LIVE-002 raised',
+        highlight: true, duration: 4000,
+        events: [
+          { msg: 'Blackbox probe: http://odoo:8069/web/health — latency 3.2s (SLA: 2s)', kind: 'warn', t: 600 },
+          { msg: 'Alert: CRMSlowResponse · severity=warning · 5m pending elapsed', kind: 'warn', t: 1800 },
+          { msg: 'INC-LIVE-002 raised — P2 · Odoo CRM · degraded performance', kind: 'success', t: 3400 },
+        ],
+      },
+      {
+        id: 's2', label: 'Root Cause Analysis', icon: '🔍', type: 'auto',
+        agent: 'RCA Engine',
+        summary: 'Memory pressure 89% — worker pool saturated — risk 42 — HiTL required',
+        highlight: false, duration: 5000,
+        events: [
+          { msg: 'Container stats: CPU 78% · Memory 89% · RSS growing steadily', kind: 'warn', t: 800 },
+          { msg: 'Odoo long-poll workers saturated — requests queuing behind pool limit', kind: 'warn', t: 2400 },
+          { msg: 'Root cause: memory pressure under sustained load — graceful restart needed', kind: 'warn', t: 3800 },
+          { msg: 'Risk score: 42/100 — above Sentinel threshold · HiTL required', kind: 'warn', t: 4800 },
+        ],
+      },
+      {
+        id: 's3', label: 'Human Approval', icon: '👤', type: 'hitl',
+        agent: 'HiTL Console',
+        summary: 'Operator approved via Slack — 11 second decision — restart authorised',
+        highlight: true, duration: 5000,
+        events: [
+          { msg: 'Risk 42 — Slack notification sent to on-call operator', kind: 'warn', t: 500 },
+          { msg: 'Slack: "CRM latency 3.2s. Memory 89%. Approve graceful restart? [Approve] [Reject]"', kind: 'info', t: 1500 },
+          { msg: '✓ APPROVED by Operator — 11 seconds · graceful restart authorised', kind: 'success', t: 4500 },
+        ],
+      },
+      {
+        id: 's4', label: 'Graceful Restart', icon: '🔄', type: 'auto',
+        agent: 'Remediation Agent',
+        summary: 'docker compose restart odoo — memory cleared — response 3.2s → 180ms',
+        highlight: true, duration: 5000,
+        events: [
+          { msg: 'Executing: docker compose restart odoo — graceful shutdown initiated', kind: 'info', t: 500 },
+          { msg: 'Active sessions terminated gracefully — memory released', kind: 'info', t: 2000 },
+          { msg: 'Container restarted — health check: 200 OK · latency 180ms', kind: 'success', t: 4200 },
+        ],
+      },
+      {
+        id: 's5', label: 'Validation & Close', icon: '✅', type: 'auto',
+        agent: 'Change Validator',
+        summary: 'Probe 180ms — SLA met — Zammad closed — Slack notified of resolution',
+        highlight: true, duration: 3000,
+        events: [
+          { msg: 'Blackbox probe: latency 180ms — below 2s threshold · SLA met', kind: 'success', t: 700 },
+          { msg: 'Zammad: INC-LIVE-002 closed · MTTR: 3m 22s · P2 SLA MET', kind: 'success', t: 1800 },
+          { msg: 'Slack: "CRM fully restored. MTTR 3m 22s. Grafana annotation posted."', kind: 'success', t: 2600 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'live-queue-depth',
+    title: 'Order Queue Spike — Autonomous Recovery',
+    subtitle: 'INC-LIVE-003 · Enterprise Order API · Worker down · Queue backing up',
+    pillar: 1, icon: '📦', appId: 'demo-api', chainId: 'live-api',
+    pri: 'P2', mttr: '38 sec', agents: 3,
+    blastRadius: 'Order processing delayed — queue accumulating — no orders lost',
+    reversibility: 'HIGH — worker restart fully reversible — Redis queue persistent',
+    slaStatus: 'P2 SLA · MTTR 38s · SLA MET',
+    pillarLabel: 'Pillar 1 · Sentinel · Autonomous',
+    pillarColor: '#16A34A',
+    incident: 'INC-LIVE-003',
+    riskScore: 12,
+    category: 'Infrastructure · Queue / Worker',
+    outcome: {
+      sla: '38s — SLA MET',
+      result: 'Order queue cleared — worker restarted autonomously — all queued orders processed',
+      mttr: '38 sec',
+      saved: '~10 min vs manual on-call',
+      agents: '3 agents',
+      autoSteps: '4/4 auto',
+      hitlSteps: '0 human gates',
+    },
+    steps: [
+      {
+        id: 's1', label: 'Queue Anomaly Detected', icon: '🔗', type: 'auto',
+        agent: 'Alert Correlator',
+        summary: 'Queue depth >50 detected via Bridge API — HighQueueDepth alert — INC-LIVE-003 raised',
+        highlight: true, duration: 3500,
+        events: [
+          { msg: 'Bridge API poll: queue_depth=87 — threshold exceeded (>50)', kind: 'warn', t: 500 },
+          { msg: 'Alert: HighQueueDepth · demo-worker not consuming — queue growing at 12/min', kind: 'warn', t: 1600 },
+          { msg: 'INC-LIVE-003 raised — P2 · Order Queue · worker unresponsive', kind: 'success', t: 3000 },
+        ],
+      },
+      {
+        id: 's2', label: 'Root Cause Analysis', icon: '🔍', type: 'auto',
+        agent: 'RCA Engine',
+        summary: 'demo-worker exited — Redis queue not draining — risk 12 — Sentinel approved',
+        highlight: false, duration: 4000,
+        events: [
+          { msg: 'Docker daemon: demo-worker container status = exited', kind: 'warn', t: 700 },
+          { msg: 'Redis queue: 87 orders pending — no active consumer', kind: 'warn', t: 2000 },
+          { msg: 'Root cause: worker stopped — queue accumulating · no data loss (Redis persistent)', kind: 'info', t: 3200 },
+          { msg: 'Risk score: 12/100 — Sentinel threshold clear · auto-approved', kind: 'success', t: 3800 },
+        ],
+      },
+      {
+        id: 's3', label: 'Worker Restart', icon: '⚡', type: 'auto',
+        agent: 'Remediation Agent',
+        summary: 'docker compose start demo-worker — queue draining at full rate',
+        highlight: true, duration: 4500,
+        events: [
+          { msg: 'Executing: docker compose start demo-worker', kind: 'info', t: 400 },
+          { msg: 'Worker started — connecting to Redis queue', kind: 'info', t: 1800 },
+          { msg: 'Queue draining: 87 → 42 → 12 → 0 — all orders processed', kind: 'success', t: 3800 },
+          { msg: 'Order processing rate restored — API healthy', kind: 'success', t: 4300 },
+        ],
+      },
+      {
+        id: 's4', label: 'Validation & Close', icon: '✅', type: 'auto',
+        agent: 'Change Validator',
+        summary: 'queue_depth=0 confirmed — Service Map green — INC-LIVE-003 closed · MTTR 38s',
+        highlight: true, duration: 3000,
+        events: [
+          { msg: 'Bridge API: queue_depth=0 · api_health=1 — all systems green', kind: 'success', t: 700 },
+          { msg: 'Service Map: Enterprise Order API → GREEN · queue normal', kind: 'success', t: 1600 },
+          { msg: 'Zammad: INC-LIVE-003 closed · MTTR: 38s · Silent Ops Centre updated', kind: 'success', t: 2500 },
+        ],
+      },
+    ],
+  },
+];
+
+// Use customer JSON scenarios if available, prepend live demo scenarios
+const SCENARIOS = [
+  ...LIVE_SCENARIOS,
+  ...(SCENARIOS_JSON && SCENARIOS_JSON.length > 0 ? SCENARIOS_JSON : []),
+];
 
 // COT_BY_SCENARIO: customer scenario reasoning entries can be added here.
 // An empty object is safe — the "View Reasoning" link simply won't appear.
@@ -496,12 +748,15 @@ function HiTLConsole({
               </div>
               <span
                 style={{
-                  fontFamily: 'monospace',
                   fontSize: 12,
                   fontWeight: 700,
                   color: col,
                   marginLeft: 10,
                   flexShrink: 0,
+                  maxWidth: 400,
+                  wordBreak: 'break-word',
+                  textAlign: 'right',
+                  fontFamily: 'monospace',
                 }}
               >
                 {v}

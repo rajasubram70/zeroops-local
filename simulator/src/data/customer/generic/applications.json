@@ -744,6 +744,64 @@
           ]
         }
       ]
+    },
+    {
+      "id": "live-api",
+      "name": "Enterprise Order API",
+      "icon": "⚡",
+      "status": "GREEN",
+      "uptime": 99.9,
+      "description": "Live enterprise order processing API — ZeroOps monitored",
+      "apps": [
+        {
+          "id": "demo-api",
+          "name": "Order Management API",
+          "status": "GREEN",
+          "perf": 98,
+          "ver": "v2.1",
+          "hosting": "Docker",
+          "hostingColor": "#0078D4",
+          "sessions": 142,
+          "uptime": 99.9,
+          "trend": [99, 99, 100, 99, 100, 99, 99, 100],
+          "up": 99,
+          "infra": [
+            { "c": "cpu",   "label": "CPU",           "val": "24%",     "unit": "%", "m": 24,  "anom": false, "detail": "Normal load",              "h": "GREEN" },
+            { "c": "req",   "label": "Request Rate",   "val": "0.4/s",   "unit": "",  "m": 80,  "anom": false, "detail": "Orders processing normally","h": "GREEN" },
+            { "c": "health","label": "Health Check",   "val": "Passing", "unit": "",  "m": 100, "anom": false, "detail": "All endpoints healthy",     "h": "GREEN" },
+            { "c": "queue", "label": "Order Queue",    "val": "0",       "unit": "",  "m": 100, "anom": false, "detail": "Queue depth normal",        "h": "GREEN" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-crm",
+      "name": "CRM Platform",
+      "icon": "🏢",
+      "status": "GREEN",
+      "uptime": 99.8,
+      "description": "Live Odoo CRM — ZeroOps monitored",
+      "apps": [
+        {
+          "id": "odoo-crm",
+          "name": "Odoo CRM",
+          "status": "GREEN",
+          "perf": 97,
+          "ver": "17.0",
+          "hosting": "Docker",
+          "hostingColor": "#0078D4",
+          "sessions": 38,
+          "uptime": 99.8,
+          "trend": [99, 100, 99, 99, 100, 99, 100, 99],
+          "up": 99,
+          "infra": [
+            { "c": "health","label": "Health Check",   "val": "Passing", "unit": "",  "m": 100, "anom": false, "detail": "Web health endpoint OK",     "h": "GREEN" },
+            { "c": "resp",  "label": "Response Time",  "val": "240ms",   "unit": "",  "m": 88,  "anom": false, "detail": "Within SLA",                "h": "GREEN" },
+            { "c": "cpu",   "label": "CPU",            "val": "18%",     "unit": "%", "m": 18,  "anom": false, "detail": "Normal load",               "h": "GREEN" },
+            { "c": "sess",  "label": "Active Sessions","val": "38",      "unit": "",  "m": 60,  "anom": false, "detail": "Normal session count",      "h": "GREEN" }
+          ]
+        }
+      ]
     }
   ]
 }

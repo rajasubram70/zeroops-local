@@ -761,42 +761,7 @@ export default function CommandCentre({ chains, incidents, industry, onNav }) {
             </div>
 
             {/* Application Health */}
-                  {/* ── DORA / AI SDLC — 2×2 ── */}
-            {METRICS?.sdlc && (
-              <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 9, color: '#7C3AED', fontFamily: 'monospace',
-                  letterSpacing: 2, marginBottom: 6,
-                  display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ flex: 1, height: 1, background: 'rgba(124,58,237,0.2)' }} />
-                  AI SDLC · DORA
-                  <span style={{ fontSize: 8, fontWeight: 700, color: '#fff',
-                    background: '#7C3AED', borderRadius: 3, padding: '1px 6px' }}>
-                    {METRICS.sdlc.dora?.rating || 'ELITE'}
-                  </span>
-                  <div style={{ flex: 1, height: 1, background: 'rgba(124,58,237,0.2)' }} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                  {[
-                    { l: 'Deploy Freq',   v: METRICS.sdlc.dora?.deploymentFrequency || `${METRICS.sdlc.deploymentsThisMonth}/mo`, c: C.BLUE,    sub: METRICS.sdlc.dora?.deploymentFrequencyLabel || 'On-demand' },
-                    { l: 'Lead Time',     v: METRICS.sdlc.dora?.leadTimeForChanges   || `${METRICS.sdlc.avgLeadTimeDays}d`,        c: C.GREEN,   sub: METRICS.sdlc.dora?.leadTimeCategory || 'Elite' },
-                    { l: 'Change Fail',   v: METRICS.sdlc.dora?.changeFailureRate     || `${METRICS.sdlc.changeFailureRate}%`,       c: C.GREEN,   sub: METRICS.sdlc.dora?.changeFailureCategory || 'Elite' },
-                    { l: 'MTTR Code Fix', v: METRICS.sdlc.dora?.mttrCode              || '22 min',                                   c: '#7C3AED', sub: METRICS.sdlc.dora?.mttrCategory || 'Elite' },
-                  ].map((k) => (
-                    <div key={k.l} style={{ background: C.PANEL, border: `1px solid ${C.BORDER}`,
-                      borderLeft: `3px solid ${k.c}`, borderRadius: 7, padding: '8px 10px' }}>
-                      <div style={{ fontSize: 8, color: C.MUTED, fontFamily: 'monospace',
-                        letterSpacing: 1, marginBottom: 3 }}>{k.l.toUpperCase()}</div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: k.c,
-                        fontFamily: 'monospace', lineHeight: 1 }}>{k.v}</div>
-                      <div style={{ fontSize: 9, color: k.c, fontWeight: 600,
-                        marginTop: 3 }}>{k.sub}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-      <div style={{ background: C.PANEL, border: `1px solid ${C.BORDER}`, borderRadius: 10, padding: '14px 16px' }}>
+            <div style={{ background: C.PANEL, border: `1px solid ${C.BORDER}`, borderRadius: 10, padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>Application Health</div>

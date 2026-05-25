@@ -59,7 +59,7 @@ services:
       - OLLAMA_MODEL=gpt-oss:20b
     # - OPENAI_API_KEY=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
       - DASHBOARD_UID=add2575
-      - SLACK_WEBHOOK=https://hooks.slack.com/services/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
+      - SLACK_WEBHOOK=https://hooks.slack.com/services/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
       - RCA_BASE_URL=http://localhost:5001
       - ZAMMAD_URL=http://zammad-docker-compose-zammad-nginx-1:8080
       - ZAMMAD_TOKEN=LSEuQk4pVaKjzYbjaVxoCp_tVdrZxu1xR-nVBfUGUi0R0SHd2DEo0UgnhD6q70yf

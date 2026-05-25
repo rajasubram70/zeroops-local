@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const BRIDGE_URL = 'http://localhost:5002';
-const POLL_MS    = 30000;
+const POLL_MS    = 5000;
 
 export function useLiveData(endpoint, fallback = null) {
   const [data,     setData]     = useState(fallback);

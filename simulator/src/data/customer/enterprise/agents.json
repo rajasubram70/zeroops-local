@@ -3,239 +3,212 @@
     {
       "id": "alert-correlator",
       "name": "Alert Correlator",
-      "icon": "\ud83d\udd14",
-      "desc": "Ingests signals from Prometheus, Datadog, Azure Monitor and ITSM. Correlates thousands of alerts into actionable incidents. Noise reduction: 94%.",
+      "icon": "🔗",
+      "desc": "Ingests Prometheus and Blackbox Exporter alerts — correlates noise into single actionable incidents. Noise reduction: 72%.",
       "runs": 5841,
       "success": "99.2%",
-      "tokens": "924K",
+      "tokens": "412K",
       "costOK": "$0.001",
       "human": "0%",
       "status": "Active",
       "model": "claude-haiku-4-5",
       "provider": "Anthropic",
       "ok": 99,
-      "dur": "0.3s",
-      "tokensMonth": "924K",
-      "tools": [
-        "Prometheus API",
-        "Datadog API",
-        "Azure Monitor",
-        "ServiceNow API"
-      ],
-      "integrations": [
-        "Prometheus",
-        "Datadog",
-        "Azure Monitor",
-        "ServiceNow",
-        "SAP Cloud ALM"
-      ],
-      "drift": {
-        "dir": "up",
-        "label": "\u2191 Accuracy improving",
-        "delta": "+2.1%"
-      },
+      "dur": "0.8s",
+      "tokensMonth": "8.2M",
+      "tools": ["Prometheus API", "Blackbox Exporter API", "Zammad API", "Grafana Annotations API"],
+      "integrations": ["Prometheus", "Blackbox Exporter", "Grafana", "Zammad"],
+      "drift": { "dir": "up", "label": "Improving", "delta": "+2.1%" },
       "anatomy": {
-        "trigger": "Alert threshold breach from any connected monitoring source",
-        "process": "Deduplicate, correlate, pattern match against vector DB of historical incidents, risk score",
-        "output": "Single actionable incident with context \u2014 pushed to RCA Engine and ServiceNow"
+        "role": "First responder — ingests all monitoring signals and reduces noise to actionable incidents",
+        "tasks": [
+          "Receive alert payload from Prometheus Alertmanager",
+          "Check suppression rules — is CRMURLDown already firing?",
+          "Query active_alerts dict for related signals",
+          "Apply correlation rules — group by service and failure pattern",
+          "Determine routing: autonomous (risk < 25) or HiTL (risk 25-74)",
+          "Create Zammad ticket and post Grafana annotation"
+        ],
+        "output": "Single correlated Zammad ticket with all related alerts linked — RCA Engine triggered automatically",
+        "decisionCriteria": "Suppression rules checked first. Risk score determines routing: autonomous < 25, HiTL 25-74, escalate > 74",
+        "memoryType": "Stateless — active_alerts dict queried per run in RCA service",
+        "llmReasoning": "LLM builds context from Prometheus metrics, Loki logs and Blackbox probe results to form incident hypothesis",
+        "contextUsed": [
+          "Prometheus alert payload — alertname, labels, annotations",
+          "active_alerts dict — currently firing alerts",
+          "Suppression rules — CRMURLDown suppresses CRMSlowResponse",
+          "Blackbox Exporter probe result — HTTP status and latency",
+          "Zammad open ticket list"
+        ]
       }
     },
     {
       "id": "log-analyzer",
       "name": "Log Analyser",
-      "icon": "\ud83d\udccb",
-      "desc": "Deep analysis of application and infrastructure logs. Identifies error patterns, performance degradation and anomalous behaviour across the full estate.",
+      "icon": "📋",
+      "desc": "Queries Loki for application and infrastructure logs — identifies error patterns and anomalies across demo-api, demo-worker and Odoo CRM.",
       "runs": 2341,
       "success": "98.1%",
       "tokens": "1.12M",
       "costOK": "$0.009",
       "human": "0%",
       "status": "Active",
-      "model": "claude-sonnet-4-5",
-      "provider": "Anthropic",
+      "model": "gpt-oss:20b (Ollama)",
+      "provider": "Ollama — local inference · host.docker.internal:11434",
       "ok": 98,
       "dur": "1.1s",
-      "tokensMonth": "1.12M",
-      "tools": ["Elasticsearch", "Datadog Logs", "Azure Log Analytics"],
-      "integrations": [
-        "Elasticsearch",
-        "Datadog",
-        "Azure Log Analytics",
-        "SAP HANA Logs"
-      ],
-      "drift": {
-        "dir": "stable",
-        "label": "\u2192 Stable",
-        "delta": "\u00b10.2%"
-      },
+      "tokensMonth": "11.2M",
+      "tools": ["Loki API", "Promtail", "Grafana API"],
+      "integrations": ["Loki", "Promtail", "Grafana"],
+      "drift": { "dir": "stable", "label": "Stable", "delta": "±0.2%" },
       "anatomy": {
-        "trigger": "Incident raised by Alert Correlator or threshold anomaly detected",
-        "process": "Query logs across time window, identify error patterns, correlate with metrics, rank hypotheses",
-        "output": "Log evidence package with top 3 root cause hypotheses \u2014 passed to RCA Engine"
+        "role": "Evidence gatherer — queries Loki logs to build diagnostic evidence for RCA Engine",
+        "tasks": [
+          "Query Loki for logs from affected service — last 30 minutes",
+          "Filter by error level — extract ERROR and WARN entries",
+          "Identify error patterns — frequency, timing, correlation with alert",
+          "Cross-reference with Prometheus metrics timeline",
+          "Rank hypotheses by log evidence strength",
+          "Pass log evidence package to RCA Engine"
+        ],
+        "output": "Log evidence package with top error patterns — passed to RCA Engine for root cause confirmation",
+        "decisionCriteria": "Error frequency above baseline and timing correlation with alert onset — minimum 80% confidence before passing to RCA Engine",
+        "memoryType": "Stateless — Loki queried fresh per incident",
+        "llmReasoning": "LLM analyses log patterns to distinguish symptom logs from root cause logs — identifies the first error in the causal chain",
+        "contextUsed": [
+          "Loki log stream — last 30 minutes for affected service",
+          "Prometheus metrics timeline — correlated with log timestamps",
+          "Container exit codes and restart events",
+          "Promtail label set — service, job, container name"
+        ]
       }
     },
     {
       "id": "rca-engine",
       "name": "RCA Engine",
-      "icon": "\ud83d\udd0d",
-      "desc": "Traverses the service dependency graph and queries the vector database of historical incidents to identify root cause with confidence score. The diagnostic core of ZeroOps.",
+      "icon": "🔍",
+      "desc": "Core diagnostic agent — queries Prometheus, Loki and Redis metrics to identify root cause with confidence score. Routes to autonomous or HiTL based on risk score.",
       "runs": 1247,
       "success": "94.8%",
       "tokens": "2.14M",
-      "costOK": "$0.021",
-      "human": "7%",
+      "costOK": "$0.019",
+      "human": "8%",
       "status": "Active",
-      "model": "claude-sonnet-4-5",
-      "provider": "Anthropic",
+      "model": "gpt-oss:20b (Ollama)",
+      "provider": "Ollama — local inference · host.docker.internal:11434",
       "ok": 95,
-      "dur": "2.8s",
-      "tokensMonth": "2.14M",
-      "tools": ["Graph Traversal", "Vector DB", "SAP RFC", "CMDB API"],
-      "integrations": [
-        "ServiceNow CMDB",
-        "SAP Cloud ALM",
-        "Datadog",
-        "Azure Monitor",
-        "GitHub"
-      ],
-      "drift": {
-        "dir": "up",
-        "label": "\u2191 Confidence improving",
-        "delta": "+3.4%"
-      },
+      "dur": "42s",
+      "tokensMonth": "22.1M",
+      "tools": ["Prometheus API", "Loki API", "Redis CLI", "Zammad API", "Grafana API"],
+      "integrations": ["Prometheus", "Loki", "Redis", "Zammad", "Grafana"],
+      "drift": { "dir": "up", "label": "Confidence improving", "delta": "+3.4%" },
       "anatomy": {
-        "trigger": "Log evidence package from Log Analyser",
-        "process": "Graph traversal of service dependencies, vector similarity search against 24 months of incidents, confidence scoring",
-        "output": "Root cause with confidence score, causal chain, recommended remediation \u2014 triggers Remediation Agent or HiTL"
+        "role": "Diagnostic core — identifies root cause with confidence score and routes to autonomous or HiTL execution",
+        "tasks": [
+          "Build context from Prometheus metrics — last 30 min for affected service",
+          "Query Loki for error logs correlated with alert onset",
+          "Check Redis queue depth — is worker consuming?",
+          "Check Docker container status via Bridge API",
+          "Build LLM prompt with all telemetry evidence",
+          "Generate RCA: root cause, confidence score, risk score",
+          "Route: risk < 25 autonomous, risk 25-74 HiTL Slack, risk > 74 escalate"
+        ],
+        "output": "Structured RCA with confidence score and risk score. Autonomous: Remediation Agent executes immediately. HiTL: Slack message with Approve/Reject. Escalate: on-call paged.",
+        "decisionCriteria": "CRMURLDown risk 18 — autonomous. CRMSlowResponse risk 42 — HiTL. HighQueueDepth risk 12 — autonomous. HighErrorRate risk 45 — HiTL",
+        "memoryType": "Contextual — Prometheus and Loki queried per incident. active_alerts dict maintained in memory",
+        "llmReasoning": "Ollama gpt-oss:20b running locally on host machine via Docker internal network. Receives Prometheus metrics, Loki logs and Blackbox probe results — builds causal chain and generates root cause hypothesis with confidence score. Local inference means zero latency to external API and no data leaving the environment.",
+        "contextUsed": [
+          "Prometheus metrics — request_rate, error_rate, p95_latency, queue_depth",
+          "Loki logs — error messages, container exit events, stack traces",
+          "Redis queue depth — orders pending vs worker consuming",
+          "Blackbox Exporter — HTTP probe status for demo-api and Odoo",
+          "Bridge API — api_health and crm_health live values",
+          "active_alerts dict — currently firing alerts for suppression logic"
+        ]
       }
     },
     {
       "id": "remediation-agent",
       "name": "Remediation Agent",
-      "icon": "\u26a1",
-      "desc": "Selects and executes the appropriate remediation action \u2014 from the knowledge base or AI-generated plan. Executes via Ansible, Kubernetes, SAP RFC or REST API. Validates recovery before closing.",
+      "icon": "⚡",
+      "desc": "Executes approved remediation actions — Docker container restarts, queue worker recovery, Slack HiTL notifications. Validates recovery via Bridge API before closing Zammad ticket.",
       "runs": 847,
       "success": "91.4%",
       "tokens": "612K",
-      "costOK": "$0.014",
-      "human": "21%",
+      "costOK": "$0.013",
+      "human": "22%",
       "status": "Active",
       "model": "claude-sonnet-4-5",
       "provider": "Anthropic",
       "ok": 91,
-      "dur": "3.2s",
-      "tokensMonth": "612K",
-      "tools": ["Ansible", "Kubernetes", "SAP RFC", "ServiceNow API", "REST"],
-      "integrations": [
-        "Ansible",
-        "Kubernetes",
-        "ServiceNow",
-        "SAP S/4HANA",
-        "Jenkins",
-        "Azure"
-      ],
-      "drift": {
-        "dir": "up",
-        "label": "\u2191 Auto-rate improving",
-        "delta": "+4.1%"
-      },
+      "dur": "2.4m",
+      "tokensMonth": "8.2M",
+      "tools": ["Docker TCP API", "Slack Webhook", "Zammad API", "Bridge API", "Grafana Annotations API"],
+      "integrations": ["Docker", "Slack", "Zammad", "Grafana", "Prometheus"],
+      "drift": { "dir": "up", "label": "Auto-rate improving", "delta": "+4.1%" },
       "anatomy": {
-        "trigger": "Confirmed root cause from RCA Engine (risk < 25) or HiTL approval (risk 25\u201374)",
-        "process": "Select remediation from KB, validate against risk thresholds, execute via appropriate tool, monitor recovery",
-        "output": "Remediation executed, recovery validated, ticket updated in ServiceNow"
+        "role": "Executor — carries out approved remediation actions via Docker API, Slack HiTL and Zammad lifecycle",
+        "tasks": [
+          "Receive remediation plan from RCA Engine",
+          "For autonomous: execute immediately via Docker TCP API",
+          "For HiTL: send Slack webhook with Approve/Reject buttons",
+          "On approval: execute Docker restart or worker start command",
+          "Poll Bridge API — wait for api_health or crm_health = 1",
+          "Post Grafana annotation with resolution timestamp",
+          "Update and close Zammad ticket with MTTR"
+        ],
+        "output": "Container restarted and healthy. Bridge API confirms recovery. Zammad ticket closed with MTTR. Grafana annotation posted.",
+        "decisionCriteria": "Autonomous if risk < 25 and alert in AUTONOMOUS_OVERRIDES list. HiTL if risk 25-74 and alert in HITL_OVERRIDES list. Token validation required for HiTL approval",
+        "memoryType": "Stateless — remediation plan received per execution from RCA Engine",
+        "llmReasoning": "Not LLM-driven for execution — deterministic Docker API calls. LLM used only for Slack message composition and Zammad ticket summary",
+        "contextUsed": [
+          "Approved remediation plan — alert name, container target, action",
+          "Bridge API — api_health and crm_health for recovery validation",
+          "Slack webhook URL — for HiTL notification",
+          "HiTL token — generated per incident for Slack approval matching",
+          "Zammad ticket ID — for update and closure"
+        ]
       }
     },
     {
       "id": "change-validator",
       "name": "Change Validator",
-      "icon": "\u2705",
-      "desc": "Pre-validates every proposed action against the live configuration baseline, change calendar and CAB restrictions. Ensures ZeroOps never acts during frozen windows or against policy.",
+      "icon": "✅",
+      "desc": "Validates every remediation action against risk thresholds before execution. Posts Grafana annotations as the audit trail for every ZeroOps action.",
       "runs": 487,
       "success": "100%",
       "tokens": "148K",
-      "costOK": "$0.001",
+      "costOK": "$0.000",
       "human": "14%",
       "status": "Active",
       "model": "claude-haiku-4-5",
       "provider": "Anthropic",
       "ok": 100,
       "dur": "0.4s",
-      "tokensMonth": "148K",
-      "tools": ["ServiceNow Change API", "CMDB API", "Ansible"],
-      "integrations": ["ServiceNow", "Azure DevOps", "GitHub", "CMDB"],
-      "drift": {
-        "dir": "stable",
-        "label": "\u2192 100% accuracy maintained",
-        "delta": "0%"
-      },
+      "tokensMonth": "2.1M",
+      "tools": ["Grafana Annotations API", "Zammad API", "Bridge API"],
+      "integrations": ["Grafana", "Zammad", "Prometheus"],
+      "drift": { "dir": "stable", "label": "100% accuracy maintained", "delta": "0%" },
       "anatomy": {
-        "trigger": "Proposed remediation action from Remediation Agent",
-        "process": "Check change calendar, CAB restrictions, CMDB baseline, rollback availability",
-        "output": "Approved (proceed) or Blocked (escalate) \u2014 all actions logged with full audit trail"
-      }
-    },
-    {
-      "id": "capacity-planner",
-      "name": "Capacity Planner",
-      "icon": "\ud83d\udcc8",
-      "desc": "Continuously monitors resource utilisation trends and proactively recommends or executes scaling actions before thresholds are breached. Prevents incidents rather than resolving them.",
-      "runs": 124,
-      "success": "97.6%",
-      "tokens": "334K",
-      "costOK": "$0.033",
-      "human": "4%",
-      "status": "Active",
-      "model": "claude-sonnet-4-5",
-      "provider": "Anthropic",
-      "ok": 98,
-      "dur": "4.1s",
-      "tokensMonth": "334K",
-      "tools": ["Prometheus", "Azure Monitor", "Kubernetes", "Ansible"],
-      "integrations": [
-        "Prometheus",
-        "Azure Monitor",
-        "Kubernetes",
-        "ServiceNow",
-        "Datadog"
-      ],
-      "drift": {
-        "dir": "up",
-        "label": "\u2191 Proactive rate up",
-        "delta": "+6.2%"
-      },
-      "anatomy": {
-        "trigger": "Resource utilisation trend crossing predictive threshold (not reactive threshold)",
-        "process": "Trend analysis over 30-day rolling window, workload forecasting, risk-adjusted scaling recommendation",
-        "output": "Proactive scaling action or recommendation \u2014 with business event correlation"
-      }
-    },
-    {
-      "id": "sod-agent",
-      "name": "SoD Check Agent",
-      "icon": "\ud83d\udd10",
-      "desc": "Automated Segregation of Duties check for every access provisioning request. Integrates with SAP GRC and identity platforms to detect conflicts before roles are assigned.",
-      "runs": 3124,
-      "success": "99.8%",
-      "tokens": "412K",
-      "costOK": "$0.007",
-      "human": "11%",
-      "status": "Active",
-      "model": "claude-sonnet-4-5",
-      "provider": "Anthropic",
-      "ok": 100,
-      "dur": "0.9s",
-      "tokensMonth": "412K",
-      "tools": ["SAP GRC API", "Azure AD", "Okta", "ServiceNow"],
-      "integrations": ["SAP GRC", "Azure AD", "Okta", "ServiceNow", "CyberArk"],
-      "drift": {
-        "dir": "stable",
-        "label": "\u2192 Zero false negatives",
-        "delta": "0%"
-      },
-      "anatomy": {
-        "trigger": "Access provisioning request received from ServiceNow",
-        "process": "Query SAP GRC for role conflict matrix, cross-reference requested roles against existing entitlements, calculate risk score",
-        "output": "Clean (auto-provision) or Conflict (HiTL with full violation detail and suggested controls)"
+        "role": "Gatekeeper — validates every action against risk thresholds before execution and posts audit trail",
+        "tasks": [
+          "Evaluate risk score from RCA Engine output",
+          "Check alert against AUTONOMOUS_OVERRIDES and HITL_OVERRIDES lists",
+          "Validate target container is in expected state",
+          "Approve autonomous (risk < 25) or route to HiTL (risk 25-74)",
+          "Post Grafana annotation — action taken, timestamp, outcome",
+          "Log to Zammad ticket audit trail"
+        ],
+        "output": "Approved with Grafana annotation posted. All actions logged. Rejected actions escalated with reason.",
+        "decisionCriteria": "AUTONOMOUS_OVERRIDES: CRMURLDown (18), HighQueueDepth (12), ServiceURLDown (18). HITL_OVERRIDES: CRMSlowResponse (42), HighErrorRate (45), HighLatency (38)",
+        "memoryType": "Stateless — risk thresholds and override lists configured in RCA service",
+        "llmReasoning": "Not LLM-driven — deterministic rules engine matching alert name against override lists and risk score thresholds",
+        "contextUsed": [
+          "Alert name — matched against AUTONOMOUS_OVERRIDES and HITL_OVERRIDES",
+          "Risk score from RCA Engine — 0-100",
+          "Grafana API credentials — for annotation posting",
+          "Zammad ticket ID — for audit trail update"
+        ]
       }
     }
   ]

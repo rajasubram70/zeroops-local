@@ -7,224 +7,157 @@
         {
           "name": "Prometheus",
           "status": "Live",
-          "agent": "Alert Correlator, Capacity Planner",
-          "last": "2s ago",
+          "agent": "Alert Correlator, RCA Engine, Capacity Planner",
+          "last": "15s ago",
           "icon": "📊",
           "highlight": true,
-          "note": "Primary metrics platform — JVM heap, DICOM throughput, Kubernetes pod health, VNA storage capacity. ZeroOps ingests all Prometheus alerts and correlates to single incidents."
+          "note": "Primary metrics platform — scrapes demo-api, demo-worker, Redis, PostgreSQL and node exporters every 15 seconds. ZeroOps Alert Correlator receives all Prometheus alerts via Alertmanager webhook. Metrics include request_rate, error_rate, p95_latency, queue_depth and container health."
         },
         {
-          "name": "Datadog",
+          "name": "Grafana",
           "status": "Live",
-          "agent": "Alert Correlator, Log Analyzer",
-          "last": "4s ago",
-          "icon": "🐶",
+          "agent": "Alert Correlator, Change Validator, Remediation Agent",
+          "last": "on every action",
+          "icon": "📈",
           "highlight": true,
-          "note": "APM and log monitoring — HL7 message queue depth, FHIR API latency, RUBEE orchestrator performance. Primary source for HL7 and integration alerts."
+          "note": "Visualisation and alerting dashboard — all ZeroOps alert rules configured here. Every autonomous and HiTL remediation action posts a Grafana annotation with timestamp, action taken and outcome. Provides the visual audit trail for all ZeroOps operations."
         },
         {
-          "name": "Dynatrace",
+          "name": "Loki",
+          "status": "Live",
+          "agent": "Log Analyser, RCA Engine",
+          "last": "continuous",
+          "icon": "📋",
+          "highlight": true,
+          "note": "Log aggregation platform — Promtail ships logs from demo-api, demo-worker, Odoo CRM and all containers. RCA Engine queries Loki for error logs correlated with alert onset. Enables root cause confirmation from log evidence without manual SSH access."
+        },
+        {
+          "name": "Blackbox Exporter",
           "status": "Live",
           "agent": "Alert Correlator, RCA Engine",
-          "last": "6s ago",
+          "last": "15s ago",
           "icon": "🔍",
-          "note": "Full-stack observability — PACS application performance, RUBEE thread pool, CVE vulnerability detection. Complements Prometheus for application-layer insights."
+          "highlight": false,
+          "note": "HTTP endpoint monitoring — probes demo-api (:8080/health) and Odoo CRM (:8069/web/health) every 15 seconds. CRMURLDown fires when probe_success=0 (0m pending). CRMSlowResponse fires when latency > 2s (5m pending). Primary trigger for all CRM and API scenarios."
         },
         {
-          "name": "Elasticsearch",
+          "name": "Tempo",
           "status": "Live",
-          "agent": "Log Analyzer, RCA Engine",
-          "last": "3s ago",
+          "agent": "RCA Engine",
+          "last": "continuous",
           "icon": "🔎",
-          "note": "Log aggregation — DICOM receiver thread dumps, HL7 consumer logs, Kubernetes pod events. RCA Engine queries Elasticsearch for historical pattern matching."
+          "note": "Distributed tracing — receives traces from demo-api via OpenTelemetry Collector. Enables RCA Engine to trace individual request failures and identify slow spans contributing to latency incidents."
         }
       ]
     },
     {
-      "cat": "ITSM & Service Management",
+      "cat": "ITSM & Incident Management",
       "color": "#7C3AED",
       "items": [
         {
-          "name": "ServiceNow",
+          "name": "Zammad",
           "status": "Live",
           "agent": "Alert Correlator, Remediation Agent, Change Validator",
-          "last": "8s ago",
+          "last": "on every incident",
           "icon": "🎫",
           "highlight": true,
-          "note": "Enterprise's ITSM system of record. ZeroOps auto-creates incidents, updates status at each remediation step and auto-closes on resolution. Full audit trail in ServiceNow. HiTL approvals delivered via ServiceNow tasks."
+          "note": "ITSM system of record for the ZeroOps live stack. Every incident auto-creates a Zammad ticket with full diagnostic context. Status updated at each remediation step. Auto-closed on resolution with MTTR calculated. HiTL approval token referenced in ticket notes. Full audit trail visible in Zammad."
+        },
+        {
+          "name": "Slack",
+          "status": "Live",
+          "agent": "Remediation Agent",
+          "last": "on HiTL events",
+          "icon": "💬",
+          "highlight": true,
+          "note": "HiTL approval channel — Guardian scenario notifications sent via Slack webhook. Message includes incident ID, root cause, risk score, blast radius and one-click Approve/Reject URL. Approval token validated by RCA service before execution proceeds."
         }
       ]
     },
     {
-      "cat": "Automation & Orchestration",
+      "cat": "Application Services",
       "color": "#16A34A",
       "items": [
         {
-          "name": "Kubernetes",
+          "name": "Enterprise Order API",
           "status": "Live",
-          "agent": "Remediation Agent, Capacity Planner",
-          "last": "3s ago",
-          "icon": "⚙",
+          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
+          "last": "2s ago",
+          "icon": "⚡",
           "highlight": true,
-          "note": "Container orchestration — PACS rolling restarts, FHIR API pod management, RUBEE scaling. All ZeroOps remediation actions execute via Kubernetes API. Zero-downtime rolling restart strategy applied."
+          "note": "Live Python Flask API — processes orders via Redis queue. Monitored by Prometheus (request_rate, error_rate, p95_latency) and Blackbox Exporter (/health endpoint). ServiceURLDown fires when container stops. HighErrorRate and HighLatency fire on degraded performance. Chaos endpoints available for demo scenarios."
         },
         {
-          "name": "Ansible",
+          "name": "Odoo CRM",
           "status": "Live",
-          "agent": "Remediation Agent",
-          "last": "10s ago",
-          "icon": "🔧",
-          "note": "Infrastructure automation — VM configuration, network maintenance validation, post-maintenance config verification. Complements Kubernetes for non-containerised components."
+          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
+          "last": "15s ago",
+          "icon": "🏢",
+          "highlight": true,
+          "note": "Live Odoo 17 CRM instance — monitored via Blackbox Exporter HTTP probe on /web/health. CRMURLDown fires immediately (0m pending) when container stops. CRMSlowResponse fires after 5 minutes of latency > 2s. Primary demo scenario: docker stop odoo triggers autonomous restart in under 60 seconds."
         },
         {
-          "name": "Azure DevOps / Jenkins",
+          "name": "Order Worker",
           "status": "Live",
-          "agent": "Remediation Agent",
-          "last": "on demand",
-          "icon": "🚀",
-          "note": "CI/CD pipeline integration — Problem Management code fixes handed to Jenkins/Azure DevOps for deployment. ZeroOps triggers pipeline and monitors handoff. Control passed to Enterprise release management."
+          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
+          "last": "continuous",
+          "icon": "📦",
+          "note": "Redis queue consumer — processes orders from demo-api via Redis list. HighQueueDepth alert fires when queue_depth > 50 — indicating worker has stopped consuming. Risk score 12 — fully autonomous. docker stop demo-worker triggers the queue depth scenario."
         }
       ]
     },
     {
-      "cat": "ERP & Enterprise Apps",
-      "color": "#7C3AED",
-      "items": [
-        {
-          "id": "sap-calm",
-          "name": "SAP Cloud ALM",
-          "icon": "\u2699",
-          "status": "Connected",
-          "desc": "SAP landscape monitoring and alerting"
-        },
-        {
-          "id": "sap-grc",
-          "name": "SAP GRC",
-          "icon": "\ud83d\udd10",
-          "status": "Connected",
-          "desc": "Governance, risk and compliance"
-        },
-        {
-          "id": "ariba",
-          "name": "SAP Ariba",
-          "icon": "\ud83d\uded2",
-          "status": "Connected",
-          "desc": "Procurement workflow monitoring"
-        }
-      ]
-    },
-    {
-      "cat": "Identity & Access",
-      "color": "#2563EB",
-      "items": [
-        {
-          "id": "azure-ad",
-          "name": "Azure Active Directory",
-          "icon": "\ud83d\udc65",
-          "status": "Connected",
-          "desc": "Identity provider and SSO"
-        },
-        {
-          "id": "okta",
-          "name": "Okta",
-          "icon": "\ud83d\udd11",
-          "status": "Connected",
-          "desc": "MFA and SSO gateway"
-        },
-        {
-          "id": "cyberark",
-          "name": "CyberArk",
-          "icon": "\ud83d\udee1",
-          "status": "Connected",
-          "desc": "Privileged access management"
-        }
-      ]
-    },
-    {
-      "cat": "Integration & Gateway",
+      "cat": "Data & Queue",
       "color": "#D97706",
       "items": [
         {
-          "name": "EDI Gateway",
+          "name": "Redis",
           "status": "Live",
-          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
-          "last": "just now",
-          "icon": "🏥",
+          "agent": "RCA Engine, Alert Correlator",
+          "last": "continuous",
+          "icon": "🗄",
           "highlight": true,
-          "note": "Patient data integration — ADT and ORM message routing across all hospital sites. Consumer thread deadlock monitoring. Gateway restart requires HiTL approval — patient data flow impact."
+          "note": "In-memory queue and cache — stores order queue between demo-api and demo-worker. Redis Exporter ships queue_depth metric to Prometheus every 15 seconds. Queue persistence means no orders lost when worker restarts — all queued items processed on worker recovery."
         },
         {
-          "name": "Multi-Tenant API Gateway",
+          "name": "PostgreSQL",
           "status": "Live",
-          "agent": "Alert Correlator, Change Validator",
-          "last": "8s ago",
-          "icon": "🌐",
-          "note": "API gateway for hospital tenant namespaces. Rate limiter config drift detection — auto-corrected on divergence from GitOps baseline."
+          "agent": "RCA Engine",
+          "last": "continuous",
+          "icon": "🗃",
+          "note": "Primary database for demo-api — stores order records, error logs and transaction history. PostgreSQL Exporter ships database metrics to Prometheus. SlowDatabase alert fires when query time > threshold — triggers HiTL scenario."
         }
       ]
     },
     {
-      "cat": "Archive & Storage",
+      "cat": "Telemetry Pipeline",
       "color": "#0891b2",
       "items": [
         {
-          "name": "Virtual Storage",
+          "name": "OpenTelemetry Collector",
           "status": "Live",
-          "agent": "Capacity Planner, Alert Correlator",
-          "last": "10s ago",
-          "icon": "🗄",
+          "agent": "RCA Engine, Log Analyser",
+          "last": "continuous",
+          "icon": "🔗",
+          "highlight": false,
+          "note": "Central telemetry pipeline — receives traces from demo-api via OTLP HTTP (:4318), exports to Tempo for distributed tracing. Also scrapes Prometheus metrics endpoint (:8889) and forwards to Prometheus. Single collection point for all observability signals."
+        },
+        {
+          "name": "Promtail",
+          "status": "Live",
+          "agent": "Log Analyser",
+          "last": "continuous",
+          "icon": "📜",
+          "note": "Log shipping agent — tails Docker container logs for all services and ships to Loki with service labels. Enables RCA Engine to query logs by container name, timestamp and log level without SSH access to containers."
+        },
+        {
+          "name": "Bridge API",
+          "status": "Live",
+          "agent": "Alert Correlator, RCA Engine, Remediation Agent",
+          "last": "5s ago",
+          "icon": "🌉",
           "highlight": true,
-          "note": "Long-term DICOM study archive — partition capacity monitored at 80%/90%/95% thresholds. Emergency Azure Blob tier migration auto-triggered at 90%. Current rate 2.4 TB/day."
-        },
-        {
-          "name": "Long-Term Archive (PostgreSQL)",
-          "status": "Live",
-          "agent": "RCA Engine, Remediation Agent",
-          "last": "12s ago",
-          "icon": "🗃",
-          "note": "PostgreSQL-backed long-term archive. Replication slot monitoring — inactive slots dropped automatically to prevent WAL accumulation. Replication lag SLA: 5 seconds."
-        },
-        {
-          "name": "Azure Monitor",
-          "status": "Live",
-          "agent": "Capacity Planner",
-          "last": "2 min ago",
-          "icon": "☁",
-          "note": "Azure-hosted components — Archive VNA, Radiology AI, Enterprise Applications. Resource utilisation trending and breach prediction."
-        }
-      ]
-    },
-    {
-      "cat": "CI/CD & DevOps",
-      "color": "#2563EB",
-      "items": [
-        {
-          "id": "jenkins",
-          "name": "Jenkins",
-          "icon": "\ud83d\udd27",
-          "status": "Connected",
-          "desc": "CI/CD pipeline orchestration"
-        },
-        {
-          "id": "github",
-          "name": "GitHub Enterprise",
-          "icon": "\ud83d\udc19",
-          "status": "Connected",
-          "desc": "Source control and PR management"
-        },
-        {
-          "id": "ansible",
-          "name": "Ansible",
-          "icon": "\u26a1",
-          "status": "Connected",
-          "desc": "Configuration management and remediation"
-        },
-        {
-          "id": "kubernetes",
-          "name": "Kubernetes",
-          "icon": "\u2638",
-          "status": "Connected",
-          "desc": "Container orchestration"
+          "note": "ZeroOps Bridge API (:5002) — aggregates live metrics from Prometheus, Blackbox Exporter and Zammad into a single JSON endpoint. Powers the simulator Service Map and Application Health in real time. Endpoints: /metrics (health, queue, MTTR), /incidents (Zammad tickets), /events (Grafana annotations)."
         }
       ]
     }

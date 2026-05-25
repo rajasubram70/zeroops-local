@@ -1,102 +1,142 @@
 {
   "articles": [
     {
-      "id": "KB-GEN-001",
-      "title": "SAP S/4HANA Work Process Saturation \u2014 Period-End",
-      "category": "ERP Operations",
+      "id": "KB-ENT-001",
+      "title": "CRM URL Down — Odoo Container Recovery",
+      "category": "Container Operations",
       "priority": "P1",
       "status": "Active",
-      "lastUpdated": "2026-05-01",
-      "relatedIncidents": ["INC0001001", "INC0000887", "INC0000741"],
-      "relatedAgents": ["RCA Engine", "Remediation Agent", "Change Validator"],
+      "lastUpdated": "2026-05-25",
+      "relatedIncidents": ["INC-LIVE-001"],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent", "Change Validator"],
       "sections": [
         {
-          "title": "Diagnosis",
-          "content": "Check SM50/SM66 for WP utilisation. Identify dialog vs background WP class allocation via SM37. Threshold: >80% dialog WP = risk of saturation during peak."
+          "title": "Detection Pattern",
+          "content": "Blackbox Exporter probes http://odoo:8069/web/health every 15 seconds. CRMURLDown fires immediately (0m pending) when probe_success=0. Alert Correlator checks active_alerts — no suppression if CRMURLDown is not already firing. Zammad ticket created automatically."
         },
         {
-          "title": "Immediate Relief",
-          "content": "Reschedule batch jobs from dialog to background WP class via SM37. Execute SM04 session cleanup for stale sessions. ZeroOps executes automatically for risk score < 25."
+          "title": "Root Cause",
+          "content": "Odoo container stopped — external docker stop command, OOM kill, or host-level issue. Health endpoint unreachable — all CRM users blocked. Risk score: 18 — fully autonomous. RCA Engine confirms via Bridge API crm_health=0."
+        },
+        {
+          "title": "Autonomous Remediation",
+          "content": "Remediation Agent executes: docker compose start odoo. Polls Bridge API every 5 seconds — waits for crm_health=1. Grafana annotation posted with resolution timestamp. Zammad ticket closed with MTTR. Typical MTTR: 52 seconds. No human involvement required."
         },
         {
           "title": "Prevention",
-          "content": "Configure ZeroOps automated WP class validation to fire 30 minutes before period-end batch windows. Set alert threshold at 70% (warning) and 85% (critical)."
-        },
-        {
-          "title": "Escalation",
-          "content": "If WP pool exceeds 95% and autonomous remediation fails, engage BASIS team. Potential for emergency dialog WP extension requires BASIS admin."
+          "content": "Ensure Odoo container has restart policy: unless-stopped in docker-compose.yml. Monitor odoo-postgres health — Odoo will not start without database. Set Blackbox Exporter alert threshold at 0m pending for immediate detection."
         }
       ]
     },
     {
-      "id": "KB-GEN-002",
-      "title": "EDI Gateway \u2014 Bulk Reconnection Failure",
-      "category": "Integration",
+      "id": "KB-ENT-002",
+      "title": "CRM Slow Response — Graceful Restart Under Memory Pressure",
+      "category": "Performance",
+      "priority": "P2",
+      "status": "Active",
+      "lastUpdated": "2026-05-25",
+      "relatedIncidents": ["INC-LIVE-002"],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Detection Pattern",
+          "content": "Blackbox Exporter latency > 2 seconds for 5 consecutive minutes triggers CRMSlowResponse (5m pending). CRMSlowResponse is suppressed if CRMURLDown is already in active_alerts — avoids duplicate incidents. Risk score: 42 — HiTL required."
+        },
+        {
+          "title": "Root Cause",
+          "content": "Odoo worker pool saturation under sustained load — memory pressure at 85-95%, long-poll workers exhausted, requests queuing. Typically seen after extended uptime or high concurrent user load. Not a container stop — service is running but degraded."
+        },
+        {
+          "title": "HiTL Remediation",
+          "content": "RCA Engine sends Slack notification with full diagnostic context — latency, memory, worker saturation metrics. Engineer approves graceful restart via Slack one-click Approve. Remediation Agent executes: docker compose restart odoo. Active sessions terminated gracefully. Typical approval time: 11 seconds. Total MTTR: 3-4 minutes."
+        },
+        {
+          "title": "Grafana Alert Configuration",
+          "content": "CRMSlowResponse pending period must be 5 minutes — prevents firing before CRMURLDown if container is fully down. CRMURLDown pending period: 0 minutes — fires immediately. This ordering ensures URL down is always handled autonomously before slow response triggers HiTL."
+        }
+      ]
+    },
+    {
+      "id": "KB-ENT-003",
+      "title": "Order Queue Spike — Worker Down Recovery",
+      "category": "Queue Management",
+      "priority": "P2",
+      "status": "Active",
+      "lastUpdated": "2026-05-25",
+      "relatedIncidents": ["INC-LIVE-003"],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Detection Pattern",
+          "content": "Prometheus scrapes Redis queue_depth via Redis Exporter every 15 seconds. HighQueueDepth alert fires when queue_depth > 50 — indicating demo-worker has stopped consuming. Bridge API reflects queue_depth in real time. Risk score: 12 — fully autonomous."
+        },
+        {
+          "title": "Root Cause",
+          "content": "demo-worker container stopped — docker stop demo-worker command or container crash. Redis queue is persistent — all queued orders survive the worker restart. No data loss. Queue accumulates at rate of incoming orders until worker restarts."
+        },
+        {
+          "title": "Autonomous Remediation",
+          "content": "Remediation Agent executes: docker compose start demo-worker. Worker connects to Redis and begins processing queued orders immediately. Bridge API queue_depth drops to 0 as backlog clears. Zammad ticket closed with MTTR. Typical MTTR: 38 seconds. No human involvement required."
+        },
+        {
+          "title": "Verification",
+          "content": "Monitor Bridge API queue_depth after worker restart — should reach 0 within 2-3 minutes depending on backlog size. If queue_depth remains elevated after 5 minutes, check Redis connectivity and demo-api order generation rate. Prometheus graph shows queue_depth timeline."
+        }
+      ]
+    },
+    {
+      "id": "KB-ENT-004",
+      "title": "High Error Rate — demo-api Chaos Mode",
+      "category": "Application Health",
+      "priority": "P2",
+      "status": "Active",
+      "lastUpdated": "2026-05-25",
+      "relatedIncidents": ["INC-LIVE-004"],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent"],
+      "sections": [
+        {
+          "title": "Detection Pattern",
+          "content": "Prometheus monitors error_rate from demo-api. HighErrorRate alert fires when error_rate > 0.1 (10%) for sustained period. Risk score: 45 — HiTL required. Triggered manually via chaos endpoint: POST /chaos with body {high_error: true}."
+        },
+        {
+          "title": "Root Cause",
+          "content": "Chaos mode enabled on demo-api — intentional error injection for demo purposes. In production equivalent: application bug, database connectivity issue, or dependency failure causing high error rates. api_health remains 1 — container is up but responses are failing."
+        },
+        {
+          "title": "HiTL Remediation",
+          "content": "RCA Engine sends Slack notification. Engineer approves via Slack one-click. Remediation Agent calls chaos endpoint: POST /chaos with body {high_error: false} to disable chaos mode. Error rate returns to 0 within one Prometheus scrape interval (15 seconds). Zammad ticket closed."
+        },
+        {
+          "title": "Chaos Endpoints",
+          "content": "Enable high error rate: POST http://localhost:8080/chaos {high_error: true}. Enable slow database: POST http://localhost:8080/chaos {slow_db: true}. Restore all: POST http://localhost:8080/chaos {high_error: false, slow_db: false}. Use for demo scenario 3 — HiTL Guardian demonstration."
+        }
+      ]
+    },
+    {
+      "id": "KB-ENT-005",
+      "title": "ZeroOps RCA Service — Risk Thresholds and Runbook",
+      "category": "Platform Operations",
       "priority": "P1",
       "status": "Active",
-      "lastUpdated": "2026-04-28",
-      "relatedIncidents": ["INC0001002", "INC0000912", "INC0000731"],
-      "relatedAgents": ["RCA Engine", "Remediation Agent"],
+      "lastUpdated": "2026-05-25",
+      "relatedIncidents": [],
+      "relatedAgents": ["Alert Correlator", "RCA Engine", "Remediation Agent", "Change Validator"],
       "sections": [
         {
-          "title": "Diagnosis",
-          "content": "Check EDI gateway connection pool \u2014 expect 0/N active partners after network maintenance. Queue depth will be growing. Message age alert confirms stale queue."
+          "title": "Risk Score Thresholds",
+          "content": "Autonomous (Sentinel): risk < 25 — executes without human gate. Applies to: CRMURLDown (18), HighQueueDepth (12), ServiceURLDown (18). HiTL (Guardian): risk 25-74 — Slack approval required. Applies to: CRMSlowResponse (42), HighErrorRate (45), HighLatency (38), SlowDatabase (38). Escalate: risk > 74 — on-call engineer paged directly."
         },
         {
-          "title": "Resolution",
-          "content": "Execute sequential partner reconnection (not bulk \u2014 v3.2.1 defect). ZeroOps automated reconnection handles this. Once connections established, replay messages in chronological order."
+          "title": "Suppression Rules",
+          "content": "CRMSlowResponse suppressed when CRMURLDown is in active_alerts — prevents HiTL firing when container is fully down. ServiceSlowResponse suppressed when ServiceURLDown is active. Suppression checked on every incoming alert. active_alerts dict maintained in rca-service memory — cleared when alert resolves in Grafana."
         },
         {
-          "title": "Prevention",
-          "content": "Permanent fix in CHG-4821 (AI SDLC pipeline). Interim: add ZeroOps post-maintenance reconnection rule for 02:00\u201303:00 window."
-        }
-      ]
-    },
-    {
-      "id": "KB-GEN-003",
-      "title": "Jenkins Build Farm \u2014 Artefact Retention",
-      "category": "DevOps",
-      "priority": "P2",
-      "status": "Active",
-      "lastUpdated": "2026-05-08",
-      "relatedIncidents": ["INC0001003"],
-      "relatedAgents": ["Capacity Planner", "Remediation Agent"],
-      "sections": [
-        {
-          "title": "Diagnosis",
-          "content": "Check disk utilisation on all Jenkins agents via Datadog. Retention policy config drift common after patching cycles. Agent-level policy vs global policy conflict."
+          "title": "Grafana Alert Configuration",
+          "content": "CRMURLDown: 0m pending — fires immediately on probe failure. CRMSlowResponse: 5m pending — fires after 5 minutes of latency > 2s. HighQueueDepth: configured in Prometheus rules. All alerts route to Alertmanager webhook at http://rca-service:5000/webhook. Grafana annotations posted by Change Validator after every action."
         },
         {
-          "title": "Resolution",
-          "content": "ZeroOps automated cleanup removes artefacts >14 days with no active references. Ansible playbook enforces retention policy across all agents."
-        },
-        {
-          "title": "Prevention",
-          "content": "ZeroOps daily disk check on all Jenkins agents at 06:00. Alert at 80%, automated cleanup at 85%. Config compliance check weekly via Ansible."
-        }
-      ]
-    },
-    {
-      "id": "KB-GEN-004",
-      "title": "SoD Conflict \u2014 AP Approval + Vendor Master",
-      "category": "Identity & Compliance",
-      "priority": "P2",
-      "status": "Active",
-      "lastUpdated": "2026-05-10",
-      "relatedIncidents": ["SR-GEN-00443"],
-      "relatedAgents": ["SoD Check Agent"],
-      "sections": [
-        {
-          "title": "Conflict Detail",
-          "content": "AP invoice approval (AP_APPROVER) combined with vendor master edit (VENDOR_MASTER_EDIT) creates payment cycle and vendor fraud SoD violation. Regulatory requirement: must not coexist without compensating controls."
-        },
-        {
-          "title": "Compensating Controls",
-          "content": "AP transaction limit (recommend \u20ac25K), dual-control for payments above threshold, quarterly access review, exception logged in GRC."
-        },
-        {
-          "title": "Escalation",
-          "content": "Finance Director or delegated Change Manager must approve. GRC risk register entry required. Annual re-certification."
+          "title": "Stack Recovery",
+          "content": "If RCA service loses state (restart): docker compose restart rca-service. active_alerts dict is reset — any stale active alerts will be re-evaluated on next Prometheus scrape. Slack webhook URL set in docker-compose.yml SLACK_WEBHOOK environment variable. Zammad admin token in RCA service environment."
         }
       ]
     }

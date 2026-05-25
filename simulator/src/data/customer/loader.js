@@ -36,7 +36,7 @@ const CUSTOMERS = {
     agents: enterpriseAgents.agents,
     kb: enterpriseKB.articles,
     gvic: enterpriseGVIC,
-    apps: enterpriseApps.domains,
+    apps: enterpriseApps.domains || enterpriseApps.chains,
     metrics: enterpriseMetrics,
     scenarios: enterpriseScenarios.scenarios,
     integrations: enterpriseIntegrations.groups,
