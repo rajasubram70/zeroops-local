@@ -73,6 +73,8 @@ logger = logging.getLogger(SERVICE_NAME)
 # ── Flask ─────────────────────────────────────────────────────
 app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
+from flask_cors import CORS
+CORS(app)
 
 
 # ── Prometheus metrics ────────────────────────────────────────
@@ -87,7 +89,24 @@ chaos_state = {
     'slow_db':       False,
     'queue_buildup': False,
     'high_error':    False,
+    'memory_leak':   False,
+    'novel_failure': False,
 }
+
+def _leak_memory():
+    """Gradually allocate memory to simulate a leak — 5MB every 10 seconds"""
+    import time
+    logger.warning('Memory leak simulation started — allocating 5MB every 10s')
+    while chaos_state.get('memory_leak'):
+        chunk = bytearray(5 * 1024 * 1024)  # 5MB
+        _memory_leak_chunks.append(chunk)
+        total_mb = len(_memory_leak_chunks) * 5
+        logger.warning(f'Memory leak — total allocated: {total_mb}MB — {len(_memory_leak_chunks)} chunks')
+        time.sleep(10)
+    logger.info('Memory leak thread stopped')
+
+# Memory leak storage — holds allocated chunks
+_memory_leak_chunks = []
 
 # ── Database ──────────────────────────────────────────────────
 def get_db():
@@ -155,9 +174,25 @@ def create_order():
             span.set_attribute('order.amount', amount)
 
             delay = random.uniform(0.05, 0.15)
+            delay = random.uniform(0.05, 0.15)
+            if chaos_state['novel_failure']:
+                if random.random() < 0.3:
+                    ERROR_RATE.labels(type='novel_error').inc()
+                    logger.error(f'NOVEL FAILURE — unexpected service mesh timeout — order {order_ref}')
+                    REQUEST_COUNT.labels(method='POST', endpoint='/orders', status='503').inc()
+                    return jsonify({'error': 'Unexpected upstream timeout — circuit breaker open'}), 503
+                delay += random.uniform(1.5, 3.5)
+                logger.warning(f'NOVEL FAILURE — degraded mode — latency {delay:.1f}s')
+            
             if chaos_state['slow_db']:
                 delay = random.uniform(2.0, 8.0)
                 logger.warning(f'Slow DB detected — latency {delay:.1f}s — order {order_ref}')
+            elif chaos_state['memory_leak'] and _memory_leak_chunks:
+                leak_mb = len(_memory_leak_chunks) * 5
+                if leak_mb > 50:
+                    extra = min((leak_mb - 50) / 50, 4.0)
+                    delay += extra
+                    logger.warning(f'GC pressure — {leak_mb}MB leaked — adding {extra:.1f}s latency')
 
             time.sleep(delay)
 
@@ -221,6 +256,32 @@ def set_chaos():
         if key in data:
             chaos_state[key] = bool(data[key])
             logger.warning(f'CHAOS ACTIVATED: {key} = {chaos_state[key]}')
+    # Novel failure activates queue buildup automatically
+    # Novel failure — stop worker consuming to build queue
+    if 'novel_failure' in data:
+        if bool(data['novel_failure']):
+            logger.warning('NOVEL FAILURE — stopping demo-worker to build queue backlog')
+            try:
+                import docker
+                client = docker.DockerClient(base_url='tcp://host.docker.internal:2375')
+                client.containers.get('demo-worker').stop()
+            except Exception as e:
+                logger.warning(f'Could not stop worker: {e}')
+        else:
+            logger.warning('NOVEL FAILURE cleared — restarting demo-worker')
+            try:
+                import docker
+                client = docker.DockerClient(base_url='tcp://host.docker.internal:2375')
+                client.containers.get('demo-worker').start()
+            except Exception as e:
+                logger.warning(f'Could not start worker: {e}')
+    # Start or stop memory leak thread
+    if 'memory_leak' in data:
+        if chaos_state['memory_leak']:
+            threading.Thread(target=_leak_memory, daemon=True).start()
+        else:
+            _memory_leak_chunks.clear()
+            logger.warning('Memory leak cleared — chunks released')
     return jsonify({'chaos_state': chaos_state})
 
 @app.route('/chaos', methods=['GET'])

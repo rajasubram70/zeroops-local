@@ -1,0 +1,5 @@
+﻿# Copy this to extra.py and fill in your pepper key
+# Generate a random 50+ character string
+API_TOKEN_PEPPERS = {
+    1: "your-pepper-key-minimum-50-characters-long-replace-this"
+}

@@ -4,6 +4,21 @@ import { C, sc, pc } from '../config/theme.js';
 import { Tag, Lbl } from '../components/atoms.jsx';
 import { useLiveData } from '../hooks/useLiveData.js';
 
+function formatTs(ts) {
+  if (!ts) return '—';
+  if (ts.includes('T') || ts.includes('Z') || ts.match(/^\d{4}-/)) {
+    const d = new Date(ts);
+    if (!isNaN(d)) {
+      const day  = d.toLocaleString('en-GB', { day: '2-digit', month: 'short', timeZone: 'Europe/Paris' });
+      const time = d.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Europe/Paris' });
+      return `${day} ${time}`;
+    }
+  }
+  const today = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', timeZone: 'Europe/Paris' });
+  if (ts.startsWith('Yesterday')) return ts.replace('Yesterday', 'Yest');
+  return `${today} ${ts}`;
+}
+
 const TIMELINE_COLORS = {
   detect: '#2563EB', correlate: '#7C3AED', rca: '#D97706',
   hitl: '#16A34A', fix: '#DC2626', validate: '#16A34A',
@@ -28,9 +43,10 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
                  ? (t.title.includes('URLDown') || t.title.includes('QueueDepth')
                    ? 'Auto-Resolved' : 'Resolved')
                  : 'Open',
-    at:        t.created ? new Date(t.created).toLocaleTimeString() : '—',
+    at:        t.created || '—',
     created:   t.created || '',
-    by:        'Zammad #' + t.zammad_id,
+    by:        t.assigned || 'ZeroOps Engine',
+    assigned:  t.assigned || 'ZeroOps Engine',
     cat:       'Automated Detection',
     desc:      t.title,
     sla:       'Met',
@@ -47,17 +63,24 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
   const [tab,     setTab]     = useState('overview');
   const [rbStates,setRbStates]= useState({});
   const [liveRCA, setLiveRCA] = useState(null);
+  const [liveSimilar, setLiveSimilar] = useState(null);
   const intel = sel ? (incidentIntel || {})[sel.id] : null;
 
   useEffect(() => {
     if (sel?.isLive && sel?.zammad_id) {
       setLiveRCA(null);
+      setLiveSimilar(null);
       fetch(`http://localhost:5002/incidents/${sel.zammad_id}/rca`)
         .then(r => r.json())
         .then(data => setLiveRCA(data))
         .catch(() => setLiveRCA(null));
+      fetch(`http://localhost:5002/incidents/${sel.zammad_id}/similar`)
+        .then(r => r.json())
+        .then(data => setLiveSimilar(data))
+        .catch(() => setLiveSimilar(null));
     } else {
       setLiveRCA(null);
+      setLiveSimilar(null);
     }
   }, [sel]);
 
@@ -109,10 +132,10 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
         <div style={{ background: C.PANEL, border: `1px solid ${C.BORDER}`,
           borderRadius: 8, overflow: 'hidden' }}>
           <div style={{ display: 'grid',
-            gridTemplateColumns: '108px 44px 1fr 100px 110px 70px',
+            gridTemplateColumns: '110px 108px 44px 1fr 100px 110px',
             padding: '8px 12px', borderBottom: `1px solid ${C.BORDER}`,
             fontSize: 8, color: C.MUTED, fontFamily: 'monospace', letterSpacing: 2 }}>
-            {['INCIDENT','PRI','SERVICE','STATUS','ASSIGNED','TIME'].map(h => (
+            {['TIME','INCIDENT','PRI','SERVICE','STATUS','ASSIGNED'].map(h => (
               <div key={h}>{h}</div>
             ))}
           </div>
@@ -130,7 +153,7 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
               <div key={inc.id}
                 onClick={() => { setSel(s => s?.id === inc.id ? null : inc); setTab('overview'); setRbStates({}); }}
                 style={{ display: 'grid',
-                  gridTemplateColumns: '108px 44px 1fr 100px 110px 70px',
+                  gridTemplateColumns: '110px 108px 44px 1fr 100px 110px',
                   padding: '10px 12px', borderBottom: `1px solid rgba(0,0,0,0.04)`,
                   cursor: 'pointer',
                   background: sel?.id === inc.id ? 'rgba(37,99,235,0.07)' : 'transparent',
@@ -138,6 +161,10 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
                 onMouseEnter={e => { if (sel?.id !== inc.id) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
                 onMouseLeave={e => { if (sel?.id !== inc.id) e.currentTarget.style.background = 'transparent'; }}
               >
+                <div style={{ fontSize: 10, color: C.MUTED, fontFamily: 'monospace' }}>
+                  <div>{formatTs(inc.at).split(' ').slice(0,2).join(' ')}</div>
+                  <div style={{ fontWeight: 600, color: '#475569' }}>{formatTs(inc.at).split(' ').slice(2).join(' ')}</div>
+                </div>
                 <div>
                   <div style={{ fontFamily: 'monospace', fontSize: 11, color: '#2563EB' }}>{inc.id}</div>
                   {(ITSM || inc.isLive) && (
@@ -168,9 +195,8 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
                     {inc.status}
                   </span>
                 </div>
-                <div style={{ fontSize: 11, color: '#64748B' }}>{inc.by}</div>
-                <div style={{ fontSize: 10, color: C.MUTED, fontFamily: 'monospace' }}>{inc.at}</div>
-              </div>
+               <div style={{ fontSize: 11, color: '#64748B' }}>{inc.assigned || inc.by || '—'}</div>
+                </div>
             ))}
         </div>
       </div>
@@ -235,8 +261,8 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
                 {[
                   ['Affected CI', sel.ci,      'monospace'],
                   ['SLA',         sel.sla,     'monospace'],
-                  ['Assigned',    sel.by,      ''],
-                  ['Created',     sel.at,      ''],
+                  ['Assigned',    sel.assigned || sel.by || '—', ''],
+                  ['Created',     formatTs(sel.at), ''],
                 ].map(([k, v, ff]) => (
                   <div key={k} style={{ marginBottom: 10 }}>
                     <div style={{ fontSize: 8, color: C.MUTED, letterSpacing: 3,
@@ -417,17 +443,46 @@ export default function IncidentView({ incidents, runHC, chains, incidentIntel }
             )}
 
             {/* ── SIMILAR ── */}
-            {tab === 'similar' && intel && (
+            {tab === 'similar' && (intel || liveSimilar) && (
               <>
                 <div style={{ fontSize: 12, color: C.MUTED, marginBottom: 12, lineHeight: 1.7 }}>
-                  Past incidents with similar signatures, ordered by similarity score.
+                  Past incidents with similar signatures from Zammad — matched by alert type.
                 </div>
-                {intel.similar.length === 0 && (
+                {(liveSimilar || intel?.similar || []).length === 0 && (
                   <div style={{ color: C.MUTED, textAlign: 'center', padding: 24, fontSize: 13 }}>
                     No similar incidents found.
                   </div>
                 )}
-                {intel.similar.map((sim, idx) => (
+                {liveSimilar ? liveSimilar.map((sim, idx) => (
+                  <div key={`${sim.id}-${idx}`} style={{ background: C.PANEL,
+                    border: `1px solid ${C.BORDER}`, borderRadius: 7,
+                    padding: 11, marginBottom: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                      <div>
+                        <span style={{ fontFamily: 'monospace', fontSize: 12,
+                          color: '#2563EB', fontWeight: 600 }}>#{sim.id}</span>
+                        <span style={{ fontSize: 11, color: C.MUTED, marginLeft: 7 }}>
+                          {sim.created ? new Date(sim.created).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) : ''}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: 10, fontFamily: 'monospace',
+                        color: C.GREEN, background: 'rgba(22,163,74,0.08)',
+                        border: '1px solid rgba(22,163,74,0.2)',
+                        borderRadius: 4, padding: '1px 6px' }}>CLOSED</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#1E293B', marginBottom: 6, fontWeight: 500 }}>
+                      {sim.title}
+                    </div>
+                    <div style={{ display: 'flex', gap: 10, fontSize: 11 }}>
+                      <span style={{ color: C.MUTED }}>
+                        MTTR: <span style={{ color: '#1E293B', fontFamily: 'monospace' }}>{sim.mttr}</span>
+                      </span>
+                      <span style={{ color: C.MUTED }}>
+                        By: <span style={{ color: C.BLUE }}>ZeroOps Engine</span>
+                      </span>
+                    </div>
+                  </div>
+                )) : (intel?.similar || []).map((sim, idx) => (
                   <div key={`${sim.id}-${idx}`} style={{ background: C.PANEL,
                     border: `1px solid ${C.BORDER}`, borderRadius: 7,
                     padding: 11, marginBottom: 8 }}>

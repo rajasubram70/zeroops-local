@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>SAP S/4HANA — System Monitor</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; background: #e8e8e8; color: #000; height: 100vh; display: flex; flex-direction: column; }
+.title-bar { background: linear-gradient(to bottom, #4a90d9, #2060a0); color: #fff; padding: 3px 8px; font-size: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; min-height: 22px; }
+.sap-logo { background: #fff; color: #0070b1; font-weight: 900; font-size: 11px; padding: 1px 5px; border-radius: 2px; letter-spacing: 1px; }
+.menu-bar { background: #f0f0f0; border-bottom: 1px solid #999; padding: 2px 4px; display: flex; gap: 0; }
+.menu-item { padding: 2px 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; white-space: nowrap; }
+.menu-item:hover { background: #fff; border-color: #999; }
+.toolbar { background: #f5f5f5; border-bottom: 1px solid #aaa; padding: 2px 4px; display: flex; align-items: center; gap: 2px; }
+.tb-btn { background: linear-gradient(to bottom, #fff, #ddd); border: 1px solid #999; border-radius: 2px; padding: 2px 8px; font-size: 11px; cursor: pointer; color: #000; min-width: 28px; text-align: center; }
+.tb-btn:hover { background: linear-gradient(to bottom, #fff, #bbb); }
+.tb-sep { width: 1px; height: 20px; background: #aaa; margin: 0 3px; }
+.tb-field { border: 1px solid #999; background: #fff; padding: 2px 4px; font-size: 12px; font-family: monospace; width: 80px; }
+.tb-label { font-size: 11px; color: #333; padding: 0 4px; }
+.txn-header { background: #dce9f5; border-bottom: 2px solid #0070b1; padding: 4px 8px; display: flex; justify-content: space-between; align-items: center; }
+.txn-title { font-size: 13px; font-weight: bold; color: #003580; }
+.txn-meta { font-size: 11px; color: #333; display: flex; gap: 16px; font-family: monospace; }
+.zo-banner { display: none; padding: 4px 8px; font-size: 11px; font-weight: bold; border-bottom: 1px solid; }
+.zo-banner.detecting { background: #fff3cd; color: #856404; border-color: #ffc107; }
+.zo-banner.resolving { background: #cce5ff; color: #004085; border-color: #b8daff; }
+.zo-banner.resolved  { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+.tab-strip { background: #e0e0e0; border-bottom: 1px solid #999; display: flex; padding: 3px 4px 0; gap: 2px; }
+.tab { padding: 3px 14px; font-size: 12px; cursor: pointer; border: 1px solid #999; border-bottom: none; background: #d0d0d0; border-radius: 3px 3px 0 0; color: #333; }
+.tab.active { background: #fff; color: #000; font-weight: bold; position: relative; top: 1px; }
+.tab:hover:not(.active) { background: #c0c0c0; }
+.content { flex: 1; background: #fff; overflow: auto; padding: 6px; }
+.kpi-strip { display: flex; gap: 6px; margin-bottom: 8px; padding: 4px; background: #f0f4f8; border: 1px solid #b0c4d8; }
+.kpi-box { flex: 1; background: #fff; border: 1px solid #b0c4d8; padding: 4px 8px; border-left: 3px solid var(--c, #0070b1); }
+.kpi-lbl { font-size: 10px; color: #666; text-transform: uppercase; }
+.kpi-val { font-size: 18px; font-weight: bold; color: var(--c, #0070b1); font-family: monospace; line-height: 1.2; }
+.kpi-sub { font-size: 10px; color: #666; }
+.sap-grid { border: 1px solid #999; margin-bottom: 8px; }
+.grid-header { background: #dce9f5; border-bottom: 1px solid #999; padding: 3px 6px; font-weight: bold; font-size: 12px; color: #003580; display: flex; justify-content: space-between; }
+.grid-header .txn-code { font-family: monospace; font-size: 10px; background: #0070b1; color: #fff; padding: 1px 6px; border-radius: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { background: #e8e8e8; border: 1px solid #bbb; padding: 3px 6px; text-align: left; font-weight: bold; font-size: 11px; color: #000; white-space: nowrap; }
+td { border: 1px solid #ddd; padding: 2px 6px; white-space: nowrap; font-family: monospace; }
+tr.row-run td { background: #ffe8e8; }
+tr:hover td { background: #d0e8ff !important; }
+.tl-green { color: #00aa00; } .tl-red { color: #cc0000; } .tl-yellow { color: #cc8800; }
+.wp-type { font-family: monospace; font-size: 10px; font-weight: bold; padding: 0 4px; border-radius: 2px; }
+.wp-dia { background: #d0e8ff; color: #003580; border: 1px solid #7bafd4; }
+.wp-btc { background: #e8d0ff; color: #380053; border: 1px solid #b47fd4; }
+.wp-upd { background: #ffd0d0; color: #530000; border: 1px solid #d47f7f; }
+.wp-spo { background: #d0ffd0; color: #005300; border: 1px solid #7fd47f; }
+.util-row { display: flex; align-items: center; gap: 6px; padding: 4px 6px; border-bottom: 1px solid #eee; }
+.util-lbl { width: 140px; font-size: 11px; }
+.util-track { width: 200px; height: 10px; background: #e0e0e0; border: 1px solid #bbb; }
+.util-fill { height: 100%; transition: width 0.5s, background 0.5s; }
+.util-pct { width: 40px; font-family: monospace; font-weight: bold; font-size: 11px; text-align: right; }
+.util-msg { font-size: 10px; }
+.section { display: none; }
+.section.active { display: block; }
+.status-bar { background: #e0e0e0; border-top: 1px solid #999; padding: 2px 8px; font-size: 11px; display: flex; justify-content: space-between; color: #333; }
+.fkey-bar { background: #d0d0d0; border-top: 1px solid #aaa; padding: 2px 4px; display: flex; gap: 2px; flex-wrap: wrap; }
+.fkey { background: linear-gradient(to bottom, #f5f5f5, #d8d8d8); border: 1px solid #999; border-radius: 2px; padding: 1px 6px; font-size: 10px; cursor: pointer; white-space: nowrap; }
+.fkey b { color: #003580; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+</head>
+<body>
+<div class="title-bar">
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="sap-logo">SAP</div>
+    <span>SAP S/4HANA — System Monitoring</span>
+  </div>
+  <div style="font-size:11px;opacity:0.9">Client 100 &nbsp;·&nbsp; PRD &nbsp;·&nbsp; sap-mock &nbsp;·&nbsp; EN</div>
+</div>
+<div class="menu-bar">
+  <div class="menu-item"><u>S</u>ystem</div>
+  <div class="menu-item"><u>E</u>dit</div>
+  <div class="menu-item"><u>G</u>oto</div>
+  <div class="menu-item"><u>V</u>iew</div>
+  <div class="menu-item">E<u>x</u>tras</div>
+  <div class="menu-item">E<u>n</u>vironment</div>
+  <div class="menu-item">Syste<u>m</u></div>
+  <div class="menu-item"><u>H</u>elp</div>
+</div>
+<div class="toolbar">
+  <div class="tb-label">Transaction:</div>
+  <input class="tb-field" id="txnField" value="SM50" onkeydown="if(event.key==='Enter')executeBtn()"/>
+  <div class="tb-btn" onclick="executeBtn()">&#10003;</div>
+  <div class="tb-sep"></div>
+  <div class="tb-btn">&#9668;</div>
+  <div class="tb-btn">&#10005;</div>
+  <div class="tb-btn">&#8855;</div>
+  <div class="tb-sep"></div>
+  <div class="tb-btn">&#128438;</div>
+  <div class="tb-btn">&#128269;</div>
+  <div class="tb-sep"></div>
+  <div class="tb-btn">|&#9668;</div>
+  <div class="tb-btn">&#9668;</div>
+  <div class="tb-btn">&#9658;</div>
+  <div class="tb-btn">&#9658;|</div>
+  <div class="tb-sep"></div>
+  <div class="tb-btn" style="background:linear-gradient(to bottom,#e8f4ff,#b8d4ff);color:#003580" onclick="refresh()">&#8635; Refresh</div>
+  <div style="margin-left:auto;font-size:10px;color:#333;display:flex;align-items:center;gap:4px">
+    <div style="width:7px;height:7px;border-radius:50%;background:#00aa00;animation:pulse 1s infinite"></div>
+    Live &nbsp;·&nbsp; 5s refresh
+  </div>
+</div>
+<div class="zo-banner" id="banner">&#129302; ZeroOps Autonomous Operations &mdash; <span id="bannerMsg"></span></div>
+<div class="txn-header">
+  <div class="txn-title" id="txnTitle">Work Process Overview &mdash; SM50</div>
+  <div class="txn-meta">
+    <span><b>System:</b> PRD</span>
+    <span><b>Host:</b> sap-mock</span>
+    <span><b>Client:</b> 100</span>
+    <span><b>User:</b> BTCADMIN</span>
+    <span><b>Time:</b> <span id="clock">--:--:--</span></span>
+  </div>
+</div>
+<div class="tab-strip">
+  <div class="tab active" id="tab-sm50" onclick="showTab('sm50','Work Process Overview &mdash; SM50')">SM50 &mdash; Work Processes</div>
+  <div class="tab" id="tab-sm37" onclick="showTab('sm37','Job Overview &mdash; SM37')">SM37 &mdash; Job Monitor</div>
+  <div class="tab" id="tab-idoc" onclick="showTab('idoc','iDoc Monitor &mdash; WE02')">WE02 &mdash; iDoc Monitor</div>
+</div>
+<div class="content">
+  <div class="kpi-strip">
+    <div class="kpi-box" style="--c:#0070b1"><div class="kpi-lbl">Dialog WP Util.</div><div class="kpi-val" id="kpiWp">—</div><div class="kpi-sub">of 6 dialog WPs</div></div>
+    <div class="kpi-box" style="--c:#0070b1"><div class="kpi-lbl">Dialog Response</div><div class="kpi-val" id="kpiResp">—</div><div class="kpi-sub">avg step time</div></div>
+    <div class="kpi-box" style="--c:#00aa00"><div class="kpi-lbl">iDoc Queue</div><div class="kpi-val" id="kpiIdoc">—</div><div class="kpi-sub">pending msgs</div></div>
+    <div class="kpi-box" style="--c:#6a1b9a"><div class="kpi-lbl">Batch Jobs</div><div class="kpi-val" id="kpiBatch">—</div><div class="kpi-sub">active/aborted</div></div>
+    <div class="kpi-box" style="--c:#e65100"><div class="kpi-lbl">HANA CPU</div><div class="kpi-val" id="kpiHana">—</div><div class="kpi-sub">database layer</div></div>
+  </div>
+
+  <div class="section active" id="sm50">
+    <div class="sap-grid">
+      <div class="grid-header">Work Process Overview <span class="txn-code">SM50</span></div>
+      <table><thead><tr><th>No.</th><th>Type</th><th>PID</th><th>St.</th><th>Reason</th><th>Start</th><th>Elapsed</th><th>Program</th><th>Cl.</th><th>User</th><th>Action</th><th>Table/Object</th><th>Util</th></tr></thead><tbody id="wpTable"></tbody></table>
+    </div>
+    <div class="sap-grid">
+      <div class="grid-header">Work Process Utilisation <span class="txn-code">SM66</span></div>
+      <div style="padding:6px">
+        <div class="util-row"><div class="util-lbl">Dialog (DIA)</div><div class="util-track"><div class="util-fill" id="uDia"></div></div><div class="util-pct" id="uDiaPct">0%</div><div class="util-msg" id="uDiaMsg"></div></div>
+        <div class="util-row"><div class="util-lbl">Background (BTC)</div><div class="util-track"><div class="util-fill" id="uBtc" style="background:#6a1b9a;width:22%"></div></div><div class="util-pct">22%</div></div>
+        <div class="util-row"><div class="util-lbl">Update (UPD)</div><div class="util-track"><div class="util-fill" id="uUpd" style="background:#e65100;width:8%"></div></div><div class="util-pct">8%</div></div>
+        <div class="util-row"><div class="util-lbl">Spool (SPO)</div><div class="util-track"><div class="util-fill" style="background:#00aa00;width:5%"></div></div><div class="util-pct">5%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sm37">
+    <div class="sap-grid">
+      <div class="grid-header">Job Overview <span class="txn-code">SM37</span></div>
+      <table><thead><tr><th></th><th>Job Name</th><th>Job No.</th><th>Status</th><th>Sched. Start</th><th>Start Time</th><th>Duration</th><th>Created By</th><th>WP No.</th><th>Note</th></tr></thead><tbody id="jobTable"></tbody></table>
+    </div>
+  </div>
+
+  <div class="section" id="idoc">
+    <div class="sap-grid">
+      <div class="grid-header">iDoc &mdash; Inbound/Outbound Queue Monitor <span class="txn-code">WE02</span></div>
+      <table><thead><tr><th></th><th>iDoc Type</th><th>Direction</th><th>Partner</th><th>Status</th><th>Status Text</th><th>Count</th><th>Queue Depth</th></tr></thead><tbody id="idocTable"></tbody></table>
+      <div style="padding:4px 6px;background:#f0f0f0;border-top:1px solid #ddd;font-size:11px;display:flex;gap:20px">
+        <span>Total pending: <b id="idocTotal">—</b></span>
+        <span>Status: <b id="idocStatus">—</b></span>
+        <span>Refreshed: <b id="idocTime">—</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span id="statusMsg">Ready</span>
+  <span style="display:flex;gap:16px"><span>Ins</span><span id="rowCount">0 entries</span><span>SAP S/4HANA 2023 FPS02</span></span>
+</div>
+<div class="fkey-bar">
+  <div class="fkey"><b>F1</b> Help</div>
+  <div class="fkey"><b>F2</b> Detail</div>
+  <div class="fkey"><b>F3</b> Back</div>
+  <div class="fkey"><b>F4</b> Possible entries</div>
+  <div class="fkey"><b>F5</b> Refresh</div>
+  <div class="fkey"><b>F6</b> Reactivate WP</div>
+  <div class="fkey"><b>F7</b> Send signal</div>
+  <div class="fkey"><b>F8</b> Execute</div>
+  <div class="fkey"><b>F9</b> Process list</div>
+  <div class="fkey"><b>F10</b> Menu</div>
+  <div class="fkey"><b>F11</b> Save</div>
+  <div class="fkey"><b>F12</b> Cancel</div>
+  <div class="fkey" style="margin-left:auto;background:linear-gradient(to bottom,#e8f4ff,#b8d4ff);color:#003580"><b>Shift+F5</b> ZeroOps Monitor</div>
+</div>
+
+<script>
+const API='http://localhost:8082', BRIDGE='http://localhost:5002';
+setInterval(()=>{ document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-GB',{hour12:false}); },1000);
+
+function showTab(id,title){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('txnTitle').innerHTML=title;
+  document.getElementById('txnField').value=id==='sm50'?'SM50':id==='sm37'?'SM37':'WE02';
+}
+function executeBtn(){
+  const v=document.getElementById('txnField').value.toUpperCase().trim();
+  if(v==='SM50'||v==='SM66') showTab('sm50','Work Process Overview &mdash; SM50');
+  else if(v==='SM37') showTab('sm37','Job Overview &mdash; SM37');
+  else if(v==='WE02') showTab('idoc','iDoc Monitor &mdash; WE02');
+}
+function wpCol(p){ return p>=85?'#cc0000':p>=70?'#cc8800':'#007700'; }
+function showBanner(type,msg){ const b=document.getElementById('banner'); b.className='zo-banner '+type; b.style.display='block'; document.getElementById('bannerMsg').textContent=msg; }
+function hideBanner(){ document.getElementById('banner').style.display='none'; }
+
+async function refreshSM50(){
+  try{
+    const d=await fetch(`${API}/sm50`).then(r=>r.json());
+    const pct=d.utilisation_pct||0, col=wpCol(pct);
+    document.getElementById('kpiWp').textContent=`${Math.round(pct)}%`;
+    document.getElementById('kpiWp').style.color=col;
+    const uDia=document.getElementById('uDia');
+    uDia.style.width=`${Math.min(pct,100)}%`; uDia.style.background=col;
+    document.getElementById('uDiaPct').textContent=`${Math.round(pct)}%`;
+    document.getElementById('uDiaPct').style.color=col;
+    document.getElementById('uDiaMsg').textContent=pct>=85?'⚠ SATURATION — ZeroOps executing SM37 reschedule':pct>=70?'▲ Elevated':'● Normal';
+    document.getElementById('uDiaMsg').style.color=pct>=85?'#cc0000':pct>=70?'#cc8800':'#007700';
+    const tbody=document.getElementById('wpTable'); tbody.innerHTML='';
+    (d.work_processes||[]).forEach(wp=>{
+      const run=wp.status==='Run';
+      const tl=run?'<span style="color:#cc0000">&#9679;</span>':'<span style="color:#00aa00">&#9679;</span>';
+      const tc=`wp-${wp.type.toLowerCase()}`;
+      const bar=`<div style="width:50px;height:6px;background:#e0e0e0;border:1px solid #bbb;display:inline-block"><div style="height:100%;width:${run?'85':'5'}%;background:${run?'#cc0000':'#007700'}"></div></div>`;
+      tbody.innerHTML+=`<tr class="${run?'row-run':''}"><td>${wp.no}</td><td><span class="wp-type ${tc}">${wp.type}</span></td><td>${wp.pid}</td><td>${tl}</td><td>${wp.reason||''}</td><td>${wp.start||''}</td><td style="color:${run&&parseInt(wp.time)>300?'#cc0000':'#000'}">${wp.time||''}</td><td style="color:${run?'#cc0000':'#000'};font-weight:${run?'bold':'normal'}">${wp.program||''}</td><td>${wp.client||''}</td><td style="color:${run?'#003580':'#000'}">${wp.user||''}</td><td>${wp.action||''}</td><td style="font-weight:${wp.table?'bold':'normal'}">${wp.table||''}</td><td>${bar}</td></tr>`;
+    });
+    document.getElementById('rowCount').textContent=`${(d.work_processes||[]).length} work processes`;
+    document.getElementById('statusMsg').textContent=pct>=85?`⚠ Dialog WP pool at ${Math.round(pct)}% — saturation detected`:'Work process overview loaded';
+  }catch(e){}
+}
+
+async function refreshSM37(){
+  try{
+    const d=await fetch(`${API}/sm37`).then(r=>r.json());
+    document.getElementById('kpiBatch').textContent=`${d.active}a/${d.aborted}x`;
+    document.getElementById('kpiBatch').style.color=d.aborted>0?'#cc0000':'#6a1b9a';
+    const tbody=document.getElementById('jobTable'); tbody.innerHTML='';
+    let jn=14721800;
+    (d.jobs||[]).forEach(job=>{
+      const ab=job.status==='Aborted', ac=job.status==='Active';
+      const tl=ab?'<span style="color:#cc0000">&#9679;</span>':ac?'<span style="color:#00aa00">&#9679;</span>':'<span style="color:#cc8800">&#9679;</span>';
+      tbody.innerHTML+=`<tr class="${ab?'row-run':''}"><td>${tl}</td><td style="font-weight:bold;color:${ab?'#cc0000':'#000'}">${job.jobname}</td><td style="color:#003580">${jn++}</td><td>${job.status}</td><td>${job.start}</td><td>${ac?new Date().toLocaleTimeString('en-GB',{hour12:false}):''}</td><td>${job.runtime||''}</td><td>${job.user}</td><td>${ac?Math.floor(Math.random()*4)+6:''}</td><td style="color:#cc0000;font-size:10px">${ab?'&#9888; ZeroOps: SM37 reschedule pending Slack approval':''}</td></tr>`;
+    });
+    document.getElementById('rowCount').textContent=`${(d.jobs||[]).length} jobs`;
+  }catch(e){}
+}
+
+async function refreshiDoc(){
+  try{
+    const d=await fetch(`${API}/idoc/queue`).then(r=>r.json());
+    const backed=d.status==='backed_up';
+    document.getElementById('idocTotal').textContent=d.total_pending;
+    document.getElementById('idocTotal').style.color=backed?'#cc0000':'#007700';
+    document.getElementById('idocStatus').textContent=backed?'⚠ QUEUE BACKED UP':'● Normal processing';
+    document.getElementById('idocStatus').style.color=backed?'#cc0000':'#007700';
+    document.getElementById('idocTime').textContent=new Date().toLocaleTimeString('en-GB',{hour12:false});
+    document.getElementById('kpiIdoc').textContent=d.total_pending;
+    document.getElementById('kpiIdoc').style.color=d.total_pending>100?'#cc0000':'#007700';
+    const tbody=document.getElementById('idocTable'); tbody.innerHTML='';
+    (d.idoc_types||[]).forEach(idoc=>{
+      const b=idoc.count>100, pct=Math.min(idoc.count/300*100,100);
+      const col=b?'#cc0000':idoc.count>20?'#cc8800':'#007700';
+      const tl=b?'<span style="color:#cc0000">&#9679;</span>':'<span style="color:#00aa00">&#9679;</span>';
+      const sts=idoc.status==='51'?'51 — Error — application doc. not posted':'53 — Application doc. passed';
+      tbody.innerHTML+=`<tr class="${b?'row-run':''}"><td>${tl}</td><td style="font-weight:bold">${idoc.idoc_type}</td><td>${idoc.direction}</td><td>${idoc.partner}</td><td style="font-family:monospace;color:${idoc.status==='51'?'#cc0000':'#007700'}">${idoc.status}</td><td style="font-size:10px;color:${idoc.status==='51'?'#cc0000':'#007700'}">${sts}</td><td style="font-weight:bold;color:${col}">${idoc.count}</td><td><div style="width:120px;height:8px;background:#e0e0e0;border:1px solid #bbb;display:inline-block"><div style="height:100%;width:${pct}%;background:${col}"></div></div></td></tr>`;
+    });
+  }catch(e){}
+}
+
+async function refreshBridge(){
+  try{
+    const m=await fetch(`${BRIDGE}/metrics`).then(r=>r.json());
+    const resp=m.sap_dialog_response_ms||0;
+    document.getElementById('kpiResp').textContent=resp>1000?`${(resp/1000).toFixed(1)}s`:`${Math.round(resp)}ms`;
+    document.getElementById('kpiResp').style.color=resp>5000?'#cc0000':resp>2000?'#cc8800':'#0070b1';
+    document.getElementById('kpiHana').textContent=`${Math.round(m.sap_hana_cpu_pct||0)}%`;
+    document.getElementById('kpiHana').style.color=(m.sap_hana_cpu_pct||0)>60?'#cc0000':'#e65100';
+    const wp=m.sap_wp_dialog_used_pct||0;
+    if(wp>85) showBanner('detecting',`Work Process Saturation — Dialog WP ${Math.round(wp)}% — ZeroOps Alert Correlator: risk 22 — SM37 reschedule executing autonomously`);
+    else if((m.sap_idoc_queue_depth||0)>100) showBanner('detecting',`iDoc Queue Backup — ${Math.round(m.sap_idoc_queue_depth)} messages pending — ZeroOps executing iDoc consumer restart autonomously`);
+    else if((m.sap_batch_queue_depth||0)>5) showBanner('resolving',`Batch Job Failure — ${Math.round(m.sap_batch_queue_depth)} jobs queued — ZeroOps HiTL: Slack approval sent to BASIS team — risk 45`);
+    else hideBanner();
+  }catch(e){}
+}
+
+async function refresh(){ await Promise.all([refreshSM50(),refreshSM37(),refreshiDoc(),refreshBridge()]); }
+refresh();
+setInterval(refresh,5000);
+</script>
+</body>
+</html>

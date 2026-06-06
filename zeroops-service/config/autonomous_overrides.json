@@ -1,0 +1,32 @@
+﻿{
+  "ServiceURLDown": {
+    "risk_score": 18,
+    "pillar": "Autonomous",
+    "reason": "URL probe failure — container restart is safe and fully reversible"
+  },
+  "HighQueueDepth": {
+    "risk_score": 12,
+    "pillar": "Autonomous",
+    "reason": "Queue buildup — worker restart is safe, no data risk"
+  },
+  "CRMURLDown": {
+    "risk_score": 18,
+    "pillar": "Autonomous",
+    "reason": "CRM URL probe failure — container restart is safe and reversible"
+  },
+  "MemoryLeakDetected": {
+    "risk_score": 18,
+    "pillar": "Autonomous",
+    "reason": "Memory leak detected — preemptive restart is safe and reversible"
+  },
+  "SAPWorkProcessSaturation": {
+    "risk_score": 22,
+    "pillar": "Autonomous",
+    "reason": "WP saturation — SM37 reschedule is safe and reversible"
+  },
+  "SAPiDocQueueBackup": {
+    "risk_score": 20,
+    "pillar": "Autonomous",
+    "reason": "iDoc queue backup — consumer restart is safe"
+  }
+}

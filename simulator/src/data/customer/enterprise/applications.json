@@ -21,13 +21,16 @@
           "trend": [99, 100, 99, 99, 100, 99, 100, 99],
           "up": 99,
           "infra": [
-            { "c": "health","label": "Health Check",   "val": "Passing", "unit": "",  "m": 100, "anom": false, "detail": "Web health endpoint OK",     "h": "GREEN" }
-
+            { "c": "health",  "label": "Health Check",      "val": "Passing", "unit": "",   "m": 100, "anom": false, "detail": "Web health endpoint OK",                        "h": "GREEN" },
+            { "c": "db-resp", "label": "DB Response Time",  "val": "180ms",   "unit": "ms", "m": 90,  "anom": false, "detail": "PostgreSQL query time normal — within SLA",      "h": "GREEN" },
+            { "c": "conn",    "label": "Connection Pool",   "val": "12/100",  "unit": "",   "m": 12,  "anom": false, "detail": "12 of 100 connections active — healthy",         "h": "GREEN" },
+            { "c": "resp",    "label": "Response Time",     "val": "240ms",   "unit": "ms", "m": 88,  "anom": false, "detail": "Within SLA",                                    "h": "GREEN" },
+            { "c": "sess",    "label": "Active Sessions",   "val": "38",      "unit": "",   "m": 60,  "anom": false, "detail": "Normal session count",                          "h": "GREEN" }
           ]
         }
       ]
     },
-        {
+    {
       "id": "live-api",
       "name": "Enterprise Order API",
       "icon": "⚡",
@@ -51,7 +54,88 @@
             { "c": "cpu",   "label": "CPU",           "val": "24%",     "unit": "%", "m": 24,  "anom": false, "detail": "Normal load",              "h": "GREEN" },
             { "c": "req",   "label": "Request Rate",   "val": "0.4/s",   "unit": "",  "m": 80,  "anom": false, "detail": "Orders processing normally","h": "GREEN" },
             { "c": "health","label": "Health Check",   "val": "Passing", "unit": "",  "m": 100, "anom": false, "detail": "All endpoints healthy",     "h": "GREEN" },
-            { "c": "queue", "label": "Order Queue",    "val": "0",       "unit": "",  "m": 100, "anom": false, "detail": "Queue depth normal",        "h": "GREEN" }
+            { "c": "queue", "label": "Order Queue",    "val": "0",       "unit": "",  "m": 100, "anom": false, "detail": "Queue depth normal",        "h": "GREEN" },
+            { "c": "mem", "label": "Memory Usage", "val": "62MB", "unit": "MB", "m": 40, "anom": false, "detail": "Memory within normal range", "h": "GREEN" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-sap",
+      "name": "SAP Landscape",
+      "icon": "🔷",
+      "status": "GREEN",
+      "uptime": 99.8,
+      "description": "Live SAP S/4HANA PCE — ZeroOps monitored",
+      "apps": [
+        {
+          "id": "s4hana-app",
+          "name": "SAP S/4HANA PCE",
+          "status": "GREEN",
+          "perf": 95,
+          "ver": "2023 FPS02",
+          "hosting": "Private Cloud",
+          "hostingColor": "#7C3AED",
+          "sessions": 147,
+          "uptime": 99.8,
+          "trend": [99, 99, 100, 99, 100, 99, 99, 100],
+          "up": 99,
+          "infra": [
+            { "c": "health", "label": "System Health",       "val": "Healthy", "unit": "",   "m": 95, "anom": false, "detail": "SAP S/4HANA PRD — all services operational", "h": "GREEN" },
+            { "c": "wp",     "label": "Work Process Util.",  "val": "18%",     "unit": "%",  "m": 18, "anom": false, "detail": "Dialog WP pool — 18% utilised — normal", "h": "GREEN" },
+            { "c": "resp",   "label": "Dialog Response",     "val": "420ms",   "unit": "ms", "m": 42, "anom": false, "detail": "SAP dialog step response time — within SLA", "h": "GREEN" },
+            { "c": "idoc",   "label": "iDoc Queue",          "val": "13",      "unit": "",   "m": 13, "anom": false, "detail": "iDoc inbound queue — normal processing", "h": "GREEN" },
+            { "c": "batch",  "label": "Batch Jobs",          "val": "2 active","unit": "",   "m": 30, "anom": false, "detail": "SM37 — 2 active batch jobs — normal", "h": "GREEN" }
+          ]
+        },
+        {
+          "id": "hana-db",
+          "name": "SAP HANA Database",
+          "status": "GREEN",
+          "perf": 97,
+          "ver": "2.0 SPS07",
+          "hosting": "Private Cloud",
+          "hostingColor": "#7C3AED",
+          "sessions": 89,
+          "uptime": 99.9,
+          "trend": [100, 100, 99, 100, 100, 99, 100, 100],
+          "up": 100,
+          "infra": [
+            { "c": "cpu",  "label": "HANA CPU",    "val": "22%", "unit": "%", "m": 22, "anom": false, "detail": "HANA in-memory DB — CPU normal", "h": "GREEN" },
+            { "c": "mem",  "label": "HANA Memory", "val": "48%", "unit": "%", "m": 48, "anom": false, "detail": "Memory utilisation within normal range", "h": "GREEN" }
+          ]
+        },
+        {
+          "id": "fiori",
+          "name": "SAP Fiori Launchpad",
+          "status": "GREEN",
+          "perf": 94,
+          "ver": "3.0",
+          "hosting": "Private Cloud",
+          "hostingColor": "#7C3AED",
+          "sessions": 234,
+          "uptime": 99.7,
+          "trend": [99, 100, 99, 99, 100, 99, 100, 99],
+          "up": 99,
+          "infra": [
+            { "c": "resp", "label": "Response Time", "val": "380ms", "unit": "ms", "m": 38, "anom": false, "detail": "Fiori launchpad response time — within SLA", "h": "GREEN" }
+          ]
+        },
+        {
+          "id": "sap-integration",
+          "name": "SAP Integration Suite",
+          "status": "GREEN",
+          "perf": 96,
+          "ver": "2023.4",
+          "hosting": "Private Cloud",
+          "hostingColor": "#7C3AED",
+          "sessions": 0,
+          "uptime": 99.8,
+          "trend": [99, 100, 99, 100, 99, 100, 99, 100],
+          "up": 99,
+          "infra": [
+            { "c": "idoc",  "label": "iDoc Queue Depth", "val": "13",  "unit": "", "m": 13, "anom": false, "detail": "iDoc inbound queue — normal processing", "h": "GREEN" },
+            { "c": "batch", "label": "Batch Queue",       "val": "0",   "unit": "", "m": 0,  "anom": false, "detail": "No batch jobs queued", "h": "GREEN" }
           ]
         }
       ]
@@ -330,471 +414,6 @@
               "m": 22,
               "anom": false,
               "detail": "Normal",
-              "h": "GREEN"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "scm",
-      "name": "Supply Chain & Logistics",
-      "icon": "\ud83d\ude9a",
-      "status": "RED",
-      "uptime": 94.1,
-      "description": "Warehouse management, transport, EDI and inventory systems",
-      "apps": [
-        {
-          "id": "wms",
-          "name": "Warehouse Mgmt System",
-          "status": "RED",
-          "perf": 58,
-          "ver": "2022.4",
-          "hosting": "On-Premise",
-          "hostingColor": "#64748B",
-          "sessions": 340,
-          "uptime": 93.2,
-          "trend": [99, 97, 95, 94, 93, 93, 92, 93],
-          "up": 93,
-          "infra": [
-            {
-              "c": "db",
-              "label": "DB Deadlock Rate",
-              "val": "14/hr",
-              "unit": "",
-              "m": 84,
-              "anom": true,
-              "detail": "Deadlocks on STOCK_LEDGER table \u2014 warehouse ops impacted",
-              "h": "RED"
-            },
-            {
-              "c": "cpu",
-              "label": "CPU",
-              "val": "91%",
-              "unit": "%",
-              "m": 91,
-              "anom": true,
-              "detail": "DB contention causing CPU spike",
-              "h": "RED"
-            }
-          ]
-        },
-        {
-          "id": "tms",
-          "name": "Transport Mgmt System",
-          "status": "GREEN",
-          "perf": 88,
-          "ver": "2023.2",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 124,
-          "uptime": 99.0,
-          "trend": [99, 99, 99, 98, 99, 99, 99, 99],
-          "up": 99,
-          "infra": [
-            {
-              "c": "resp",
-              "label": "Response Time",
-              "val": "1.4s",
-              "unit": "s",
-              "m": 28,
-              "anom": false,
-              "detail": "Normal",
-              "h": "GREEN"
-            }
-          ]
-        },
-        {
-          "id": "edi",
-          "name": "EDI Gateway",
-          "status": "RED",
-          "perf": 41,
-          "ver": "3.2.1",
-          "hosting": "On-Premise",
-          "hostingColor": "#64748B",
-          "sessions": 0,
-          "uptime": 88.4,
-          "trend": [99, 96, 92, 90, 88, 87, 88, 88],
-          "up": 88,
-          "infra": [
-            {
-              "c": "queue",
-              "label": "Message Queue",
-              "val": "2,341",
-              "unit": "",
-              "m": 96,
-              "anom": true,
-              "detail": "ORDERS/DESADV/INVOIC queues stalled \u2014 2,341 messages pending",
-              "h": "RED"
-            },
-            {
-              "c": "conn",
-              "label": "Partner Connections",
-              "val": "3/12",
-              "unit": "",
-              "m": 75,
-              "anom": true,
-              "detail": "9 of 12 trading partner connections dropped",
-              "h": "RED"
-            }
-          ]
-        },
-        {
-          "id": "inv",
-          "name": "Inventory Platform",
-          "status": "AMBER",
-          "perf": 78,
-          "ver": "2023.1",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 210,
-          "uptime": 97.8,
-          "trend": [99, 98, 98, 97, 98, 97, 98, 97],
-          "up": 98,
-          "infra": [
-            {
-              "c": "sync",
-              "label": "Sync Lag",
-              "val": "18 min",
-              "unit": "",
-              "m": 60,
-              "anom": true,
-              "detail": "Inventory sync lagging due to EDI gateway dependency",
-              "h": "AMBER"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "eng",
-      "name": "Engineering & DevOps",
-      "icon": "\u2699",
-      "status": "AMBER",
-      "uptime": 97.8,
-      "description": "CI/CD pipeline, source control, artifact management and project tools",
-      "apps": [
-        {
-          "id": "jenkins",
-          "name": "Jenkins CI/CD",
-          "status": "AMBER",
-          "perf": 69,
-          "ver": "2.440",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 88,
-          "uptime": 96.4,
-          "trend": [99, 98, 97, 96, 96, 96, 96, 96],
-          "up": 96,
-          "infra": [
-            {
-              "c": "disk",
-              "label": "Build Agent Disk",
-              "val": "91%",
-              "unit": "%",
-              "m": 91,
-              "anom": true,
-              "detail": "Build artifacts consuming disk \u2014 pipeline failures imminent",
-              "h": "AMBER"
-            },
-            {
-              "c": "queue",
-              "label": "Build Queue",
-              "val": "34 jobs",
-              "unit": "",
-              "m": 68,
-              "anom": true,
-              "detail": "34 jobs queued \u2014 3 agents offline",
-              "h": "AMBER"
-            }
-          ]
-        },
-        {
-          "id": "github",
-          "name": "GitHub Enterprise",
-          "status": "GREEN",
-          "perf": 97,
-          "ver": "3.11",
-          "hosting": "On-Premise",
-          "hostingColor": "#64748B",
-          "sessions": 420,
-          "uptime": 99.8,
-          "trend": [100, 100, 100, 100, 100, 100, 99, 100],
-          "up": 100,
-          "infra": [
-            {
-              "c": "resp",
-              "label": "Response Time",
-              "val": "0.3s",
-              "unit": "s",
-              "m": 6,
-              "anom": false,
-              "detail": "Normal",
-              "h": "GREEN"
-            }
-          ]
-        },
-        {
-          "id": "nexus",
-          "name": "Nexus Repository",
-          "status": "GREEN",
-          "perf": 84,
-          "ver": "3.61",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 88,
-          "uptime": 99.1,
-          "trend": [99, 99, 100, 99, 99, 100, 99, 99],
-          "up": 99,
-          "infra": [
-            {
-              "c": "disk",
-              "label": "Repo Disk",
-              "val": "74%",
-              "unit": "%",
-              "m": 74,
-              "anom": false,
-              "detail": "Normal \u2014 auto-cleanup scheduled",
-              "h": "GREEN"
-            }
-          ]
-        },
-        {
-          "id": "jira",
-          "name": "Jira / Confluence",
-          "status": "GREEN",
-          "perf": 91,
-          "ver": "9.12",
-          "hosting": "Cloud",
-          "hostingColor": "#64748B",
-          "sessions": 1240,
-          "uptime": 99.5,
-          "trend": [100, 99, 100, 100, 99, 100, 100, 99],
-          "up": 99,
-          "infra": [
-            {
-              "c": "resp",
-              "label": "Response Time",
-              "val": "1.1s",
-              "unit": "s",
-              "m": 22,
-              "anom": false,
-              "detail": "Normal",
-              "h": "GREEN"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "infra",
-      "name": "Corporate Infrastructure",
-      "icon": "\ud83c\udf10",
-      "status": "AMBER",
-      "uptime": 98.6,
-      "description": "Microsoft 365, network, VPN and core infrastructure services",
-      "apps": [
-        {
-          "id": "m365",
-          "name": "Microsoft 365",
-          "status": "GREEN",
-          "perf": 98,
-          "ver": "N/A",
-          "hosting": "SaaS",
-          "hostingColor": "#64748B",
-          "sessions": 14200,
-          "uptime": 99.9,
-          "trend": [100, 100, 100, 100, 100, 100, 100, 100],
-          "up": 100,
-          "infra": [
-            {
-              "c": "resp",
-              "label": "Exchange Latency",
-              "val": "0.8s",
-              "unit": "s",
-              "m": 16,
-              "anom": false,
-              "detail": "Normal",
-              "h": "GREEN"
-            }
-          ]
-        },
-        {
-          "id": "vpn",
-          "name": "VPN Gateway",
-          "status": "AMBER",
-          "perf": 71,
-          "ver": "v8.4",
-          "hosting": "On-Premise",
-          "hostingColor": "#64748B",
-          "sessions": 2840,
-          "uptime": 97.2,
-          "trend": [99, 99, 98, 97, 97, 97, 97, 97],
-          "up": 97,
-          "infra": [
-            {
-              "c": "cert",
-              "label": "Certificate Expiry",
-              "val": "8 days",
-              "unit": "",
-              "m": 84,
-              "anom": true,
-              "detail": "SSL certificate expires in 8 days \u2014 renewal required",
-              "h": "AMBER"
-            },
-            {
-              "c": "load",
-              "label": "Concurrent Users",
-              "val": "2,840",
-              "unit": "",
-              "m": 71,
-              "anom": true,
-              "detail": "Approaching licensed capacity of 4,000",
-              "h": "AMBER"
-            }
-          ]
-        },
-        {
-          "id": "network",
-          "name": "Core Network",
-          "status": "GREEN",
-          "perf": 96,
-          "ver": "N/A",
-          "hosting": "On-Premise",
-          "hostingColor": "#64748B",
-          "sessions": 0,
-          "uptime": 99.7,
-          "trend": [100, 100, 100, 99, 100, 100, 100, 100],
-          "up": 100,
-          "infra": [
-            {
-              "c": "lat",
-              "label": "Core Latency",
-              "val": "2ms",
-              "unit": "ms",
-              "m": 4,
-              "anom": false,
-              "detail": "Normal",
-              "h": "GREEN"
-            }
-          ]
-        },
-        {
-          "id": "azure",
-          "name": "Azure Platform",
-          "status": "GREEN",
-          "perf": 99,
-          "ver": "N/A",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 0,
-          "uptime": 99.95,
-          "trend": [100, 100, 100, 100, 100, 100, 100, 100],
-          "up": 100,
-          "infra": [
-            {
-              "c": "resp",
-              "label": "Platform Health",
-              "val": "Healthy",
-              "unit": "",
-              "m": 0,
-              "anom": false,
-              "detail": "All regions operational",
-              "h": "GREEN"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "integration",
-      "name": "Integration & Middleware",
-      "icon": "\ud83d\udd17",
-      "status": "AMBER",
-      "uptime": 96.8,
-      "description": "API gateway, ESB, ETL pipeline and middleware services",
-      "apps": [
-        {
-          "id": "apigw",
-          "name": "API Gateway",
-          "status": "AMBER",
-          "perf": 76,
-          "ver": "3.4.1",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 0,
-          "uptime": 97.4,
-          "trend": [99, 98, 97, 97, 97, 96, 97, 97],
-          "up": 97,
-          "infra": [
-            {
-              "c": "rate",
-              "label": "Error Rate",
-              "val": "4.2%",
-              "unit": "%",
-              "m": 84,
-              "anom": true,
-              "detail": "Elevated 4xx responses \u2014 downstream service timeout",
-              "h": "AMBER"
-            },
-            {
-              "c": "lat",
-              "label": "P95 Latency",
-              "val": "3.8s",
-              "unit": "s",
-              "m": 76,
-              "anom": true,
-              "detail": "Above 2s SLA target",
-              "h": "AMBER"
-            }
-          ]
-        },
-        {
-          "id": "esb",
-          "name": "ESB / Message Broker",
-          "status": "AMBER",
-          "perf": 72,
-          "ver": "7.2",
-          "hosting": "On-Premise",
-          "hostingColor": "#64748B",
-          "sessions": 0,
-          "uptime": 96.1,
-          "trend": [99, 98, 97, 96, 96, 96, 96, 96],
-          "up": 96,
-          "infra": [
-            {
-              "c": "queue",
-              "label": "Dead Letter Queue",
-              "val": "847",
-              "unit": "",
-              "m": 85,
-              "anom": true,
-              "detail": "847 messages in DLQ \u2014 retry exhausted",
-              "h": "AMBER"
-            }
-          ]
-        },
-        {
-          "id": "etl",
-          "name": "ETL Pipeline",
-          "status": "GREEN",
-          "perf": 88,
-          "ver": "2023.3",
-          "hosting": "Azure",
-          "hostingColor": "#0078D4",
-          "sessions": 0,
-          "uptime": 99.0,
-          "trend": [99, 99, 99, 99, 99, 100, 99, 99],
-          "up": 99,
-          "infra": [
-            {
-              "c": "lag",
-              "label": "Pipeline Lag",
-              "val": "4 min",
-              "unit": "",
-              "m": 20,
-              "anom": false,
-              "detail": "Within 15-min SLA",
               "h": "GREEN"
             }
           ]

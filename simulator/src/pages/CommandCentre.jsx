@@ -32,6 +32,23 @@ const OUT_COLORS = {
   COMPLETED: '#7C3AED',
 };
 
+function formatTs(ts) {
+  if (!ts) return '—';
+  // ISO timestamp from live Grafana annotations
+  if (ts.includes('T') || ts.includes('Z') || ts.match(/^\d{4}-/)) {
+    const d = new Date(ts);
+    if (!isNaN(d)) {
+      const day = d.toLocaleString('en-GB', { day: '2-digit', month: 'short', timeZone: 'Europe/Paris' });
+      const time = d.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Europe/Paris' });
+      return `${day} ${time}`;
+    }
+  }
+  // Static JSON timestamps like "07:14" or "Yesterday 22:30"
+  const today = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', timeZone: 'Europe/Paris' });
+  if (ts.startsWith('Yesterday')) return `${ts.replace('Yesterday', 'Yest')}`;
+  return `${today} ${ts}`;
+}
+
 function SilentOpsLog() {
   const [filter, setFilter] = useState('all');
   const { data: liveEvents, isLive, lastSync } = useLiveData('/events', SILENT_LOG);
@@ -50,7 +67,7 @@ function SilentOpsLog() {
 
   const autoCount  = log.filter((e) => e.pillar === 1).length;
   const hitlCount  = log.filter((e) => e.pillar === 2).length;
-  const healCount  = log.filter((e) => ['HEALED', 'AUTO-RESOLVED'].includes(e.outcome)).length;
+  const healCount  = log.filter((e) => ['HEALED', 'AUTO-RESOLVED', 'SUPPRESSED'].includes(e.outcome)).length;
   const approvedCount = log.filter((e) => e.outcome === 'RESOLVED').length;
   const awaitingCount = log.filter((e) => e.outcome === 'AWAITING APPROVAL').length;
   const totalCount = log.length;
@@ -102,29 +119,25 @@ function SilentOpsLog() {
 
   const displayStats = isLive ? liveStats : DAILY_STATS;
 
+  const now = Date.now();
   const groups = [
     {
       label: 'Last Hour',
-      items: shown.filter((e) => parseInt(e.ts.split(':')[0]) >= 3),
+      items: shown.filter((e) => e.time_ms
+        ? (now - e.time_ms) < 3600000
+        : false),
     },
     {
-      label: '2-4 Hours Ago',
-      items: shown.filter((e) => {
-        const h = parseInt(e.ts.split(':')[0]);
-        return h >= 1 && h < 3;
-      }),
+      label: '2–6 Hours Ago',
+      items: shown.filter((e) => e.time_ms
+        ? (now - e.time_ms) >= 3600000 && (now - e.time_ms) < 21600000
+        : false),
     },
     {
       label: 'Earlier Today',
-      items: shown.filter(
-        (e) =>
-          parseInt(e.ts.split(':')[0]) < 1 ||
-          e.ts.startsWith('2') ||
-          e.ts.startsWith('18') ||
-          e.ts.startsWith('20') ||
-          e.ts.startsWith('22') ||
-          e.ts.startsWith('23')
-      ),
+      items: shown.filter((e) => e.time_ms
+        ? (now - e.time_ms) >= 21600000
+        : true),
     },
   ].filter((g) => g.items.length > 0);
 
@@ -331,7 +344,10 @@ function SilentOpsLog() {
                     : 'transparent',
                 }}
               >
-                <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#64748B', flexShrink: 0, width: 54 }}>{entry.ts}</span>
+                <div style={{ flexShrink: 0, width: 82, fontFamily: 'monospace' }}>
+                  <div style={{ fontSize: 10, color: '#94A3B8' }}>{formatTs(entry.ts).split(' ').slice(0,2).join(' ')}</div>
+                  <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>{formatTs(entry.ts).split(' ').slice(2).join(' ')}</div>
+                </div>
                 <div style={{ width: 76, flexShrink: 0 }}>
                   <span
                     style={{

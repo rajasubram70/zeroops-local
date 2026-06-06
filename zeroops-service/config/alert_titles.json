@@ -1,0 +1,15 @@
+﻿{
+  "CRMURLDown":               "Odoo CRM — Health probe failure — Auto-detected by ZeroOps",
+  "CRMSlowResponse":          "Odoo CRM — Response time degradation — Auto-detected by ZeroOps",
+  "ServiceURLDown":           "Order API — Service unreachable — Auto-detected by ZeroOps",
+  "ServiceSlowResponse":      "Order API — Latency degradation — Auto-detected by ZeroOps",
+  "HighQueueDepth":           "Order Worker — Queue backlog detected — Auto-detected by ZeroOps",
+  "HighErrorRate":            "Order API — Elevated error rate — Auto-detected by ZeroOps",
+  "HighLatency":              "Order API — P95 latency SLA breach — Auto-detected by ZeroOps",
+  "MemoryLeakDetected":       "Order API — Memory leak detected — preemptive restart — Auto-detected by ZeroOps",
+  "NovelFailure":             "Order API — Novel failure pattern detected — Auto-detected by ZeroOps",
+  "SAPWorkProcessSaturation": "SAP S/4HANA — Dialog work process pool saturated — Auto-detected by ZeroOps",
+  "SAPiDocQueueBackup":       "SAP S/4HANA — iDoc inbound queue backing up — Auto-detected by ZeroOps",
+  "SAPBatchJobFailure":       "SAP S/4HANA — Batch job aborted — payroll processing at risk — Auto-detected by ZeroOps",
+  "SAPHANASlowdown":          "SAP S/4HANA — HANA database response degraded — Auto-detected by ZeroOps"
+}

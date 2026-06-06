@@ -1,0 +1,45 @@
+﻿version: '3.8'
+services:
+  netbox:
+    image: netboxcommunity/netbox:latest
+    container_name: netbox
+    depends_on:
+      - netbox-postgres
+      - netbox-redis
+    env_file: netbox.env
+    volumes:
+      - ./extra.py:/etc/netbox/config/extra.py:ro
+    ports:
+      - "8000:8080"
+    restart: unless-stopped
+
+  netbox-worker:
+    image: netboxcommunity/netbox:latest
+    container_name: netbox-worker
+    depends_on:
+      - netbox-postgres
+      - netbox-redis
+    env_file: netbox.env
+    volumes:
+      - ./extra.py:/etc/netbox/config/extra.py:ro
+    command: python manage.py rqworker
+    restart: unless-stopped
+
+  netbox-postgres:
+    image: postgres:15
+    container_name: netbox-postgres
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netbox123
+    volumes:
+      - netbox-postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  netbox-redis:
+    image: redis:7-alpine
+    container_name: netbox-redis
+    restart: unless-stopped
+
+volumes:
+  netbox-postgres-data:

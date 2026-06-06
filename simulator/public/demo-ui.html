@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Enterprise Order Platform — ZeroOps Live Demo</title>
+<style>
+  :root {
+    --bg:       #0F172A;
+    --panel:    #1E293B;
+    --border:   #334155;
+    --text:     #F1F5F9;
+    --muted:    #94A3B8;
+    --green:    #22C55E;
+    --amber:    #F59E0B;
+    --red:      #EF4444;
+    --blue:     #3B82F6;
+    --purple:   #8B5CF6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left h1 { font-size: 20px; font-weight: 700; }
+  .header-left p  { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid;
+    transition: all 0.3s;
+  }
+  .status-pill.healthy  { background: rgba(34,197,94,0.1);  color: var(--green);  border-color: rgba(34,197,94,0.3);  }
+  .status-pill.degraded { background: rgba(245,158,11,0.1); color: var(--amber);  border-color: rgba(245,158,11,0.3); }
+  .status-pill.down     { background: rgba(239,68,68,0.1);  color: var(--red);    border-color: rgba(239,68,68,0.3);  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+  }
+  .dot.pulse { animation: pulse 1.2s infinite; }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── KPI strip ── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-label { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; font-family: monospace; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 800; font-family: monospace; line-height: 1; }
+  .kpi-sub   { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .kpi-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    transition: width 0.5s, background 0.5s;
+    border-radius: 0 3px 0 0;
+  }
+
+  /* ── Main grid ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Order form ── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
+  .form-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--blue); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #2563EB, #7C3AED);
+    color: #fff;
+  }
+  .btn-primary:hover   { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:active  { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-flood {
+    background: rgba(245,158,11,0.15);
+    color: var(--amber);
+    border: 1px solid rgba(245,158,11,0.3);
+    font-size: 12px;
+    padding: 8px;
+  }
+  .btn-flood:hover { background: rgba(245,158,11,0.25); }
+
+  .btn-chaos {
+    background: rgba(239,68,68,0.12);
+    color: var(--red);
+    border: 1px solid rgba(239,68,68,0.3);
+    font-size: 12px;
+    padding: 8px;
+  }
+  .btn-restore {
+    background: rgba(34,197,94,0.12);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  /* ── Response feed ── */
+  .response-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .response-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid transparent;
+    animation: slideIn 0.2s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .response-item.success { background: rgba(34,197,94,0.07);   border-color: rgba(34,197,94,0.2);   }
+  .response-item.error   { background: rgba(239,68,68,0.07);   border-color: rgba(239,68,68,0.2);   }
+  .response-item.slow    { background: rgba(245,158,11,0.07);  border-color: rgba(245,158,11,0.2);  }
+  .response-item.timeout { background: rgba(239,68,68,0.12);   border-color: rgba(239,68,68,0.35);  }
+  .resp-status { font-size: 11px; font-weight: 700; font-family: monospace; min-width: 40px; }
+  .resp-ref    { font-family: monospace; color: var(--muted); font-size: 11px; flex: 1; }
+  .resp-time   { font-family: monospace; font-size: 12px; font-weight: 600; min-width: 56px; text-align: right; }
+  .resp-ts     { font-size: 10px; color: var(--muted); font-family: monospace; min-width: 50px; text-align: right; }
+
+  /* ── Latency chart ── */
+  .chart-container {
+    position: relative;
+    height: 180px;
+    margin-bottom: 10px;
+  }
+  canvas { width: 100% !important; }
+
+  /* ── Chaos control ── */
+  .chaos-panel {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .chaos-title {
+    font-size: 11px;
+    color: var(--red);
+    font-family: monospace;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .chaos-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .chaos-state {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg);
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: monospace;
+  }
+  .chaos-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+  .chaos-dot.active { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  /* ── Log panel ── */
+  .log-panel { height: 160px; overflow-y: auto; }
+  .log-line {
+    font-family: monospace;
+    font-size: 11px;
+    padding: 2px 0;
+    display: flex;
+    gap: 10px;
+  }
+  .log-line .log-ts    { color: var(--muted); min-width: 60px; }
+  .log-line .log-level { min-width: 50px; font-weight: 700; }
+  .log-line .log-level.INFO  { color: var(--blue); }
+  .log-line .log-level.WARN  { color: var(--amber); }
+  .log-line .log-level.ERROR { color: var(--red); }
+  .log-line .log-msg { color: #CBD5E1; }
+
+  /* ── ZeroOps banner ── */
+  .zeroops-banner {
+    display: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .zeroops-banner.detecting  { background: rgba(59,130,246,0.1);  color: #60A5FA; border: 1px solid rgba(59,130,246,0.3); }
+  .zeroops-banner.diagnosing { background: rgba(139,92,246,0.1);  color: #A78BFA; border: 1px solid rgba(139,92,246,0.3); }
+  .zeroops-banner.fixing     { background: rgba(245,158,11,0.1);  color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .zeroops-banner.resolved   { background: rgba(34,197,94,0.1);   color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>⚡ Enterprise Order Platform</h1>
+    <p>Live order processing — connected to demo-api :8080 · PostgreSQL · Redis</p>
+  </div>
+  <div id="statusPill" class="status-pill healthy">
+    <div id="statusDot" class="dot pulse"></div>
+    <span id="statusText">All Systems Operational</span>
+  </div>
+</div>
+
+<!-- ZeroOps action banner -->
+<div id="zeroBanner" class="zeroops-banner"></div>
+
+<!-- KPI strip -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">ORDERS SUBMITTED</div>
+    <div class="kpi-value" id="kpiTotal" style="color: var(--blue)">0</div>
+    <div class="kpi-sub">this session</div>
+    <div class="kpi-bar" id="barTotal" style="width:0%; background: var(--blue)"></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">SUCCESS RATE</div>
+    <div class="kpi-value" id="kpiSuccess" style="color: var(--green)">—</div>
+    <div class="kpi-sub">last 20 requests</div>
+    <div class="kpi-bar" id="barSuccess" style="width:100%; background: var(--green)"></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">AVG RESPONSE</div>
+    <div class="kpi-value" id="kpiAvg" style="color: var(--blue)">—</div>
+    <div class="kpi-sub">milliseconds</div>
+    <div class="kpi-bar" id="barAvg" style="width:20%; background: var(--blue)"></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">P95 LATENCY</div>
+    <div class="kpi-value" id="kpiP95" style="color: var(--blue)">—</div>
+    <div class="kpi-sub">milliseconds</div>
+    <div class="kpi-bar" id="barP95" style="width:20%; background: var(--blue)"></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">ERRORS</div>
+    <div class="kpi-value" id="kpiErrors" style="color: var(--muted)">0</div>
+    <div class="kpi-sub">total failures</div>
+    <div class="kpi-bar" id="barErrors" style="width:0%; background: var(--red)"></div>
+  </div>
+</div>
+
+<!-- Main grid -->
+<div class="main-grid">
+
+  <!-- Left: Order form -->
+  <div>
+    <div class="panel" style="margin-bottom:12px">
+      <div class="panel-title">📦 Submit Order</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">PRODUCT</label>
+          <input class="form-input" id="product" value="Industrial Cable Reel" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">QUANTITY</label>
+          <input class="form-input" id="quantity" type="number" value="50" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">CUSTOMER ID</label>
+          <input class="form-input" id="customer" value="CUST-EU-4821" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">AMOUNT (€)</label>
+          <input class="form-input" id="amount" type="number" value="2450.00" />
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btnSubmit" onclick="submitOrder()">
+        ▶ Submit Order
+      </button>
+      <button class="btn btn-flood" onclick="startFlood()">
+        ⚡ Flood — 20 concurrent orders
+      </button>
+    </div>
+
+    <!-- Chaos controls -->
+    <div class="chaos-panel">
+      <div class="chaos-title">⚠ CHAOS INJECTION — DEMO CONTROLS</div>
+      <div class="chaos-grid" style="margin-bottom:10px">
+        <div class="chaos-state">
+          <div class="chaos-dot" id="dotSlowDb"></div>
+          <span>slow_db</span>
+        </div>
+        <div class="chaos-state">
+          <div class="chaos-dot" id="dotHighError"></div>
+          <span>high_error</span>
+        </div>
+        <div class="chaos-state">
+          <div class="chaos-dot" id="dotQueue"></div>
+          <span>queue</span>
+        </div>
+      </div>
+      <div class="chaos-grid">
+        <button class="btn btn-chaos" onclick="injectChaos('slow_db')">💉 Slow DB</button>
+        <button class="btn btn-chaos" onclick="injectChaos('high_error')">💉 High Errors</button>
+        <button class="btn btn-restore" onclick="restoreAll()">✅ Restore All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Charts and feed -->
+  <div>
+    <!-- Latency chart -->
+    <div class="panel" style="margin-bottom:12px">
+      <div class="panel-title">📈 Response Time — Live
+        <span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:400" id="slaLabel">SLA: 1000ms</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="latencyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Response feed -->
+    <div class="panel">
+      <div class="panel-title">📋 Request Feed
+        <span style="margin-left:auto">
+          <span style="font-size:10px; color:var(--green); font-family:monospace">■ OK</span>
+          <span style="font-size:10px; color:var(--amber); font-family:monospace; margin-left:8px">■ SLOW</span>
+          <span style="font-size:10px; color:var(--red); font-family:monospace; margin-left:8px">■ ERR</span>
+        </span>
+      </div>
+      <div class="response-feed" id="responseFeed"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom: Logs -->
+<div class="panel">
+  <div class="panel-title">🖥 Application Log — demo-api
+    <button onclick="clearLogs()" style="margin-left:auto; background:none; border:1px solid var(--border); color:var(--muted); padding:2px 8px; border-radius:4px; cursor:pointer; font-size:11px">Clear</button>
+  </div>
+  <div class="log-panel" id="logPanel"></div>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────
+const API = 'http://localhost:8080';
+let stats = { total:0, success:0, errors:0, latencies:[] };
+let chaosState = { slow_db:false, high_error:false, queue_buildup:false };
+let floodInterval = null;
+let chartData = { labels:[], values:[] };
+let chart = null;
+let zeroopsActive = false;
+
+// ── Chart setup ───────────────────────────────────────────────
+function initChart() {
+  const ctx = document.getElementById('latencyChart').getContext('2d');
+  const SLA = 1000;
+  chart = {
+    ctx, SLA,
+    draw() {
+      const canvas = ctx.canvas;
+      const W = canvas.clientWidth, H = canvas.clientHeight;
+      canvas.width = W; canvas.height = H;
+      ctx.clearRect(0, 0, W, H);
+
+      const data = chartData.values;
+      if (data.length < 2) return;
+
+      const max = Math.max(...data, SLA * 1.2);
+      const min = 0;
+      const range = max - min || 1;
+
+      // SLA line
+      const slaY = H - ((SLA - min) / range) * (H - 20) - 10;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(239,68,68,0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, slaY);
+      ctx.lineTo(W, slaY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(239,68,68,0.6)';
+      ctx.font = '9px monospace';
+      ctx.fillText('SLA 1000ms', 4, slaY - 3);
+
+      // Area fill
+      ctx.beginPath();
+      data.forEach((v, i) => {
+        const x = (i / (data.length - 1)) * W;
+        const y = H - ((v - min) / range) * (H - 20) - 10;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      const lastX = W;
+      const lastY = H - ((data[data.length-1] - min) / range) * (H - 20) - 10;
+      ctx.lineTo(lastX, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+
+      const avgLatency = data.reduce((a,b) => a+b, 0) / data.length;
+      const fillColor = avgLatency > SLA ? 'rgba(239,68,68,0.1)' : avgLatency > 500 ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.08)';
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+
+      // Line
+      const lineColor = avgLatency > SLA ? '#EF4444' : avgLatency > 500 ? '#F59E0B' : '#22C55E';
+      ctx.beginPath();
+      data.forEach((v, i) => {
+        const x = (i / (data.length - 1)) * W;
+        const y = H - ((v - min) / range) * (H - 20) - 10;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Last point dot
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = lineColor;
+      ctx.fill();
+    }
+  };
+}
+
+// ── Submit order ──────────────────────────────────────────────
+async function submitOrder(silent = false) {
+  const btn = document.getElementById('btnSubmit');
+  if (!silent) { btn.disabled = true; btn.textContent = '⏳ Submitting…'; }
+
+  const orderRef = `ORD-${Date.now().toString().slice(-6)}`;
+  const start = performance.now();
+
+  try {
+    const payload = {
+      order_ref: orderRef,
+      amount: parseFloat(document.getElementById('amount')?.value || 99.99),
+      product: document.getElementById('product')?.value || 'Cable Reel',
+      quantity: parseInt(document.getElementById('quantity')?.value || 1),
+      customer_id: document.getElementById('customer')?.value || 'CUST-001',
+    };
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch(`${API}/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    const elapsed = Math.round(performance.now() - start);
+    stats.total++;
+    stats.latencies.push(elapsed);
+    if (stats.latencies.length > 50) stats.latencies.shift();
+    chartData.values.push(elapsed);
+    if (chartData.values.length > 60) chartData.values.shift();
+
+    if (res.ok) {
+      stats.success++;
+      const type = elapsed > 2000 ? 'slow' : 'success';
+      addFeedItem(type, res.status, orderRef, elapsed);
+      addLog('INFO', `Order ${orderRef} created — ${elapsed}ms`);
+    } else {
+      stats.errors++;
+      addFeedItem('error', res.status, orderRef, elapsed);
+      addLog('ERROR', `Order ${orderRef} failed — HTTP ${res.status} — ${elapsed}ms`);
+    }
+  } catch(e) {
+    const elapsed = Math.round(performance.now() - start);
+    stats.total++;
+    stats.errors++;
+    chartData.values.push(3000);
+    if (chartData.values.length > 60) chartData.values.shift();
+    const isTimeout = e.name === 'AbortError';
+    addFeedItem('timeout', isTimeout ? 'TIMEOUT' : 'ERR', orderRef, elapsed);
+    addLog('ERROR', isTimeout
+      ? `Order ${orderRef} TIMEOUT after ${elapsed}ms — DB connection pool exhausted`
+      : `Order ${orderRef} failed — ${e.message}`);
+  } finally {
+    if (!silent) { btn.disabled = false; btn.textContent = '▶ Submit Order'; }
+    updateKPIs();
+    updateStatus();
+    if (chart) chart.draw();
+  }
+}
+
+// ── Flood mode ────────────────────────────────────────────────
+function startFlood() {
+  addLog('WARN', 'Flood mode started — 20 concurrent orders per burst');
+  let burst = 0;
+  const interval = setInterval(async () => {
+    burst++;
+    const promises = Array.from({length: 20}, () => submitOrder(true));
+    await Promise.allSettled(promises);
+    if (burst >= 3) { clearInterval(interval); addLog('INFO', 'Flood burst complete'); }
+  }, 1500);
+}
+
+// ── Chaos injection ───────────────────────────────────────────
+async function injectChaos(type) {
+  const body = {};
+  body[type] = true;
+  try {
+    await fetch(`${API}/chaos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    chaosState[type] = true;
+    updateChaosIndicators();
+    addLog('WARN', `⚠ Chaos injected: ${type} = true`);
+    showBanner('detecting', `⚠ Chaos active: ${type.replace('_',' ')} — degradation beginning`);
+    setTimeout(() => detectZeroOps(type), 3000);
+  } catch(e) {
+    addLog('ERROR', `Failed to inject chaos: ${e.message}`);
+  }
+}
+
+async function restoreAll() {
+  try {
+    await fetch(`${API}/chaos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ high_error: false, slow_db: false, queue_buildup: false }),
+    });
+    chaosState = { slow_db:false, high_error:false, queue_buildup:false };
+    updateChaosIndicators();
+    addLog('INFO', '✅ All chaos cleared — system restoring');
+    showBanner('resolved', '✅ ZeroOps remediation complete — all systems restored');
+    setTimeout(() => hideBanner(), 5000);
+  } catch(e) {
+    addLog('ERROR', `Failed to restore: ${e.message}`);
+  }
+}
+
+// ── ZeroOps simulation overlay ────────────────────────────────
+function detectZeroOps(chaosType) {
+  if (zeroopsActive) return;
+  zeroopsActive = true;
+
+  const steps = {
+    slow_db: [
+      [0,    'detecting',  '🔗 Alert Correlator: HighDBLatency detected — p95 latency > 2s — INC raised'],
+      [3000, 'diagnosing', '🔍 RCA Engine: Querying Prometheus metrics + Loki logs — building context'],
+      [6000, 'diagnosing', '🔍 RCA Engine: PostgreSQL connection pool exhaustion identified — risk 38 — HiTL'],
+      [9000, 'fixing',     '👤 HiTL: Slack notification sent — "DB pool exhausted. Approve connection reset?"'],
+    ],
+    high_error: [
+      [0,    'detecting',  '🔗 Alert Correlator: HighErrorRate detected — error_rate > 10% — INC raised'],
+      [3000, 'diagnosing', '🔍 RCA Engine: Ollama gpt-oss:20b analysing error patterns in Loki logs'],
+      [6000, 'diagnosing', '🔍 RCA Engine: Application-layer fault identified — risk 45 — HiTL required'],
+      [9000, 'fixing',     '👤 HiTL: Slack notification sent — "60% error rate. Approve chaos rollback?"'],
+    ],
+  };
+
+  const sequence = steps[chaosType] || steps.high_error;
+  sequence.forEach(([delay, type, msg]) => {
+    setTimeout(() => showBanner(type, `🤖 ZeroOps — ${msg}`), delay);
+  });
+
+  setTimeout(() => { zeroopsActive = false; }, 12000);
+}
+
+// ── UI helpers ────────────────────────────────────────────────
+function addFeedItem(type, status, ref, ms) {
+  const feed = document.getElementById('responseFeed');
+  const el = document.createElement('div');
+  el.className = `response-item ${type}`;
+  const statusColor = type === 'success' ? 'var(--green)' : type === 'slow' ? 'var(--amber)' : 'var(--red)';
+  el.innerHTML = `
+    <span class="resp-status" style="color:${statusColor}">${status}</span>
+    <span class="resp-ref">${ref}</span>
+    <span class="resp-time" style="color:${ms > 1000 ? 'var(--red)' : ms > 500 ? 'var(--amber)' : 'var(--green)'}">${ms}ms</span>
+    <span class="resp-ts">${new Date().toLocaleTimeString('en',{hour12:false})}</span>
+  `;
+  feed.insertBefore(el, feed.firstChild);
+  while (feed.children.length > 30) feed.removeChild(feed.lastChild);
+}
+
+function addLog(level, msg) {
+  const panel = document.getElementById('logPanel');
+  const el = document.createElement('div');
+  el.className = 'log-line';
+  el.innerHTML = `
+    <span class="log-ts">${new Date().toLocaleTimeString('en',{hour12:false})}</span>
+    <span class="log-level ${level}">${level}</span>
+    <span class="log-msg">${msg}</span>
+  `;
+  panel.insertBefore(el, panel.firstChild);
+  while (panel.children.length > 60) panel.removeChild(panel.lastChild);
+}
+
+function clearLogs() { document.getElementById('logPanel').innerHTML = ''; }
+
+function showBanner(type, msg) {
+  const b = document.getElementById('zeroBanner');
+  b.className = `zeroops-banner ${type}`;
+  b.style.display = 'block';
+  b.textContent = msg;
+}
+function hideBanner() {
+  document.getElementById('zeroBanner').style.display = 'none';
+}
+
+function updateChaosIndicators() {
+  ['slow_db','high_error','queue_buildup'].forEach(k => {
+    const key = k === 'queue_buildup' ? 'queue' : k.replace('_','');
+    const dot = document.getElementById('dot' + k.split('_').map(w => w[0].toUpperCase()+w.slice(1)).join(''));
+    if (dot) dot.className = `chaos-dot ${chaosState[k] ? 'active' : ''}`;
+  });
+  document.getElementById('dotSlowDb').className    = `chaos-dot ${chaosState.slow_db ? 'active' : ''}`;
+  document.getElementById('dotHighError').className = `chaos-dot ${chaosState.high_error ? 'active' : ''}`;
+  document.getElementById('dotQueue').className     = `chaos-dot ${chaosState.queue_buildup ? 'active' : ''}`;
+}
+
+function updateKPIs() {
+  const { total, success, errors, latencies } = stats;
+  const rate = total > 0 ? Math.round((success/total)*100) : null;
+  const avg  = latencies.length ? Math.round(latencies.reduce((a,b)=>a+b,0)/latencies.length) : null;
+  const sorted = [...latencies].sort((a,b)=>a-b);
+  const p95 = sorted.length ? sorted[Math.floor(sorted.length * 0.95)] : null;
+
+  document.getElementById('kpiTotal').textContent   = total;
+  document.getElementById('kpiSuccess').textContent = rate !== null ? `${rate}%` : '—';
+  document.getElementById('kpiAvg').textContent     = avg !== null ? `${avg}ms` : '—';
+  document.getElementById('kpiP95').textContent     = p95 !== null ? `${p95}ms` : '—';
+  document.getElementById('kpiErrors').textContent  = errors;
+
+  // colours
+  const successEl = document.getElementById('kpiSuccess');
+  successEl.style.color = rate === null ? 'var(--muted)' : rate >= 95 ? 'var(--green)' : rate >= 80 ? 'var(--amber)' : 'var(--red)';
+  const avgEl = document.getElementById('kpiAvg');
+  if (avg !== null) avgEl.style.color = avg < 500 ? 'var(--green)' : avg < 1000 ? 'var(--amber)' : 'var(--red)';
+  const p95El = document.getElementById('kpiP95');
+  if (p95 !== null) p95El.style.color = p95 < 500 ? 'var(--green)' : p95 < 1000 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('kpiErrors').style.color = errors === 0 ? 'var(--muted)' : 'var(--red)';
+
+  // bars
+  document.getElementById('barTotal').style.width = `${Math.min(total/200*100, 100)}%`;
+  if (rate !== null) document.getElementById('barSuccess').style.width = `${rate}%`;
+  if (avg !== null)  document.getElementById('barAvg').style.width = `${Math.min(avg/2000*100, 100)}%`;
+  if (p95 !== null)  document.getElementById('barP95').style.width = `${Math.min(p95/2000*100, 100)}%`;
+  if (errors > 0)    document.getElementById('barErrors').style.width = `${Math.min(errors/50*100,100)}%`;
+}
+
+function updateStatus() {
+  const sorted = [...stats.latencies].sort((a,b)=>a-b);
+  const p95 = sorted.length ? sorted[Math.floor(sorted.length * 0.95)] : 0;
+  const errRate = stats.total > 0 ? stats.errors / stats.total : 0;
+  const pill = document.getElementById('statusPill');
+  const dot  = document.getElementById('statusDot');
+  const txt  = document.getElementById('statusText');
+
+  if (errRate > 0.3 || p95 > 3000) {
+    pill.className = 'status-pill down';
+    dot.className  = 'dot pulse';
+    txt.textContent = '🔴 Service Degraded — Errors High';
+  } else if (errRate > 0.1 || p95 > 1000) {
+    pill.className = 'status-pill degraded';
+    dot.className  = 'dot pulse';
+    txt.textContent = '🟡 Performance Degraded';
+  } else {
+    pill.className = 'status-pill healthy';
+    dot.className  = 'dot';
+    txt.textContent = 'All Systems Operational';
+  }
+}
+
+// ── Auto-submit every 3s to show live traffic ─────────────────
+function startAutoSubmit() {
+  setInterval(() => submitOrder(true), 3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+window.onload = () => {
+  initChart();
+  addLog('INFO', 'Enterprise Order Platform started — connected to demo-api :8080');
+  addLog('INFO', 'Auto-submit active — sending orders every 3 seconds');
+  startAutoSubmit();
+};
+
+window.onresize = () => { if (chart) chart.draw(); };
+</script>
+</body>
+</html>

@@ -76,7 +76,7 @@ Be specific, concise, and actionable. Reference incident IDs and component names
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer ---`,
         },
         body: JSON.stringify({
           model: 'gpt-4o',

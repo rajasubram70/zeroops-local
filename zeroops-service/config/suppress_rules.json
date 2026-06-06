@@ -1,0 +1,8 @@
+﻿{
+  "CRMSlowResponse":     "CRMURLDown",
+  "ServiceSlowResponse": "ServiceURLDown",
+  "HighLatency":         "MemoryLeakDetected",
+  "HighQueueDepth":      "NovelFailure",
+  "HighErrorRate":       "NovelFailure",
+  "SAPHANASlowdown":     "SAPWorkProcessSaturation"
+}

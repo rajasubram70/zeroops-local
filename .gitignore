@@ -29,4 +29,4 @@ Thumbs.db
 # Vite cache
 simulator/.vite/
 simulator/node_modules/
-simulator/dist/
+simulator/dist/.env

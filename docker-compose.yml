@@ -5,6 +5,8 @@ networks:
     driver: bridge
   zammad-docker-compose_default:
     external: true
+  netbox_default:
+    external: true
 
 volumes:
   prometheus_data:
@@ -26,6 +28,7 @@ services:
       - OTEL_ENDPOINT=http://otel-collector:4318
       - REDIS_HOST=redis
       - POSTGRES_DSN=postgresql://appuser:apppass@postgres:5432/enterprise_db
+      - TZ=Europe/Paris
     networks: [zeroops]
     restart: unless-stopped
     depends_on: [postgres, redis, otel-collector]
@@ -41,9 +44,9 @@ services:
     restart: unless-stopped
     depends_on: [loki]
 
-  rca-service:
-    build: ./rca-service
-    container_name: rca-service
+  zeroops-service:
+    build: ./zeroops-service
+    container_name: zeroops-service
     ports:
       - "5001:5000"
     volumes:
@@ -57,24 +60,34 @@ services:
       - USE_OLLAMA=true
       - OLLAMA_URL=http://host.docker.internal:11434/v1
       - OLLAMA_MODEL=gpt-oss:20b
-    # - OPENAI_API_KEY=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
       - DASHBOARD_UID=add2575
-      - SLACK_WEBHOOK=https://hooks.slack.com/services/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
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK}
       - RCA_BASE_URL=http://localhost:5001
       - ZAMMAD_URL=http://zammad-docker-compose-zammad-nginx-1:8080
-      - ZAMMAD_TOKEN=LSEuQk4pVaKjzYbjaVxoCp_tVdrZxu1xR-nVBfUGUi0R0SHd2DEo0UgnhD6q70yf
+      - ZAMMAD_TOKEN=${ZAMMAD_TOKEN}
+      - TZ=Europe/Paris
     networks:
       - zeroops
       - zammad-docker-compose_default
     restart: unless-stopped
     depends_on: [prometheus, loki, grafana]
-
+  s4hana:
+    build: ./s4hana/api
+    container_name: s4hana
+    ports:
+      - "8082:8082"
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      - zeroops
+    restart: unless-stopped
   demo-worker:
     build: ./app/worker
     container_name: demo-worker
     environment:
       - REDIS_HOST=redis
       - POSTGRES_DSN=postgresql://appuser:apppass@postgres:5432/enterprise_db
+      - TZ=Europe/Paris
     networks: [zeroops]
     restart: unless-stopped
     depends_on: [redis, postgres]
@@ -143,9 +156,10 @@ services:
       - ./config/grafana/provisioning:/etc/grafana/provisioning
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=zeroops
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_FEATURE_TOGGLES_ENABLE=correlations
+      - TZ=Europe/Paris
     networks: [zeroops]
     restart: unless-stopped
     depends_on: [prometheus, loki, tempo]
@@ -170,7 +184,7 @@ services:
     environment:
       POSTGRES_DB: enterprise_db
       POSTGRES_USER: appuser
-      POSTGRES_PASSWORD: apppass
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks: [zeroops]
@@ -209,7 +223,7 @@ services:
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - odoo_postgres_data:/var/lib/postgresql/data
     networks: [zeroops]
@@ -225,13 +239,18 @@ services:
       - PROMETHEUS_URL=http://prometheus:9090
       - LOKI_URL=http://loki:3100
       - ZAMMAD_URL=http://zammad-docker-compose-zammad-nginx-1:8080
-      - ZAMMAD_TOKEN=LSEuQk4pVaKjzYbjaVxoCp_tVdrZxu1xR-nVBfUGUi0R0SHd2DEo0UgnhD6q70yf
-      - RCA_URL=http://rca-service:5000
+      - ZAMMAD_TOKEN=${ZAMMAD_TOKEN}
+      - RCA_URL=http://zeroops-service:5000
+      - TZ=Europe/Paris
+      - NETBOX_URL=http://netbox:8080
+      - NETBOX_USER=admin
+      - NETBOX_PASS=zeroops
     networks:
       - zeroops
       - zammad-docker-compose_default
+      - netbox_default
     restart: unless-stopped
-    depends_on: [prometheus, loki, grafana, rca-service]
+    depends_on: [prometheus, loki, grafana, zeroops-service]
 
 # ── odoo CRM ─
   odoo:
@@ -242,10 +261,13 @@ services:
     environment:
       - HOST=odoo-postgres
       - USER=odoo
-      - PASSWORD=odoo123
+      - PASSWORD=${ODOO_POSTGRES_PASSWORD}
+      - TZ=Europe/Paris
     volumes:
       - odoo_data:/var/lib/odoo
     networks: [zeroops]
     restart: unless-stopped
     depends_on:
       - odoo-postgres
+
+

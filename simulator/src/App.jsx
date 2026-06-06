@@ -82,20 +82,52 @@ export default function App() {
     setChains(prev => prev.map(ch => {
       if (ch.id === 'live-api') {
         const healthy = liveMetrics.api_health === 1;
-        const queueAnom = liveMetrics.queue_depth > 50;
+        const queueAnom = liveMetrics.queue_depth > 5;
+        const memMb = liveMetrics?.api_memory_mb || 0;
+        const memHigh = memMb > 150;
+        const memWarn = memMb > 100;
         return {
           ...ch,
-          status: healthy ? (queueAnom ? 'AMBER' : 'GREEN') : 'RED',
+          status: healthy ? (queueAnom ? 'AMBER' : memHigh ? 'AMBER' : memWarn ? 'AMBER' : 'GREEN') : 'RED',
           uptime: healthy ? 99.9 : 0,
           apps: ch.apps.map(app => ({
             ...app,
-            status: healthy ? (queueAnom ? 'AMBER' : 'GREEN') : 'RED',
+            status: healthy ? (queueAnom ? 'AMBER' : memHigh ? 'AMBER' : memWarn ? 'AMBER' : 'GREEN') : 'RED',
             perf: healthy ? 98 : 0,
             infra: app.infra.map(i => {
-              if (i.c === 'health') return { ...i, val: healthy ? 'Passing' : 'DOWN', m: healthy ? 100 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Web health endpoint OK' : 'Health check FAILING — container down' };
-              if (i.c === 'resp')   return { ...i, val: healthy ? '240ms' : 'Timeout', m: healthy ? 88 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Within SLA' : 'No response — container unreachable' };
-              if (i.c === 'cpu')    return { ...i, val: healthy ? '18%' : 'N/A', m: healthy ? 18 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Normal load' : 'Container down — no CPU data' };
-              if (i.c === 'sess')   return { ...i, val: healthy ? '38' : '0', m: healthy ? 60 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Normal session count' : 'No active sessions — container down' };
+              const dbMs   = liveMetrics?.db_response_ms || 120;
+              const dbPool = liveMetrics?.db_pool_used   || 0;
+              const dbSlow = dbMs > 1000;
+              const dbAnom = dbMs > 500;
+              if (i.c === 'health')  return { ...i, val: healthy ? 'Passing' : 'DOWN', m: healthy ? 100 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Web health endpoint OK' : 'Health check FAILING — container down' };
+              if (i.c === 'resp')    return { ...i, val: healthy ? '240ms' : 'Timeout', m: healthy ? 88 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Within SLA' : 'No response — container unreachable' };
+              if (i.c === 'sess')    return { ...i, val: healthy ? '38' : '0', m: healthy ? 60 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'AMBER' };
+              if (i.c === 'db-resp') return { ...i, val: healthy ? `${dbMs}ms` : 'N/A', m: healthy ? Math.max(0, 100 - Math.round(dbMs/20)) : 0, anom: healthy && dbAnom, h: !healthy ? 'RED' : dbSlow ? 'RED' : dbAnom ? 'AMBER' : 'GREEN', detail: !healthy ? 'Container down' : dbSlow ? `DB response ${dbMs}ms — SLA breach — connection pool pressure` : dbAnom ? `DB response ${dbMs}ms — elevated — monitor` : `PostgreSQL query time normal — ${dbMs}ms` };
+              if (i.c === 'conn')    return { ...i, val: healthy ? `${dbPool}/100` : 'N/A', m: healthy ? dbPool : 0, anom: healthy && dbPool > 50, h: !healthy ? 'RED' : dbPool > 80 ? 'RED' : dbPool > 50 ? 'AMBER' : 'GREEN', detail: !healthy ? 'Container down' : dbPool > 80 ? `${dbPool} connections active — pool near exhaustion` : dbPool > 50 ? `${dbPool} connections — elevated — monitor` : `${dbPool} of 100 connections active — healthy` };
+              if (i.c === 'mem') {
+                const memMb = liveMetrics?.api_memory_mb || 62;
+                const memHigh = memMb > 150;
+                const memWarn = memMb > 100;
+                return { ...i,
+                  val: `${memMb}MB`,
+                  m: Math.min(Math.round(memMb / 3), 100),
+                  anom: memHigh || memWarn,
+                  h: !healthy ? 'RED' : memHigh ? 'RED' : memWarn ? 'AMBER' : 'GREEN',
+                  detail: !healthy ? 'Container down' : memHigh ? `Memory ${memMb}MB — OOM risk — preemptive restart triggered` : memWarn ? `Memory ${memMb}MB — elevated — monitoring trend` : `Memory ${memMb}MB — within normal range`
+                };
+              }
+              if (i.c === 'queue') {
+                const qd = liveMetrics?.queue_depth || 0;
+                const qHigh = qd > 50;
+                const qWarn = qd > 5;
+                return { ...i,
+                  val: `${qd}`,
+                  m: Math.min(qd * 2, 100),
+                  anom: qHigh || qWarn,
+                  h: !healthy ? 'RED' : qHigh ? 'RED' : qWarn ? 'AMBER' : 'GREEN',
+                  detail: !healthy ? 'Container down' : qHigh ? `Queue ${qd} — worker down — backlog critical` : qWarn ? `Queue ${qd} — worker consuming slowly` : `Queue depth normal — ${qd} pending`
+                };
+              }
               return i;
             })
           }))
@@ -103,19 +135,120 @@ export default function App() {
       }
       if (ch.id === 'live-crm') {
         const healthy = liveMetrics.crm_health === 1;
+        const dbMs   = liveMetrics?.db_response_ms || 120;
+        const dbPool = liveMetrics?.db_pool_used   || 0;
+        const dbSlow = dbMs > 1000;
+        const dbAnom = dbMs > 500;
         return {
           ...ch,
-          status: healthy ? 'GREEN' : 'RED',
+          status: healthy ? (dbSlow ? 'AMBER' : 'GREEN') : 'RED',
           uptime: healthy ? 99.8 : 0,
           apps: ch.apps.map(app => ({
             ...app,
-            status: healthy ? 'GREEN' : 'RED',
+            status: healthy ? (dbSlow ? 'AMBER' : 'GREEN') : 'RED',
             perf: healthy ? 97 : 0,
             infra: app.infra.map(i => {
-              if (i.c === 'health') return { ...i, val: healthy ? 'Passing' : 'DOWN', m: healthy ? 100 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Web health endpoint OK' : 'Health check FAILING — container down' };
+              if (i.c === 'health')  return { ...i, val: healthy ? 'Passing' : 'DOWN', m: healthy ? 100 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'RED', detail: healthy ? 'Web health endpoint OK' : 'Health check FAILING — container down' };
+              if (i.c === 'db-resp') return { ...i, val: healthy ? `${dbMs}ms` : 'N/A', m: healthy ? Math.max(0, 100 - Math.round(dbMs / 20)) : 0, anom: healthy && dbAnom, h: !healthy ? 'RED' : dbSlow ? 'RED' : dbAnom ? 'AMBER' : 'GREEN', detail: !healthy ? 'Container down' : dbSlow ? `DB response ${dbMs}ms — SLA breach` : dbAnom ? `DB response ${dbMs}ms — elevated` : `PostgreSQL query time normal — ${dbMs}ms` };
+              if (i.c === 'conn')    return { ...i, val: healthy ? `${dbPool}/100` : 'N/A', m: healthy ? dbPool : 0, anom: healthy && dbPool > 50, h: !healthy ? 'RED' : dbPool > 80 ? 'RED' : dbPool > 50 ? 'AMBER' : 'GREEN', detail: !healthy ? 'Container down' : `${dbPool} of 100 connections active` };
+              if (i.c === 'resp')    return { ...i, val: healthy ? `${dbMs < 500 ? 240 : Math.round(dbMs * 1.4)}ms` : 'Timeout', m: healthy ? (dbSlow ? 30 : 88) : 0, anom: !healthy || dbSlow, h: !healthy ? 'RED' : dbSlow ? 'AMBER' : 'GREEN', detail: healthy ? 'Within SLA' : 'No response' };
+              if (i.c === 'sess')    return { ...i, val: healthy ? '38' : '0', m: healthy ? 60 : 0, anom: !healthy, h: healthy ? 'GREEN' : 'AMBER' };
               return i;
             })
           }))
+        };
+      }
+      if (ch.id === 'live-sap') {
+        const wpPct    = liveMetrics?.sap_wp_dialog_used_pct   || 18;
+        const respMs   = liveMetrics?.sap_dialog_response_ms   || 420;
+        const idocQ    = liveMetrics?.sap_idoc_queue_depth     || 13;
+        const batchQ   = liveMetrics?.sap_batch_queue_depth    || 0;
+        const hanaCpu  = liveMetrics?.sap_hana_cpu_pct         || 22;
+        const hanaMem  = liveMetrics?.sap_hana_memory_pct      || 48;
+
+        const wpHigh   = wpPct  > 85;
+        const wpWarn   = wpPct  > 70;
+        const respSlow = respMs > 5000;
+        const respWarn = respMs > 2000;
+        const idocHigh = idocQ  > 100;
+        const batchErr = batchQ > 5;
+        const hanaWarn = hanaCpu > 60;
+
+        const sapStatus = wpHigh || respSlow || idocHigh || batchErr ? 'RED'
+                        : wpWarn || respWarn || hanaWarn ? 'AMBER' : 'GREEN';
+
+        return {
+          ...ch,
+          status: sapStatus,
+          apps: ch.apps.map(app => {
+            if (app.id === 's4hana-app') {
+              return {
+                ...app,
+                status: wpHigh ? 'RED' : wpWarn ? 'AMBER' : 'GREEN',
+                infra: app.infra.map(i => {
+                  if (i.c === 'health') return { ...i,
+                    val: sapStatus === 'RED' ? 'Degraded' : 'Healthy',
+                    m: sapStatus === 'RED' ? 40 : 95,
+                    anom: sapStatus !== 'GREEN',
+                    h: sapStatus
+                  };
+                  if (i.c === 'wp') return { ...i,
+                    val: `${Math.round(wpPct)}%`,
+                    m: Math.round(wpPct),
+                    anom: wpWarn || wpHigh,
+                    h: wpHigh ? 'RED' : wpWarn ? 'AMBER' : 'GREEN',
+                    detail: wpHigh ? `Dialog WP pool ${Math.round(wpPct)}% — saturation — SM37 reschedule triggered` : wpWarn ? `Dialog WP pool ${Math.round(wpPct)}% — elevated — monitor` : `Dialog WP pool ${Math.round(wpPct)}% — normal`
+                  };
+                  if (i.c === 'resp') return { ...i,
+                    val: respMs > 1000 ? `${(respMs/1000).toFixed(1)}s` : `${Math.round(respMs)}ms`,
+                    m: Math.min(Math.round(respMs / 200), 100),
+                    anom: respWarn || respSlow,
+                    h: respSlow ? 'RED' : respWarn ? 'AMBER' : 'GREEN',
+                    detail: respSlow ? `Dialog response ${(respMs/1000).toFixed(1)}s — HANA slowdown detected` : respWarn ? `Dialog response ${(respMs/1000).toFixed(1)}s — elevated` : `Dialog response ${Math.round(respMs)}ms — within SLA`
+                  };
+                  if (i.c === 'idoc') return { ...i,
+                    val: `${Math.round(idocQ)}`,
+                    m: Math.min(Math.round(idocQ / 10), 100),
+                    anom: idocHigh,
+                    h: idocHigh ? 'RED' : 'GREEN',
+                    detail: idocHigh ? `iDoc queue ${Math.round(idocQ)} — backup detected — consumer restarting` : `iDoc queue ${Math.round(idocQ)} — normal processing`
+                  };
+                  if (i.c === 'batch') return { ...i,
+                    val: batchErr ? `${Math.round(batchQ)} queued` : '2 active',
+                    m: Math.min(Math.round(batchQ * 10), 100),
+                    anom: batchErr,
+                    h: batchErr ? 'RED' : 'GREEN',
+                    detail: batchErr ? `SM37 — ${Math.round(batchQ)} jobs queued — payroll batch aborted` : 'SM37 — batch jobs running normally'
+                  };
+                  return i;
+                })
+              };
+            }
+            if (app.id === 'hana-db') {
+              return {
+                ...app,
+                status: hanaWarn ? 'AMBER' : 'GREEN',
+                infra: app.infra.map(i => {
+                  if (i.c === 'cpu') return { ...i,
+                    val: `${Math.round(hanaCpu)}%`,
+                    m: Math.round(hanaCpu),
+                    anom: hanaWarn,
+                    h: hanaCpu > 80 ? 'RED' : hanaWarn ? 'AMBER' : 'GREEN',
+                    detail: hanaWarn ? `HANA CPU ${Math.round(hanaCpu)}% — elevated — query optimisation recommended` : `HANA CPU ${Math.round(hanaCpu)}% — normal`
+                  };
+                  if (i.c === 'mem') return { ...i,
+                    val: `${Math.round(hanaMem)}%`,
+                    m: Math.round(hanaMem),
+                    anom: hanaMem > 85,
+                    h: hanaMem > 90 ? 'RED' : hanaMem > 85 ? 'AMBER' : 'GREEN',
+                    detail: `HANA memory ${Math.round(hanaMem)}% — ${hanaMem > 85 ? 'elevated' : 'normal'}`
+                  };
+                  return i;
+                })
+              };
+            }
+            return app;
+          })
         };
       }
       return ch;
@@ -327,7 +460,7 @@ export default function App() {
                 chains={chains}
                 healed={HC.healed}
                 runHC={runHC}
-                liveMetrics={TICKER.liveMetrics}
+                liveMetrics={liveMetrics}
                 predictAlerts={TICKER.predictAlerts}
                 demoDegrade={TICKER.demoDegrade}
                 onStartDegrade={TICKER.startDegradation}

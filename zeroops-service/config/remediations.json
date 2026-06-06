@@ -1,0 +1,81 @@
+﻿{
+  "HighErrorRate": {
+    "action": "disable_chaos",
+    "params": {"high_error": false},
+    "desc": "Disable high error chaos — restore normal operation"
+  },
+  "HighLatency": {
+    "action": "disable_chaos",
+    "params": {"slow_db": false},
+    "desc": "Disable slow DB chaos — restore normal DB performance"
+  },
+  "HighQueueDepth": {
+    "action": "restart_service",
+    "target": "demo-worker",
+    "desc": "Restart queue worker — consumer stopped, queue building up"
+  },
+  "SlowDatabase": {
+    "action": "disable_chaos",
+    "params": {"slow_db": false},
+    "desc": "Restore DB performance"
+  },
+  "ServiceURLDown": {
+    "action": "restart_service",
+    "target": "demo-api",
+    "desc": "Restart demo-api service — restore URL availability"
+  },
+  "ServiceSlowResponse": {
+    "action": "disable_chaos",
+    "params": {"slow_db": false},
+    "desc": "Disable slow DB chaos — restore response time"
+  },
+  "CRMURLDown": {
+    "action": "restart_service",
+    "target": "odoo",
+    "desc": "Restart Odoo CRM — restore URL availability"
+  },
+  "CRMSlowResponse": {
+    "action": "restart_service",
+    "target": "odoo",
+    "desc": "Restart Odoo CRM — restore response time"
+  },
+  "MemoryLeakDetected": {
+    "action": "restart_service",
+    "target": "demo-api",
+    "restart_type": "restart",
+    "desc": "Preemptive restart — memory leak cleared — OOM prevented"
+  },
+  "NovelFailure": {
+    "action": "disable_chaos",
+    "params": {"novel_failure": false},
+    "desc": "Disable novel failure chaos — restore normal operation"
+  },
+  "SAPWorkProcessSaturation": {
+    "action": "call_endpoint",
+    "url": "http://s4hana:8082/sm37/reschedule",
+    "method": "POST",
+    "body": {},
+    "desc": "SM37 reschedule — move batch jobs to background WP class — dialog pool freed"
+  },
+  "SAPiDocQueueBackup": {
+    "action": "call_endpoint",
+    "url": "http://s4hana:8082/chaos",
+    "method": "POST",
+    "body": {"idoc_backup": false},
+    "desc": "iDoc consumer restarted — queue processing resumed"
+  },
+  "SAPBatchJobFailure": {
+    "action": "call_endpoint",
+    "url": "http://s4hana:8082/sm37/reschedule",
+    "method": "POST",
+    "body": {},
+    "desc": "SM37 batch job rescheduled — payroll processing requeued"
+  },
+  "SAPHANASlowdown": {
+    "action": "call_endpoint",
+    "url": "http://s4hana:8082/chaos",
+    "method": "POST",
+    "body": {"hana_slowdown": false},
+    "desc": "HANA query optimisation applied — CDS view push-down enabled"
+  }
+}
