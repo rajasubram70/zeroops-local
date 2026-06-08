@@ -82,7 +82,7 @@
     {
       "id": "wf",
       "icon": "⚡",
-      "label": "Workflows",
+      "label": "Agent Pipeline",
       "acc": "wf",
       "pillar": "ops"
     },
